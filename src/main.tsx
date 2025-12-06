@@ -38,7 +38,7 @@ if (rootElement && !rootElement.innerHTML) {
           <RouterProvider router={router} />
         </SidebarProvider>
       </ThemeProvider>
-    </StrictMode>
+    </StrictMode>,
   );
 }
 
