@@ -2,11 +2,14 @@
   "name": "astrodesk",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "vite --port 3000",
-    "build": "vite build && tsc",
-    "serve": "vite preview",
-    "test": "vitest run"
+  "homepage": "https://poteznyszymon.github.io/AstroDesk-frontend",
+ "scripts": {
+  "dev": "vite --port 3000",
+  "build": "vite build && tsc",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist",
+  "serve": "vite preview",
+  "test": "vitest run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -44,6 +47,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "gh-pages": "^6.3.0",
     "jsdom": "^27.0.0",
     "typescript": "^5.7.2",
     "vite": "^7.1.7",

@@ -2,23 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email nie może być pusty")
-    .email("Zły format email"),
+  email: z.string().min(1, "Email nie może być pusty").email("Zły format email"),
   password: z.string().min(1, "Hasło nie może być puste"),
 });
 
@@ -37,15 +27,13 @@ function RouteComponent() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
+  function onSubmit(_values: z.infer<typeof loginSchema>) {
     navigate({ to: "/" });
   }
 
   return (
     <Card className="flex h-screen w-full rounded-none sm:rounded-xl flex-col items-stretch justify-center gap-6 p-8 sm:h-fit sm:max-w-88">
-      <h3 className="text-lg font-semibold text-balance">
-        Zaloguj się do Astrodesk
-      </h3>
+      <h3 className="text-lg font-semibold text-balance">Zaloguj się do Astrodesk</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 ">
           <FormField
