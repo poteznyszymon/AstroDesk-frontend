@@ -1,0 +1,1 @@
+import{j as e}from"./index-CJIwHBW3.js";function l(){return e.jsx("div",{className:"flex flex-1 flex-col h-full gap-4 items-center justify-center",children:e.jsx("h1",{className:"text-lg",children:"Strona glowna"})})}export{l as component};
