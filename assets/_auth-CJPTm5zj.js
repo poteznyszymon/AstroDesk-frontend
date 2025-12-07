@@ -1,0 +1,1 @@
+import{j as e,O as t}from"./index-CJIwHBW3.js";import{T as s}from"./ThemeIconButton-C9Iu1BR_.js";function o(){return e.jsxs("main",{className:"bg-background w-full h-screen  flex items-center justify-center",children:[e.jsx(s,{className:"fixed top-4 right-4"}),e.jsx("div",{className:"flex-1 flex items-center justify-center",children:e.jsx(t,{})})]})}export{o as component};

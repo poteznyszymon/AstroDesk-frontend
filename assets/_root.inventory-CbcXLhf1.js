@@ -1,1 +1,0 @@
-import{j as e}from"./index-vbWuI_9x.js";function n(){return e.jsx("div",{className:"flex flex-1 flex-col h-full gap-4 items-center justify-center",children:e.jsx("h1",{className:"text-lg",children:"System inwentaryzacyjny"})})}export{n as component};
