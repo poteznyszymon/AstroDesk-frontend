@@ -33,7 +33,7 @@ function NetworkNode({ data }: any) {
     },
   };
 
-  const { color, icon } = config[data.type];
+  const { color, icon } = config[data.type as keyof typeof config];
 
   return (
     <div className={`rounded-lg px-3 py-2 text-white ${color}`}>
