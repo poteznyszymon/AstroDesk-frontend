@@ -12,6 +12,8 @@ import {
   SidebarHeader,
   SidebarFooter,
   useSidebar,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_MOBILE,
 } from "@/components/ui/sidebar";
 import logo from "@/astrodesk.jpg";
 import { menuItems } from "@/data/app-links";
@@ -61,7 +63,7 @@ export const AppSidebar = () => {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={""} alt={"user avatar"} />
                     <AvatarFallback className="rounded-lg border">JD</AvatarFallback>
@@ -72,7 +74,7 @@ export const AppSidebar = () => {
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side="bottom" align="end" sideOffset={4}>
+              <DropdownMenuContent className="rounded-lg" side="bottom" align="end" sideOffset={4} style={{ minWidth: `calc(${isMobile ? SIDEBAR_WIDTH_MOBILE : SIDEBAR_WIDTH} - 1rem)` }}>
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -90,6 +92,7 @@ export const AppSidebar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={() => {
                       navigate({ to: "/login" });
                     }}
