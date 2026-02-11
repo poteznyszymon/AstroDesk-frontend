@@ -11,7 +11,6 @@
 body {
   @apply m-0;
   font-family: var(--font-sans);
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scrollbar-color: var(--muted-foreground) var(--card);
