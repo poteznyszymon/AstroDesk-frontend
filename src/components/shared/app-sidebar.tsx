@@ -95,7 +95,7 @@ export const AppSidebar = () => {
                     }}
                   >
                     <LogOut />
-                    Log out
+                    Wyloguj sie
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
