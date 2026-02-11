@@ -19,11 +19,14 @@ import logo from "@/astrodesk.jpg";
 import { menuItems } from "@/data/app-links";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Switch } from "../ui/switch";
+import { useAdmin } from "@/data/mock/admin-context";
 
 export const AppSidebar = () => {
   const navigate = useNavigate();
   const { location } = useRouterState();
   const { toggleSidebar, isMobile } = useSidebar();
+  const { adminView, toggleAdminView } = useAdmin();
 
   function handleLinkClick() {
     if (isMobile) {
@@ -90,9 +93,13 @@ export const AppSidebar = () => {
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                <DropdownMenuGroup className="flex items-center justify-between p-1 text-xs">
+                  Set admin view <Switch checked={adminView} onCheckedChange={toggleAdminView} />
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem
-                    className="cursor-pointer"
+                    className="cursor-pointer text-xs"
                     onClick={() => {
                       navigate({ to: "/login" });
                     }}

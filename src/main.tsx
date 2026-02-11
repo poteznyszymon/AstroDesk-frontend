@@ -9,6 +9,7 @@ import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { ThemeProvider } from "./components/theme/theme-provider.tsx";
 import { SidebarProvider } from "./components/ui/sidebar.tsx";
+import { AdminProvider } from "./data/mock/admin-context.tsx";
 
 // Create a new router instance
 const router = createRouter({
@@ -34,9 +35,11 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <SidebarProvider>
-          <RouterProvider router={router} />
-        </SidebarProvider>
+        <AdminProvider>
+          <SidebarProvider>
+            <RouterProvider router={router} />
+          </SidebarProvider>
+        </AdminProvider>
       </ThemeProvider>
     </StrictMode>,
   );
