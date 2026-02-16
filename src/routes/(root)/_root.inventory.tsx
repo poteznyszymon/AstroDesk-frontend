@@ -189,11 +189,11 @@ const statusConfig: Record<EquipmentStatus, { label: string; variant: "default" 
 };
 
 const columns: ColumnDef<Equipment>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => <div className="font-mono text-sm ml-2">{row.getValue("id")}</div>,
-  },
+  // {
+  //   accessorKey: "id",
+  //   header: "ID",
+  //   cell: ({ row }) => <div className="font-mono text-sm ml-2">{row.getValue("id")}</div>,
+  // },
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -207,7 +207,7 @@ const columns: ColumnDef<Equipment>[] = [
       const config = typeConfig[type];
       const TypeIcon = config.icon;
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-3">
           <TypeIcon className="h-4 w-4 text-muted-foreground" />
           <div>
             <div className="font-medium">{row.getValue("name")}</div>

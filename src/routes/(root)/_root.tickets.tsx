@@ -9,6 +9,5 @@ export const Route = createFileRoute("/(root)/_root/tickets")({
 
 function RouteComponent() {
   const { adminView } = useAdmin();
-
   return <div className="w-full flex flex-col gap-4">{adminView ? <AdminTicketView /> : <UserTicketView />}</div>;
 }

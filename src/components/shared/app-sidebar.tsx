@@ -96,7 +96,6 @@ export const AppSidebar = () => {
                 <DropdownMenuGroup className="flex items-center justify-between p-1 text-xs">
                   Set admin view <Switch checked={adminView} onCheckedChange={toggleAdminView} />
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     className="cursor-pointer text-xs"
