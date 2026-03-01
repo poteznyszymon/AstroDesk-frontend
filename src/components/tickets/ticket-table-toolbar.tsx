@@ -10,7 +10,7 @@ interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   return (
     <div className="flex items-center gap-4 justify-between flex-col xs:flex-row">
       <Input
@@ -44,7 +44,7 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
           </DialogContent>
         </Dialog>
 
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="">
               Kolumny <ChevronDown className="ml-2 h-4 w-4" />
@@ -62,7 +62,7 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
                 );
               })}
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
     </div>
   );
