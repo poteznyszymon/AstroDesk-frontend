@@ -10,7 +10,6 @@ import {
   type SortingState,
   type VisibilityState,
   type Table,
-  type RowData,
 } from "@tanstack/react-table";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
