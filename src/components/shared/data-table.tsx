@@ -10,6 +10,7 @@ import {
   type SortingState,
   type VisibilityState,
   type Table,
+  type RowData,
 } from "@tanstack/react-table";
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,10 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   toolbar?: React.ComponentType<{ table: Table<TData> }>;
+  onRowClick: (RowData: TData) => void;
 }
 
-export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -65,7 +67,7 @@ export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar }: Da
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} onClick={() => onRowClick && onRowClick(row.original)} className={"cursor-pointer hover:bg-muted/50"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}

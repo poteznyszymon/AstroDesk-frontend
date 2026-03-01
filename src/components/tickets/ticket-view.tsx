@@ -30,7 +30,7 @@ const TicketView = () => {
   return (
     <div className="w-full flex flex-col gap-4">
       {adminView && <AdminTicketTypeSelection ticketsType={ticketsType} setTicketsType={setTicketsType} />}
-      <DataTable columns={columns} data={adminView ? filteredData : mockUserTickets} toolbar={TicketTableToolbar} />
+      <DataTable columns={columns} data={adminView ? filteredData : mockUserTickets} toolbar={TicketTableToolbar} onRowClick={() => {}} />
     </div>
   );
 };

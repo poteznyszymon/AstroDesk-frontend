@@ -120,7 +120,7 @@ export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
               <DropdownMenuLabel>Akcje</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => navigator.clipboard.writeText(equipment.serialNumber)}>Kopiuj numer seryjny</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Zobacz szczegóły</DropdownMenuItem>
+              {/* <DropdownMenuItem>Zobacz szczegóły</DropdownMenuItem> */}
               <DropdownMenuItem>Edytuj sprzęt</DropdownMenuItem>
               <DropdownMenuItem>Przypisz do pracownika</DropdownMenuItem>
               <DropdownMenuItem className="text-red-600">Usuń z inwentarza</DropdownMenuItem>
