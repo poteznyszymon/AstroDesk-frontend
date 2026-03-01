@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAdmin } from "@/data/mock/admin-context";
 import TicketView from "@/components/tickets/ticket-view";
 
 export const Route = createFileRoute("/(root)/_root/tickets")({
