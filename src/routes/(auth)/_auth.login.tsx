@@ -6,29 +6,28 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-
-const loginSchema = z.object({
-  email: z.string().min(1, "Email nie może być pusty").email("Zły format email"),
-  password: z.string().min(1, "Hasło nie może być puste"),
-});
+import { useLogin } from "@/hooks/auth/useAuth";
+import { Spinner } from "@/components/ui/spinner";
+import { loginSchema } from "@/types/login-types";
 
 export const Route = createFileRoute("/(auth)/_auth/login")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { login, isLoading } = useLogin();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "johndoe@gmail.com",
+      password: "johndoe123",
     },
   });
 
-  function onSubmit(_values: z.infer<typeof loginSchema>) {
-    navigate({ to: "/" });
+  function onSubmit(values: z.infer<typeof loginSchema>) {
+    login(values)
   }
 
   return (
@@ -62,8 +61,9 @@ function RouteComponent() {
               </FormItem>
             )}
           />
-          <Button className="w-full" type="submit">
+          <Button className="w-full" type="submit" disabled={isLoading}>
             Zaloguj się
+            {isLoading && <Spinner data-icon="inline-end" />}
           </Button>
         </form>
       </Form>

@@ -11,6 +11,11 @@ import { ThemeProvider } from "./components/theme/theme-provider.tsx";
 import { SidebarProvider } from "./components/ui/sidebar.tsx";
 import { AdminProvider } from "./data/mock/admin-context.tsx";
 
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -28,19 +33,24 @@ declare module "@tanstack/react-router" {
   }
 }
 
+export const queryClient = new QueryClient()
+
+
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <AdminProvider>
-          <SidebarProvider>
-            <RouterProvider router={router} />
-          </SidebarProvider>
-        </AdminProvider>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+          <AdminProvider>
+            <SidebarProvider>
+              <RouterProvider router={router} />
+            </SidebarProvider>
+          </AdminProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </StrictMode>,
   );
 }

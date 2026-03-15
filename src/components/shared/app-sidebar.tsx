@@ -21,12 +21,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Switch } from "../ui/switch";
 import { useAdmin } from "@/data/mock/admin-context";
+import { useLogout, useMe } from "@/hooks/auth/useAuth";
 
 export const AppSidebar = () => {
-  const navigate = useNavigate();
   const { location } = useRouterState();
   const { toggleSidebar, isMobile } = useSidebar();
   const { adminView, toggleAdminView } = useAdmin();
+  const { logout } = useLogout();
+  const { user } = useMe();
 
   function handleLinkClick() {
     if (isMobile) {
@@ -69,11 +71,11 @@ export const AppSidebar = () => {
                 <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={""} alt={"user avatar"} />
-                    <AvatarFallback className="rounded-lg border">JD</AvatarFallback>
+                    <AvatarFallback className="rounded-lg border">{user?.name.slice(0,2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">johndoe</span>
-                    <span className="truncate text-xs">johndoe@gmail.com</span>
+                    <span className="truncate font-medium">{user?.name}</span>
+                    <span className="truncate text-xs">{user?.email}</span>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -83,11 +85,11 @@ export const AppSidebar = () => {
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage src={""} alt={"user avatar"} />
-                        <AvatarFallback className="rounded-lg border">JD</AvatarFallback>
+                        <AvatarFallback className="rounded-lg border">{user?.name.slice(0,2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">johndoe</span>
-                        <span className="truncate text-xs">johndoe@gmail.com</span>
+                        <span className="truncate font-medium">{user?.name}</span>
+                        <span className="truncate text-xs">{user?.email}</span>
                       </div>
                     </div>
                   </DropdownMenuLabel>
@@ -100,7 +102,8 @@ export const AppSidebar = () => {
                   <DropdownMenuItem
                     className="cursor-pointer text-xs"
                     onClick={() => {
-                      navigate({ to: "/login" });
+                      console.log("click")
+                      logout();
                     }}
                   >
                     <LogOut />
