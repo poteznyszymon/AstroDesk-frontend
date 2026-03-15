@@ -3,15 +3,22 @@ import { Input } from "@/components/ui/input";
 import type { Table } from "@tanstack/react-table";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useMe } from "@/hooks/auth/useAuth";
+import { useTickets } from "@/hooks/ticket/useTIcekts";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
 export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+
+  const { user } = useMe();
+  const { isLoading } = useTickets(user?.name);
+
   return (
     <div className="flex items-center gap-4 justify-between flex-col xs:flex-row">
       <Input
+        disabled={isLoading}
         placeholder="Szukaj po tytule..."
         value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
         onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
@@ -20,7 +27,7 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
       <div className="flex items-center gap-4 w-full justify-between xs:w-fit">
         <Dialog>
           <DialogTrigger asChild>
-            <Button>Dodaj nowy</Button>
+            <Button disabled={isLoading}>Dodaj nowy</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

@@ -1,11 +1,11 @@
 import { loginSchema } from "@/types/login-types";
 import type z from "zod";
 
-const fakeUser = { id: 1, name: "John doe", email: "johndoe@gmail.com" };
+const fakeUser = { id: 1, name: "Jan Kowalski", email: "jankowalski@gmail.com" };
 
 export const loginMock = async ({ email, password }: z.infer<typeof loginSchema>) => {
   await new Promise(res => setTimeout(res, 800));
-  if (email === "johndoe@gmail.com" && password === "johndoe123") {
+  if (email === "jankowalski@gmail.com" && password === "jankowalski") {
     localStorage.setItem("token", "fake-jwt-token");
     return fakeUser;
   }

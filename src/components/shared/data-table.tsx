@@ -14,15 +14,17 @@ import {
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import TableSkeleton from "./table-skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   toolbar?: React.ComponentType<{ table: Table<TData> }>;
   onRowClick: (RowData: TData) => void;
+  isLoading: boolean;
 }
 
-export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, isLoading }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -50,8 +52,7 @@ export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRo
   return (
     <div className="space-y-4">
       {Toolbar && <Toolbar table={table} />}
-
-      <div className="overflow-hidden rounded-md border">
+      {!isLoading && <div className="overflow-hidden rounded-md border">
         <UITable>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -81,13 +82,13 @@ export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRo
             )}
           </TableBody>
         </UITable>
-      </div>
-
+      </div>}
+      {isLoading && <TableSkeleton />}
       <div className="flex justify-end gap-2">
-        <Button size="sm" variant="outline" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+        <Button size="sm" variant="outline" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage() || isLoading}>
           Poprzednia
         </Button>
-        <Button size="sm" variant="outline" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+        <Button size="sm" variant="outline" onClick={() => table.nextPage()} disabled={!table.getCanNextPage() || isLoading}>
           Następna
         </Button>
       </div>

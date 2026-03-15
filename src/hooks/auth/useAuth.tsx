@@ -27,7 +27,7 @@ export const useMe = () => {
     queryKey: ["me"],
     queryFn: getMeMock,
     retry: false,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // 5 min
   });
   return { user, isLoading }
 };
@@ -37,8 +37,8 @@ export const useLogout = () => {
   const { mutate: logout } = useMutation({
     mutationFn: logoutMock,
     onSuccess: () => {
-      queryClient.setQueryData(["me"], null);
-      queryClient.clear();
+      // queryClient.setQueryData(["me"], null);
+      // queryClient.clear();
       navigate({ to: "/login" });
     },
     onError: () => {

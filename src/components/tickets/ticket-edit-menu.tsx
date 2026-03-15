@@ -5,9 +5,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import type { Ticket } from "@/types/tickets";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
+import { useDeleteTicket } from "@/hooks/ticket/useTIcekts";
+import { Spinner } from "../ui/spinner";
 
 const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
   const [activeDialog, setActiveDialog] = useState<"details" | "edit" | "delete" | null>(null);
+  const { deleteTicket, isLoading } = useDeleteTicket()
+
+  const handleOnDelete = async (ticketId: string) => {
+    await deleteTicket(ticketId);
+    setActiveDialog(null);
+  }
 
   return (
     <>
@@ -49,8 +57,12 @@ const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
             <Button variant="outline" size={"sm"} onClick={() => setActiveDialog(null)}>
               Anuluj
             </Button>
-            <Button variant="destructive" size={"sm"} onClick={() => setActiveDialog(null)}>
+            <Button variant="destructive" size={"sm"} disabled={isLoading} onClick={() => {
+              handleOnDelete(ticket.id);
+              
+            }}>
               Usuń
+              {isLoading && <Spinner />}
             </Button>
           </DialogFooter>
         </DialogContent>
