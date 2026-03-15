@@ -3,52 +3,25 @@ import { mockNetworkItems, mockNetworkHistory } from "@/data/mock/mock-network";
 import { getNetworkColumns } from "./network-columns";
 import { NetworkTableToolbar } from "./network-table-toolbar";
 import type { NetworkItem } from "@/types/network";
-import { useState, useMemo, useCallback } from "react";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Link as LinkIcon, Monitor, MapPin, Clock, ArrowRight } from "lucide-react";
-import type { Table } from "@tanstack/react-table";
 
 const NetworkView = () => {
   const columns = getNetworkColumns();
   const [selectedItem, setSelectedItem] = useState<NetworkItem | null>(null);
-  const [search, setSearch] = useState("");
-
-  const filteredData = useMemo(() => {
-    if (!search.trim()) return mockNetworkItems;
-    const q = search.toLowerCase();
-    return mockNetworkItems.filter(
-      (item) =>
-        item.macAddress.toLowerCase().includes(q) ||
-        item.ipAddress.toLowerCase().includes(q) ||
-        (item.hostname?.toLowerCase().includes(q) ?? false) ||
-        (item.vendor?.toLowerCase().includes(q) ?? false) ||
-        (item.switchName?.toLowerCase().includes(q) ?? false)
-    );
-  }, [search]);
 
   const history = selectedItem
     ? mockNetworkHistory.filter((h) => h.macAddress === selectedItem.macAddress)
     : [];
 
-  // stable reference - nie powoduje re-mount przy każdym wpisaniu znaku
-  const ToolbarWithSearch = useCallback(
-    (props: { table: Table<NetworkItem> }) => (
-      <NetworkTableToolbar
-        table={props.table}
-        searchValue={search}
-        onSearchChange={setSearch}
-      />
-    ),
-    [search]
-  );
-
   return (
     <div className="w-full flex flex-col gap-4">
       <DataTable
         columns={columns}
-        data={filteredData}
-        toolbar={ToolbarWithSearch}
+        data={mockNetworkItems}
+        toolbar={NetworkTableToolbar}
         onRowClick={(row) => setSelectedItem(row)}
       />
 

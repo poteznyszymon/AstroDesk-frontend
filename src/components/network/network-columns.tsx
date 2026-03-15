@@ -1,6 +1,6 @@
 import type { NetworkItem } from "@/types/network";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Link as LinkIcon, Unlink, Laptop, Monitor, Printer, Server, Smartphone, HardDrive } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Link as LinkIcon, Unlink, Laptop, Monitor, Printer, Server, HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
