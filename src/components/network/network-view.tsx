@@ -19,6 +19,7 @@ const NetworkView = () => {
   return (
     <div className="w-full flex flex-col gap-4">
       <DataTable
+        isLoading={false}
         columns={columns}
         data={mockNetworkItems}
         toolbar={NetworkTableToolbar}
