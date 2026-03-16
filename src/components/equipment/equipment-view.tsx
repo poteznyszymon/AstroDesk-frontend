@@ -15,7 +15,7 @@ const AdminEquipmentView = () => {
   const [selectedAsset, setSelectedAsset] = useState<Equipment | null>(null);
   return (
     <div className="w-full flex flex-col gap-4">
-      <DataTable columns={columns} data={mockData} toolbar={EquipmentTableToolbar} onRowClick={(row) => setSelectedAsset(row)} />
+      <DataTable isLoading={false} columns={columns} data={mockData} toolbar={EquipmentTableToolbar} onRowClick={(row) => setSelectedAsset(row)} />
       <Sheet
         open={!!selectedAsset}
         onOpenChange={(isOpen) => {
