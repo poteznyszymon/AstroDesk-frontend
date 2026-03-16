@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createTicketMock, deleteTicketMock, getTicketsMock } from "./mock.tickets";
+import { createTicketMock, deleteTicketMock, getTicketsMock, updateTicketMock } from "./mock.tickets";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
+import type { Ticket } from "@/types/tickets";
 
 const TICKETS_KEY = "tickets";
 
@@ -28,12 +29,28 @@ export const useDeleteTicket = () => {
 };
 
 export const useCreateTicket = () => {
-  const {} = useMutation({
-    mutationFn: createTicketMock,
-      onSuccess: () => {
+  const { mutateAsync: createTicket, isPending: isLoading } = useMutation({
+    mutationFn: (ticket: Omit<Ticket, "id" | "createdAt">) => createTicketMock(ticket),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY] });
       toast.success("Ticket dodany");
     },
     onError: () => toast.error("Błąd podczas dodawania"),
-  })
-}
+  });
+
+  return { createTicket, isLoading };
+};
+
+export const useUpdateTicket = () => {
+  const { mutateAsync: updateTicket, isPending: isLoading } = useMutation({
+    mutationFn: ({ id, ticket }: { id: string; ticket: Partial<Ticket> }) => 
+      updateTicketMock(id, ticket),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TICKETS_KEY] });
+      toast.success("Ticket zaktualizowany");
+    },
+    onError: () => toast.error("Błąd podczas aktualizacji"),
+  });
+
+  return { updateTicket, isLoading };
+};

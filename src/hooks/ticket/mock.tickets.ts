@@ -29,7 +29,7 @@ export const mockTickets: Ticket[] = [
     description: "Słaby sygnał Wi-Fi na drugim piętrze.",
     status: "open",
     priority: "critical",
-    assignee: "",
+    assignee: null,
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-29",
     updatedAt: "2025-12-01",
@@ -196,4 +196,12 @@ export const createTicketMock = async (ticket: Omit<Ticket, "id" | "createdAt">)
   };
   mockTickets.unshift(newTicket);
   return newTicket;
+};
+
+export const updateTicketMock = async (id: string, updates: Partial<Ticket>) => {
+  await delay(500);
+  const idx = mockTickets.findIndex(t => t.id === id);
+  if (idx === -1) throw new Error("Ticket not found");
+  mockTickets[idx] = { ...mockTickets[idx], ...updates };
+  return mockTickets[idx];
 };

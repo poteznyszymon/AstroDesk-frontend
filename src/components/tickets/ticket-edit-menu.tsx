@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import type { Ticket } from "@/types/tickets";
+import { priorityConfig, statusConfig, type Ticket } from "@/types/tickets";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { useDeleteTicket } from "@/hooks/ticket/useTIcekts";
 import { Spinner } from "../ui/spinner";
+import { Separator } from "../ui/separator";
+import { Badge } from "../ui/badge";
+import EditTicketDialog from "./edit-ticket-dialog";
 
 const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
   const [activeDialog, setActiveDialog] = useState<"details" | "edit" | "delete" | null>(null);
@@ -16,6 +19,8 @@ const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
     await deleteTicket(ticketId);
     setActiveDialog(null);
   }
+
+  console.log(ticket)
 
   return (
     <>
@@ -28,14 +33,14 @@ const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() => {
               navigator.clipboard.writeText(ticket.id);
               toast("ID skopiowane do schowka", { duration: 1000 });
             }}
           >
             Kopiuj ID
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setActiveDialog("details")}>Zobacz szczegóły</DropdownMenuItem>
           <DropdownMenuItem onClick={() => setActiveDialog("edit")}>Edytuj zgłoszenie</DropdownMenuItem>
@@ -68,21 +73,83 @@ const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={activeDialog === "edit"} onOpenChange={() => setActiveDialog(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edytuj zgłoszenie</DialogTitle>
-          </DialogHeader>
-          <div className="py-8">tu bedzie formularz do edycji</div>
-        </DialogContent>
-      </Dialog>
+      <EditTicketDialog
+        ticket={ticket}
+        open={activeDialog === "edit"}
+        onOpenChange={(open) => !open && setActiveDialog(null)}
+      />
 
       <Dialog open={activeDialog === "details"} onOpenChange={() => setActiveDialog(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Szczegóły zgłoszenia</DialogTitle>
           </DialogHeader>
-          <div className="py-8">tu beda szczegoly</div>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Tytuł</p>
+              <p className="text-base font-semibold">{ticket.title}</p>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Opis</p>
+              <p className="text-sm text-foreground whitespace-pre-wrap">{ticket.description}</p>
+            </div>
+
+            <Separator />
+
+            <div className="flex gap-6">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Status</p>
+                {(() => {
+                  const { label, variant, icon: Icon } = statusConfig[ticket.status];
+                  return (
+                    <Badge variant={variant} className="flex items-center gap-1 w-fit">
+                      <Icon className="h-3 w-3" />
+                      {label}
+                    </Badge>
+                  );
+                })()}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Priorytet</p>
+                {(() => {
+                  const { label, className } = priorityConfig[ticket.priority];
+                  return (
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${className}`}>
+                      {label}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex gap-6 items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Przypisany do</p>
+                <p className="text-sm">{ticket.assignee ?? <span className="italic text-muted-foreground">Brak</span>}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Utworzony przez</p>
+                <p className="text-sm">{ticket.createdBy}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-6 items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Data utworzenia</p>
+                <p className="text-sm">{new Date(ticket.createdAt).toLocaleString("pl-PL")}</p>
+              </div>
+              {ticket.updatedAt && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Ostatnia aktualizacja</p>
+                  <p className="text-sm">{new Date(ticket.updatedAt).toLocaleString("pl-PL")}</p>
+                </div>
+              )}
+            </div>
+
+          </div>
         </DialogContent>
       </Dialog>
     </>

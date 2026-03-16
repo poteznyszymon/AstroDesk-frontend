@@ -3,16 +3,19 @@ import { Clock, CheckCircle2, AlertCircle, Circle } from "lucide-react";
 export type TicketStatus = "open" | "in-progress" | "resolved" | "closed";
 export type TicketPriority = "low" | "medium" | "high" | "critical";
 
+export const ticketStatuses = ["open", "in-progress", "resolved", "closed"] as const;
+export const ticketPriorities = ["low", "medium", "high", "critical"] as const;
+
 export interface Ticket {
   id: string;
   title: string;
   description: string;
   status: TicketStatus;
   priority: TicketPriority;
-  assignee: string;
+  assignee: string | null;
   createdBy: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
 }
 
 export const statusConfig: Record<
