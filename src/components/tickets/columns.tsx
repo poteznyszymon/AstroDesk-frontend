@@ -84,13 +84,20 @@ export const getColumns = (): ColumnDef<Ticket>[] => {
   ];
 
   columns.push({
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const ticket = row.original;
-      return <TicketEditMenu ticket={ticket} />;
-    },
-  });
+  id: "actions",
+  enableHiding: false,
+  cell: ({ row }) => {
+    return (
+      <div
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onPointerUp={(e) => e.stopPropagation()}
+      >
+        <TicketEditMenu ticket={row.original} />
+      </div>
+    );
+  },
+});
 
   return columns;
 };
