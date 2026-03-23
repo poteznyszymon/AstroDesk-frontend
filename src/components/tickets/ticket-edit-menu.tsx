@@ -19,8 +19,6 @@ const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
     setActiveDialog(null);
   }
 
-  console.log(ticket)
-
   return (
     <>
       <DropdownMenu>

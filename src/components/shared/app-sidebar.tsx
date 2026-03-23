@@ -36,6 +36,8 @@ export const AppSidebar = () => {
     }
   }
 
+  console.log(location.pathname)
+
   return (
     <Sidebar className="border-r! border-r-border!">
       <SidebarHeader>
@@ -51,7 +53,7 @@ export const AppSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={location.pathname === item.url ? "text-foreground bg-sidebar-accent outline-solid outline-1 outline-border" : "text-muted-foreground"}>
+                  <SidebarMenuButton asChild className={location.pathname.includes(item.url) ? "text-foreground bg-sidebar-accent outline-solid outline-1 outline-border" : "text-muted-foreground"}>
                     <Link to={item.url} onClick={handleLinkClick}>
                       <item.icon />
                       <span>{item.title}</span>
