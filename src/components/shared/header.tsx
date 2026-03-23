@@ -1,14 +1,24 @@
-import { useRouterState } from "@tanstack/react-router";
-import ThemeIconButton from "../theme/ThemeIconButton";
+import { useRouterState, Link } from "@tanstack/react-router";
+import { menuItems } from "@/data/app-links";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
-import { menuItems } from "@/data/app-links";
+import ThemeIconButton from "../theme/ThemeIconButton";
 
 const Header = () => {
   const { location } = useRouterState();
-
-  function getLocationDescription(pathname: string): string {
-    return menuItems.find((x) => x.url === pathname)?.title || "";
+  const segments = location.pathname.split("/").filter(Boolean);
+  
+  function getLabel(segment: string): string {
+    const found = menuItems.find((x) => x.url === `/${segment}`);
+    return found?.title ?? segment;
   }
 
   return (
@@ -16,10 +26,34 @@ const Header = () => {
       <div className="flex items-center h-full p-4 gap-4">
         <SidebarTrigger className="p-4" />
         <Separator orientation="vertical" />
-        <div className="flex-1 flex items-center text-sm h-full">
-          <p className="text-sm">{getLocationDescription(location.pathname)}</p>
+
+        <Breadcrumb>
+          <BreadcrumbList>
+            {segments.map((segment, index) => {
+              const isLast = index === segments.length - 1;
+              const href = "/" + segments.slice(0, index + 1).join("/");
+
+              return (
+                <div key={href} className="flex items-center gap-1.5">
+                  <BreadcrumbItem>
+                    {isLast ? (
+                      <BreadcrumbPage>{getLabel(segment)}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink asChild>
+                        <Link to={href}>{getLabel(segment)}</Link>
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                  {!isLast && <BreadcrumbSeparator />}
+                </div>
+              );
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <div className="ml-auto">
+          <ThemeIconButton />
         </div>
-        <ThemeIconButton />
       </div>
     </header>
   );

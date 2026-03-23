@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as rootRootRouteImport } from './routes/(root)/_root'
 import { Route as authAuthRouteImport } from './routes/(auth)/_auth'
 import { Route as rootRootIndexRouteImport } from './routes/(root)/_root.index'
-import { Route as rootRootTicketsRouteImport } from './routes/(root)/_root.tickets'
 import { Route as rootRootNetworkRouteImport } from './routes/(root)/_root.network'
-import { Route as rootRootInventoryRouteImport } from './routes/(root)/_root.inventory'
 import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
+import { Route as rootRootTicketsIndexRouteImport } from './routes/(root)/_root.tickets.index'
+import { Route as rootRootInventoryIndexRouteImport } from './routes/(root)/_root.inventory.index'
+import { Route as rootRootTicketsIdRouteImport } from './routes/(root)/_root.tickets.$id'
+import { Route as rootRootInventoryIdRouteImport } from './routes/(root)/_root.inventory.$id'
 
 const rootRootRoute = rootRootRouteImport.update({
   id: '/(root)/_root',
@@ -30,19 +32,9 @@ const rootRootIndexRoute = rootRootIndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRootRoute,
 } as any)
-const rootRootTicketsRoute = rootRootTicketsRouteImport.update({
-  id: '/tickets',
-  path: '/tickets',
-  getParentRoute: () => rootRootRoute,
-} as any)
 const rootRootNetworkRoute = rootRootNetworkRouteImport.update({
   id: '/network',
   path: '/network',
-  getParentRoute: () => rootRootRoute,
-} as any)
-const rootRootInventoryRoute = rootRootInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
   getParentRoute: () => rootRootRoute,
 } as any)
 const authAuthLoginRoute = authAuthLoginRouteImport.update({
@@ -50,45 +42,87 @@ const authAuthLoginRoute = authAuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authAuthRoute,
 } as any)
+const rootRootTicketsIndexRoute = rootRootTicketsIndexRouteImport.update({
+  id: '/tickets/',
+  path: '/tickets/',
+  getParentRoute: () => rootRootRoute,
+} as any)
+const rootRootInventoryIndexRoute = rootRootInventoryIndexRouteImport.update({
+  id: '/inventory/',
+  path: '/inventory/',
+  getParentRoute: () => rootRootRoute,
+} as any)
+const rootRootTicketsIdRoute = rootRootTicketsIdRouteImport.update({
+  id: '/tickets/$id',
+  path: '/tickets/$id',
+  getParentRoute: () => rootRootRoute,
+} as any)
+const rootRootInventoryIdRoute = rootRootInventoryIdRouteImport.update({
+  id: '/inventory/$id',
+  path: '/inventory/$id',
+  getParentRoute: () => rootRootRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof authAuthLoginRoute
-  '/inventory': typeof rootRootInventoryRoute
   '/network': typeof rootRootNetworkRoute
-  '/tickets': typeof rootRootTicketsRoute
   '/': typeof rootRootIndexRoute
+  '/inventory/$id': typeof rootRootInventoryIdRoute
+  '/tickets/$id': typeof rootRootTicketsIdRoute
+  '/inventory': typeof rootRootInventoryIndexRoute
+  '/tickets': typeof rootRootTicketsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof authAuthLoginRoute
-  '/inventory': typeof rootRootInventoryRoute
   '/network': typeof rootRootNetworkRoute
-  '/tickets': typeof rootRootTicketsRoute
   '/': typeof rootRootIndexRoute
+  '/inventory/$id': typeof rootRootInventoryIdRoute
+  '/tickets/$id': typeof rootRootTicketsIdRoute
+  '/inventory': typeof rootRootInventoryIndexRoute
+  '/tickets': typeof rootRootTicketsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(auth)/_auth': typeof authAuthRouteWithChildren
   '/(root)/_root': typeof rootRootRouteWithChildren
   '/(auth)/_auth/login': typeof authAuthLoginRoute
-  '/(root)/_root/inventory': typeof rootRootInventoryRoute
   '/(root)/_root/network': typeof rootRootNetworkRoute
-  '/(root)/_root/tickets': typeof rootRootTicketsRoute
   '/(root)/_root/': typeof rootRootIndexRoute
+  '/(root)/_root/inventory/$id': typeof rootRootInventoryIdRoute
+  '/(root)/_root/tickets/$id': typeof rootRootTicketsIdRoute
+  '/(root)/_root/inventory/': typeof rootRootInventoryIndexRoute
+  '/(root)/_root/tickets/': typeof rootRootTicketsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/inventory' | '/network' | '/tickets' | '/'
+  fullPaths:
+    | '/login'
+    | '/network'
+    | '/'
+    | '/inventory/$id'
+    | '/tickets/$id'
+    | '/inventory'
+    | '/tickets'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/inventory' | '/network' | '/tickets' | '/'
+  to:
+    | '/login'
+    | '/network'
+    | '/'
+    | '/inventory/$id'
+    | '/tickets/$id'
+    | '/inventory'
+    | '/tickets'
   id:
     | '__root__'
     | '/(auth)/_auth'
     | '/(root)/_root'
     | '/(auth)/_auth/login'
-    | '/(root)/_root/inventory'
     | '/(root)/_root/network'
-    | '/(root)/_root/tickets'
     | '/(root)/_root/'
+    | '/(root)/_root/inventory/$id'
+    | '/(root)/_root/tickets/$id'
+    | '/(root)/_root/inventory/'
+    | '/(root)/_root/tickets/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,25 +153,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof rootRootIndexRouteImport
       parentRoute: typeof rootRootRoute
     }
-    '/(root)/_root/tickets': {
-      id: '/(root)/_root/tickets'
-      path: '/tickets'
-      fullPath: '/tickets'
-      preLoaderRoute: typeof rootRootTicketsRouteImport
-      parentRoute: typeof rootRootRoute
-    }
     '/(root)/_root/network': {
       id: '/(root)/_root/network'
       path: '/network'
       fullPath: '/network'
       preLoaderRoute: typeof rootRootNetworkRouteImport
-      parentRoute: typeof rootRootRoute
-    }
-    '/(root)/_root/inventory': {
-      id: '/(root)/_root/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof rootRootInventoryRouteImport
       parentRoute: typeof rootRootRoute
     }
     '/(auth)/_auth/login': {
@@ -146,6 +166,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof authAuthLoginRouteImport
       parentRoute: typeof authAuthRoute
+    }
+    '/(root)/_root/tickets/': {
+      id: '/(root)/_root/tickets/'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof rootRootTicketsIndexRouteImport
+      parentRoute: typeof rootRootRoute
+    }
+    '/(root)/_root/inventory/': {
+      id: '/(root)/_root/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof rootRootInventoryIndexRouteImport
+      parentRoute: typeof rootRootRoute
+    }
+    '/(root)/_root/tickets/$id': {
+      id: '/(root)/_root/tickets/$id'
+      path: '/tickets/$id'
+      fullPath: '/tickets/$id'
+      preLoaderRoute: typeof rootRootTicketsIdRouteImport
+      parentRoute: typeof rootRootRoute
+    }
+    '/(root)/_root/inventory/$id': {
+      id: '/(root)/_root/inventory/$id'
+      path: '/inventory/$id'
+      fullPath: '/inventory/$id'
+      preLoaderRoute: typeof rootRootInventoryIdRouteImport
+      parentRoute: typeof rootRootRoute
     }
   }
 }
@@ -163,17 +211,21 @@ const authAuthRouteWithChildren = authAuthRoute._addFileChildren(
 )
 
 interface rootRootRouteChildren {
-  rootRootInventoryRoute: typeof rootRootInventoryRoute
   rootRootNetworkRoute: typeof rootRootNetworkRoute
-  rootRootTicketsRoute: typeof rootRootTicketsRoute
   rootRootIndexRoute: typeof rootRootIndexRoute
+  rootRootInventoryIdRoute: typeof rootRootInventoryIdRoute
+  rootRootTicketsIdRoute: typeof rootRootTicketsIdRoute
+  rootRootInventoryIndexRoute: typeof rootRootInventoryIndexRoute
+  rootRootTicketsIndexRoute: typeof rootRootTicketsIndexRoute
 }
 
 const rootRootRouteChildren: rootRootRouteChildren = {
-  rootRootInventoryRoute: rootRootInventoryRoute,
   rootRootNetworkRoute: rootRootNetworkRoute,
-  rootRootTicketsRoute: rootRootTicketsRoute,
   rootRootIndexRoute: rootRootIndexRoute,
+  rootRootInventoryIdRoute: rootRootInventoryIdRoute,
+  rootRootTicketsIdRoute: rootRootTicketsIdRoute,
+  rootRootInventoryIndexRoute: rootRootInventoryIndexRoute,
+  rootRootTicketsIndexRoute: rootRootTicketsIndexRoute,
 }
 
 const rootRootRouteWithChildren = rootRootRoute._addFileChildren(
