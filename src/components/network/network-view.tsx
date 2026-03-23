@@ -32,7 +32,7 @@ const NetworkView = () => {
           if (!isOpen) setSelectedItem(null);
         }}
       >
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-lg overflow-y-auto px-6">
           {selectedItem && (
             <>
               <SheetHeader className="mb-6">
@@ -99,7 +99,7 @@ const NetworkView = () => {
                               idx === 0 ? "bg-primary border-primary" : "bg-background border-border"
                             }`}
                           />
-                          <div className="rounded-md border px-3 py-2 text-sm space-y-1">
+                          <div className="rounded-md border px-4 py-3 text-sm space-y-2">
                             <div className="flex items-center justify-between">
                               <span className="font-mono font-medium text-sm">{entry.ipAddress}</span>
                               {idx === 0 && <Badge variant="default" className="text-xs">Aktualny</Badge>}

@@ -15,9 +15,9 @@ export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TDat
   return (
     <div className="flex items-center gap-4 justify-between flex-col xs:flex-row">
       <Input
-        placeholder="Szukaj po IP, MAC, hostname..."
-        value={(table.getColumn("ipAddress")?.getFilterValue() as string) ?? ""}
-        onChange={(event) => table.getColumn("ipAddress")?.setFilterValue(event.target.value)}
+        placeholder="Szukaj po hostname"
+        value={(table.getColumn("hostname")?.getFilterValue() as string) ?? ""}
+        onChange={(event) => table.getColumn("hostname")?.setFilterValue(event.target.value)}
         className="sm:max-w-sm w-full"
       />
       <div className="flex items-center gap-4 w-full justify-between xs:w-fit">

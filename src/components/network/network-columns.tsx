@@ -138,12 +138,6 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.macAddress)}>
-                Kopiuj MAC
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.ipAddress)}>
-                Kopiuj IP
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Pokaż historię</DropdownMenuItem>
               {!item.isImported && (
