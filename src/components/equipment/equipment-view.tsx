@@ -1,21 +1,33 @@
 import { DataTable } from "@/components/shared/data-table";
-import { demoEquipment } from "@/data/mock/mock-equipment";
 import { getEquipmentColumns } from "./equipment-columns";
 import { EquipmentTableToolbar } from "./equipment-table-toolbar";
 import { useAdmin } from "@/data/mock/admin-context";
 import type { Equipment } from "@/types/equipment";
-import { useState } from "react";
+import {useMemo, useState} from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
+import {useEquipment} from "@/hooks/inventory/useInventory.tsx";
+import {useMe} from "@/hooks/auth/useAuth.tsx";
 
 const AdminEquipmentView = () => {
   const { adminView } = useAdmin();
-
+  const { data, isLoading } = useEquipment();
+  const { user } = useMe();
   const columns = getEquipmentColumns();
-  const mockData = adminView ? demoEquipment : demoEquipment.filter((e) => e.assignedTo?.includes("Jan"));
+
+  const filteredData = useMemo(() => {
+      const equipment = data?.equipment ?? [];
+
+      if (!adminView) {
+        return equipment.filter((e) => e.assignedTo == user?.name);
+      }
+
+      return equipment;
+  }, [adminView, data, user?.name]);
+
   const [selectedAsset, setSelectedAsset] = useState<Equipment | null>(null);
   return (
     <div className="w-full flex flex-col gap-4">
-      <DataTable isLoading={false} columns={columns} data={mockData} toolbar={EquipmentTableToolbar} onRowClick={(row) => setSelectedAsset(row)} />
+      <DataTable isLoading={isLoading} columns={columns} data={filteredData} toolbar={EquipmentTableToolbar} onRowClick={(row) => setSelectedAsset(row)} />
       <Sheet
         open={!!selectedAsset}
         onOpenChange={(isOpen) => {

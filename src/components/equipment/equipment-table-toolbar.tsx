@@ -4,6 +4,7 @@ import type { Table } from "@tanstack/react-table";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAdmin } from "@/data/mock/admin-context";
+import AddEquipmentDialog from "@/components/equipment/add-equipment-dialog.tsx";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -46,29 +47,7 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Dodaj nowy</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Dodaj nowy sprzet</DialogTitle>
-                  <DialogDescription>Tutaj bedzie formularz do nowego sprzetu do systemu</DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline" size={"sm"}>
-                      Anuluj
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button size={"sm"} onClick={() => toast("Nowy sprzet zostal dodany pomyslne.", { action: { label: "Zamknij", onClick: () => {} } })}>
-                      Dodaj
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+           <AddEquipmentDialog />
           </>
         )}
 

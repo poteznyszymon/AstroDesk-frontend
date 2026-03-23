@@ -105,9 +105,7 @@ export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
     {
       id: "actions",
       enableHiding: false,
-      cell: ({ row }) => {
-        const equipment = row.original;
-
+      cell: (_) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -118,7 +116,6 @@ export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(equipment.serialNumber)}>Kopiuj numer seryjny</DropdownMenuItem>
               <DropdownMenuSeparator />
               {/* <DropdownMenuItem>Zobacz szczegóły</DropdownMenuItem> */}
               <DropdownMenuItem>Edytuj sprzęt</DropdownMenuItem>
