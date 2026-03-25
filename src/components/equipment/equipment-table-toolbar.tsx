@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Table } from "@tanstack/react-table";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { toast } from "sonner";
+// import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+// import { toast } from "sonner";
 import { useAdmin } from "@/data/mock/admin-context";
 import AddEquipmentDialog from "@/components/equipment/add-equipment-dialog.tsx";
 
