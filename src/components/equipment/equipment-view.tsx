@@ -1,22 +1,22 @@
 import { DataTable } from "@/components/shared/data-table";
-import { getEquipmentColumns } from "./equipment-columns";
 import { EquipmentTableToolbar } from "./equipment-table-toolbar";
 import { useAdmin } from "@/data/mock/admin-context";
-import type { Equipment } from "@/types/equipment";
+import type { Inventory } from "@/types/inventory";
 import {useMemo} from "react";
-import {useEquipment} from "@/hooks/inventory/useInventory.tsx";
 import {useMe} from "@/hooks/auth/useAuth.tsx";
 import { useNavigate } from "@tanstack/react-router";
+import { useInventory } from "@/hooks/inventory/useInventory";
+import { getInventoryColumns } from "./equipment-columns";
 
 const AdminEquipmentView = () => {
   const { adminView } = useAdmin();
-  const { data, isLoading } = useEquipment();
+  const { data, isLoading } = useInventory();
   const { user } = useMe();
-  const columns = getEquipmentColumns();
+  const columns = getInventoryColumns();
   const navigate = useNavigate()
 
   const filteredData = useMemo(() => {
-      const equipment = data?.equipment ?? [];
+      const equipment = data ?? [];
 
       if (!adminView) {
         return equipment.filter((e) => e.assignedTo == user?.name);
@@ -25,7 +25,7 @@ const AdminEquipmentView = () => {
       return equipment;
   }, [adminView, data, user?.name]);
 
-  const handleRowClick = (row: Equipment) => {
+  const handleRowClick = (row: Inventory) => {
     navigate({to: `/inventory/${row.id}`})
   }
   

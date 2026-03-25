@@ -1,35 +1,51 @@
-import type { Equipment, EquipmentStatus, EquipmentType } from "@/types/equipment";
 import React from "react";
-import { ArrowUpDown, MoreHorizontal, Monitor, Laptop, Printer, Server, Smartphone, HardDrive } from "lucide-react";
+import { 
+  ArrowUpDown, 
+  MoreHorizontal, 
+  Monitor, 
+  Laptop, 
+  Printer, 
+  Smartphone, 
+  Router, 
+  Network 
+} from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
-export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
-  const typeConfig: Record<EquipmentType, { label: string; icon: React.ElementType }> = {
-    laptop: { label: "Laptop", icon: Laptop },
-    desktop: { label: "Komputer", icon: Monitor },
-    monitor: { label: "Monitor", icon: Monitor },
-    printer: { label: "Drukarka", icon: Printer },
-    phone: { label: "Telefon", icon: Smartphone },
-    server: { label: "Serwer", icon: Server },
-    other: { label: "Inne", icon: HardDrive },
+import type { Inventory, InventoryItemType, InventoryStatus } from "@/types/inventory";
+
+export const getInventoryColumns = (): ColumnDef<Inventory>[] => {
+  const typeConfig: Record<InventoryItemType, { label: string; icon: React.ElementType }> = {
+    LAPTOP: { label: "Laptop", icon: Laptop },
+    KOMPUTER: { label: "Komputer", icon: Monitor },
+    DRUKARKA: { label: "Drukarka", icon: Printer },
+    ROUTER: { label: "Router", icon: Router },
+    SWITCH: { label: "Switch", icon: Network },
+    TELEFON: { label: "Telefon", icon: Smartphone },
   };
 
-  const statusConfig: Record<EquipmentStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-    active: { label: "Aktywny", variant: "default" },
-    "in-repair": { label: "W naprawie", variant: "destructive" },
-    available: { label: "Dostępny", variant: "secondary" },
-    retired: { label: "Wycofany", variant: "outline" },
+  const statusConfig: Record<InventoryStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    DOSTEPNE: { label: "Dostępne", variant: "secondary" },
+    DO_WYDANIA: { label: "Do wydania", variant: "outline" },
+    WYDANE: { label: "Wydane", variant: "default" },
+    ZAJETE: { label: "Zajęte", variant: "default" },
+    W_TRAKCIE: { label: "W trakcie", variant: "outline" },
+    PRZYJETY: { label: "Przyjęty", variant: "default" },
+    SERWIS: { label: "W serwisie", variant: "destructive" },
+    UTYLIZACJA: { label: "Utylizacja", variant: "destructive" },
+    CANCELLED: { label: "Anulowane", variant: "destructive" },
   };
 
-  const columns: ColumnDef<Equipment>[] = [
-    // {
-    //   accessorKey: "id",
-    //   header: "ID",
-    //   cell: ({ row }) => <div className="font-mono text-sm ml-2">{row.getValue("id")}</div>,
-    // },
+  const columns: ColumnDef<Inventory>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => (
@@ -39,9 +55,10 @@ export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
         </Button>
       ),
       cell: ({ row }) => {
-        const type = row.original.type;
+        const type = row.original.itemType;
         const config = typeConfig[type];
         const TypeIcon = config.icon;
+        
         return (
           <div className="flex items-center gap-2 ml-3">
             <TypeIcon className="h-4 w-4 text-muted-foreground" />
@@ -54,21 +71,21 @@ export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
       },
     },
     {
-      accessorKey: "type",
+      accessorKey: "itemType",
       header: "Typ",
       cell: ({ row }) => {
-        const type = row.getValue("type") as EquipmentType;
+        const type = row.getValue("itemType") as InventoryItemType;
         const config = typeConfig[type];
-        return <span className="text-sm">{config.label}</span>;
+        return <span className="text-sm">{config?.label || type}</span>;
       },
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status") as EquipmentStatus;
+        const status = row.getValue("status") as InventoryStatus;
         const config = statusConfig[status];
-        return <Badge variant={config.variant}>{config.label}</Badge>;
+        return <Badge variant={config?.variant || "default"}>{config?.label || status}</Badge>;
       },
     },
     {
@@ -87,7 +104,10 @@ export const getEquipmentColumns = (): ColumnDef<Equipment>[] => {
     {
       accessorKey: "location",
       header: "Lokalizacja",
-      cell: ({ row }) => <div>{row.getValue("location")}</div>,
+      cell: ({ row }) => {
+        const location = row.getValue("location") as string | null;
+        return <div>{location || <span className="text-muted-foreground">—</span>}</div>;
+      },
     },
     {
       accessorKey: "assignedDate",

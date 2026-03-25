@@ -16,37 +16,17 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
   return (
     <div className="flex items-center gap-4 justify-between flex-col xs:flex-row">
       <Input
-        placeholder="Szukaj po tytule..."
-        value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-        onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
-        className="sm:max-w-sm w-full"
+        
+        placeholder="Filtruj sprzęt..."
+        value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+        onChange={(event) =>
+          table.getColumn("name")?.setFilterValue(event.target.value)
+        }
+        className="h-8 w-full sm:w-[150px] lg:w-[250px]"
       />
       <div className="flex items-center gap-4 w-full justify-between xs:w-fit">
         {adminView && (
           <>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Wydaj sprzet</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Wydaj sprzet</DialogTitle>
-                  <DialogDescription>Tutaj bedzie mozliwosc wybrania dostepnego sprzetu oraz pracownika oraz jakis komentarz mozliwy typu laptop wydany z torba i zasilaczem</DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline" size={"sm"}>
-                      Anuluj
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button size={"sm"} onClick={() => toast("Nowy sprzet zostal dodany pomyslne.", { action: { label: "Zamknij", onClick: () => {} } })}>
-                      Wydaj
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
            <AddEquipmentDialog />
           </>
         )}

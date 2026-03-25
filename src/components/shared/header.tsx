@@ -27,7 +27,7 @@ const Header = () => {
         <SidebarTrigger className="p-4" />
         <Separator orientation="vertical" />
 
-        <Breadcrumb>
+        <Breadcrumb className="hidden xs:block">
           <BreadcrumbList>
             {segments.map((segment, index) => {
               const isLast = index === segments.length - 1;

@@ -1,217 +1,397 @@
-import type { Equipment } from "@/types/equipment";
+import type {
+    Inventory,
+    CreateInventoryPayload,
+    UpdateInventoryPayload,
+} from "@/types/inventory";
 
-export const mockEquipment: Equipment[] = [
+
+export const mockInventory: Inventory[] = [
     {
-        id: "INV-001",
+        id: 1,
         name: "Dell Latitude 5520",
-        type: "laptop",
+        itemType: "LAPTOP",
         serialNumber: "DL5520-2024-001",
-        status: "active",
-        assignedTo: "dr hab. Jan Kowalski",
+        model: "Latitude 5520",
+        boughtDate: "2024-03-01",
+        price: 4299.99,
+        invoiceNumber: "FV/2024/03/0041",
         location: "Pokój 204",
+        assignedTo: "dr hab. Jan Kowalski",
+        assignedBy: "admin",
         assignedDate: "2024-03-15",
+        status: "WYDANE",
+        //priority: "HIGH",
+        author: "admin",
+        notes: null,
     },
     {
-        id: "INV-002",
+        id: 2,
         name: "HP ProDesk 400 G7",
-        type: "desktop",
+        itemType: "KOMPUTER",
         serialNumber: "HP400G7-2024-002",
-        status: "active",
+        model: "ProDesk 400 G7",
+        boughtDate: "2024-01-05",
+        price: 2899.0,
+        invoiceNumber: "FV/2024/01/0012",
+        location: "Dziekanat",
         assignedTo: "mgr Anna Nowak",
-        location: "Dziekanat",
+        assignedBy: "admin",
         assignedDate: "2024-01-10",
+        status: "WYDANE",
+        //priority: "MEDIUM",
+        author: "admin",
+        notes: null,
     },
     {
-        id: "INV-003",
-        name: "Dell UltraSharp U2422H",
-        type: "monitor",
-        serialNumber: "DLU2422H-2024-003",
-        status: "active",
-        assignedTo: "prof. dr hab. Piotr Wiśniewski",
-        location: "Pokój 312",
-        assignedDate: "2024-02-20",
-    },
-    {
-        id: "INV-004",
+        id: 3,
         name: "HP LaserJet Pro M404dn",
-        type: "printer",
-        serialNumber: "HPM404DN-2023-004",
-        status: "in-repair",
-        assignedTo: null,
+        itemType: "DRUKARKA",
+        serialNumber: "HPM404DN-2023-003",
+        model: "LaserJet Pro M404dn",
+        boughtDate: "2023-06-10",
+        price: 1299.0,
+        invoiceNumber: "FV/2023/06/0088",
         location: "Sala wykładowa A1",
-        assignedDate: null,
-    },
-    {
-        id: "INV-005",
-        name: "iPhone 14 Pro",
-        type: "phone",
-        serialNumber: "IP14P-2023-005",
-        status: "active",
-        assignedTo: "mgr inż. Katarzyna Zielińska",
-        location: "Sekretariat",
-        assignedDate: "2023-11-01",
-    },
-    {
-        id: "INV-006",
-        name: "Dell PowerEdge R640",
-        type: "server",
-        serialNumber: "DPE640-2022-006",
-        status: "active",
         assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "SERWIS",
+        //priority: "HIGH",
+        author: "admin",
+        notes: "Wymiana bębna drukującego – oddana do serwisu 2024-11-20.",
+    },
+    {
+        id: 4,
+        name: "TP-Link TL-ER7206",
+        itemType: "ROUTER",
+        serialNumber: "TPLER7206-2023-004",
+        model: "TL-ER7206",
+        boughtDate: "2023-09-15",
+        price: 849.0,
+        invoiceNumber: "FV/2023/09/0155",
         location: "Serwerownia",
+        assignedTo: null,
+        assignedBy: null,
         assignedDate: null,
+        status: "DOSTEPNE",
+        //priority: "HIGH",
+        author: "admin",
+        notes: "Router zapasowy.",
     },
     {
-        id: "INV-007",
+        id: 5,
+        name: "Cisco Catalyst 2960-X",
+        itemType: "SWITCH",
+        serialNumber: "CC2960X-2022-005",
+        model: "Catalyst 2960-X 24-port",
+        boughtDate: "2022-04-20",
+        price: 3200.0,
+        invoiceNumber: "FV/2022/04/0033",
+        location: "Serwerownia",
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "ZAJETE",
+        //priority: "HIGH",
+        author: "admin",
+        notes: null,
+    },
+    {
+        id: 6,
+        name: "iPhone 14 Pro",
+        itemType: "TELEFON",
+        serialNumber: "IP14P-2023-006",
+        model: "iPhone 14 Pro 256GB",
+        boughtDate: "2023-11-01",
+        price: 5499.0,
+        invoiceNumber: "FV/2023/11/0201",
+        location: "Sekretariat",
+        assignedTo: "mgr inż. Katarzyna Zielińska",
+        assignedBy: "admin",
+        assignedDate: "2023-11-05",
+        status: "WYDANE",
+        //priority: "MEDIUM",
+        author: "admin",
+        notes: null,
+    },
+    {
+        id: 7,
         name: "Lenovo ThinkPad X1 Carbon",
-        type: "laptop",
+        itemType: "LAPTOP",
         serialNumber: "LTX1C-2024-007",
-        status: "available",
-        assignedTo: null,
+        model: "ThinkPad X1 Carbon Gen 11",
+        boughtDate: "2024-02-14",
+        price: 6799.0,
+        invoiceNumber: "FV/2024/02/0029",
         location: "Magazyn IT",
-        assignedDate: null,
-    },
-    {
-        id: "INV-008",
-        name: "Projektor Epson EB-2250U",
-        type: "other",
-        serialNumber: "EPJ2250-2024-008",
-        status: "active",
         assignedTo: null,
-        location: "Sala wykładowa B2",
+        assignedBy: null,
         assignedDate: null,
+        status: "DOSTEPNE",
+        //priority: "MEDIUM",
+        author: "admin",
+        notes: "Nowy, nierozpakowany.",
     },
     {
-        id: "INV-009",
-        name: "HP EliteDesk 800 G6",
-        type: "desktop",
-        serialNumber: "HPE800G6-2023-009",
-        status: "retired",
-        assignedTo: null,
-        location: "Laboratorium 101",
-        assignedDate: null,
-    },
-    {
-        id: "INV-010",
-        name: "Epson EcoTank ET-4850",
-        type: "printer",
-        serialNumber: "EPT4850-2024-010",
-        status: "active",
-        assignedTo: null,
-        location: "Dziekanat",
-        assignedDate: null,
-    },
-    {
-        id: "INV-011",
+        id: 8,
         name: "Dell Precision 5570",
-        type: "laptop",
-        serialNumber: "DP5570-2024-011",
-        status: "active",
-        assignedTo: "dr inż. Tomasz Lewandowski",
+        itemType: "LAPTOP",
+        serialNumber: "DP5570-2024-008",
+        model: "Precision 5570",
+        boughtDate: "2024-07-01",
+        price: 7299.0,
+        invoiceNumber: "FV/2024/07/0077",
         location: "Pokój 405",
-        assignedDate: "2024-07-01",
+        assignedTo: "dr inż. Tomasz Lewandowski",
+        assignedBy: "admin",
+        assignedDate: "2024-07-05",
+        status: "WYDANE",
+        //priority: "HIGH",
+        author: "admin",
+        notes: null,
     },
     {
-        id: "INV-012",
-        name: "LG 27UK850-W",
-        type: "monitor",
-        serialNumber: "LG27UK-2023-012",
-        status: "active",
-        assignedTo: "dr inż. Tomasz Lewandowski",
-        location: "Pokój 405",
-        assignedDate: "2023-08-15",
-    },
-    {
-        id: "INV-013",
+        id: 9,
         name: "Dell OptiPlex 7090",
-        type: "desktop",
-        serialNumber: "DO7090-2023-013",
-        status: "active",
-        assignedTo: null,
+        itemType: "KOMPUTER",
+        serialNumber: "DO7090-2023-009",
+        model: "OptiPlex 7090",
+        boughtDate: "2023-03-12",
+        price: 3199.0,
+        invoiceNumber: "FV/2023/03/0061",
         location: "Laboratorium 203",
-        assignedDate: null,
-    },
-    {
-        id: "INV-014",
-        name: "MacBook Pro 14 M3",
-        type: "laptop",
-        serialNumber: "MBP14M3-2024-014",
-        status: "active",
-        assignedTo: "dr Magdalena Wiśniewska",
-        location: "Pokój 210",
-        assignedDate: "2024-10-01",
-    },
-    {
-        id: "INV-015",
-        name: "Tablica interaktywna Samsung Flip",
-        type: "other",
-        serialNumber: "SFL65-2024-015",
-        status: "active",
         assignedTo: null,
-        location: "Sala seminaryjna C3",
+        assignedBy: null,
         assignedDate: null,
+        status: "DOSTEPNE",
+        //priority: "LOW",
+        author: "admin",
+        notes: null,
+    },
+    {
+        id: 10,
+        name: "MacBook Pro 14 M3",
+        itemType: "LAPTOP",
+        serialNumber: "MBP14M3-2024-010",
+        model: "MacBook Pro 14\" M3",
+        boughtDate: "2024-10-01",
+        price: 9299.0,
+        invoiceNumber: "FV/2024/10/0110",
+        location: "Pokój 210",
+        assignedTo: "dr Magdalena Wiśniewska",
+        assignedBy: "admin",
+        assignedDate: "2024-10-03",
+        status: "WYDANE",
+        //priority: "HIGH",
+        author: "admin",
+        notes: null,
+    },
+    {
+        id: 11,
+        name: "Epson EcoTank ET-4850",
+        itemType: "DRUKARKA",
+        serialNumber: "EPT4850-2024-011",
+        model: "EcoTank ET-4850",
+        boughtDate: "2024-01-20",
+        price: 899.0,
+        invoiceNumber: "FV/2024/01/0020",
+        location: "Dziekanat",
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "DOSTEPNE",
+        //priority: "LOW",
+        author: "admin",
+        notes: null,
+    },
+    {
+        id: 12,
+        name: "HP EliteDesk 800 G6",
+        itemType: "KOMPUTER",
+        serialNumber: "HPE800G6-2023-012",
+        model: "EliteDesk 800 G6",
+        boughtDate: "2021-05-10",
+        price: 2499.0,
+        invoiceNumber: "FV/2021/05/0050",
+        location: "Magazyn IT",
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "UTYLIZACJA",
+        //priority: "LOW",
+        author: "admin",
+        notes: "Sprzęt przeznaczony do utylizacji — dysk wymontowany.",
+    },
+    {
+        id: 13,
+        name: "Samsung Galaxy S24",
+        itemType: "TELEFON",
+        serialNumber: "SGS24-2024-013",
+        model: "Galaxy S24 128GB",
+        boughtDate: "2024-04-01",
+        price: 3799.0,
+        invoiceNumber: "FV/2024/04/0044",
+        location: "Magazyn IT",
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "DO_WYDANIA",
+        //priority: "MEDIUM",
+        author: "admin",
+        notes: "Przygotowany do wydania dla nowego pracownika.",
+    },
+    {
+        id: 14,
+        name: "TP-Link TL-SG1024",
+        itemType: "SWITCH",
+        serialNumber: "TPSG1024-2023-014",
+        model: "TL-SG1024 24-port",
+        boughtDate: "2023-08-22",
+        price: 499.0,
+        invoiceNumber: "FV/2023/08/0140",
+        location: "Laboratorium 101",
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "PRZYJETY",
+        //priority: "MEDIUM",
+        author: "admin",
+        notes: "Przyjęty na stan, czeka na konfigurację.",
+    },
+    {
+        id: 15,
+        name: "MikroTik hEX S",
+        itemType: "ROUTER",
+        serialNumber: "MTHEX-2022-015",
+        model: "hEX S RB760iGS",
+        boughtDate: "2022-11-05",
+        price: 379.0,
+        invoiceNumber: "FV/2022/11/0095",
+        location: "Laboratorium 101",
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "W_TRAKCIE",
+        //priority: "MEDIUM",
+        author: "admin",
+        notes: "W trakcie konfiguracji sieci laboratoryjnej.",
     },
 ];
 
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+const delay = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
 
-export const getEquipmentMock = async (): Promise<{ equipment: Equipment[] }> => {
-    await delay(1000);
-    return { equipment: [...mockEquipment] };
+const nextId = (): number =>
+    mockInventory.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+
+
+export const getAllInventoryMock = async (): Promise<Inventory[]> => {
+    await delay(800);
+    return [...mockInventory];
 };
 
-export const getEquipmentByIdMock = async (id: string): Promise<Equipment> => {
-    await delay(500);
-    const item = mockEquipment.find(e => e.id === id);
-    if (!item) throw new Error("Equipment not found");
+
+export const getInventoryByIdMock = async (id: number): Promise<Inventory> => {
+    await delay(400);
+    const item = mockInventory.find(i => i.id === id);
+    if (!item) throw new Error(`Inventory item with id ${id} not found`);
     return { ...item };
 };
 
-export const createEquipmentMock = async (
-    equipment: Omit<Equipment, "id">
-): Promise<Equipment> => {
-    await delay(500);
-    const lastId = mockEquipment
-        .map(e => parseInt(e.id.replace("INV-", ""), 10))
-        .reduce((max, n) => Math.max(max, n), 0);
-    const newEquipment: Equipment = {
-        ...equipment,
-        id: `INV-${String(lastId + 1).padStart(3, "0")}`,
-    };
-    mockEquipment.unshift(newEquipment);
-    return newEquipment;
-};
 
-export const updateEquipmentMock = async (
-    id: string,
-    updates: Partial<Equipment>
-): Promise<Equipment> => {
-    await delay(500);
-    const idx = mockEquipment.findIndex(e => e.id === id);
-    if (idx === -1) throw new Error("Equipment not found");
-    mockEquipment[idx] = { ...mockEquipment[idx], ...updates };
-    return mockEquipment[idx];
-};
 
-export const deleteEquipmentMock = async (id: string): Promise<void> => {
-    await delay(1000);
-    const idx = mockEquipment.findIndex(e => e.id === id);
-    if (idx === -1) throw new Error("Equipment not found");
-    mockEquipment.splice(idx, 1);
-};
-
-export const assignEquipmentMock = async (
-    id: string,
-    assignedTo: string,
-    assignedDate: string
-): Promise<Equipment> => {
-    return updateEquipmentMock(id, { assignedTo, assignedDate, status: "active" });
-};
-
-export const unassignEquipmentMock = async (id: string): Promise<Equipment> => {
-    return updateEquipmentMock(id, {
-        assignedTo: null,
+export const createInventoryMock = async (
+    payload: CreateInventoryPayload
+): Promise<Inventory> => {
+    await delay(600);
+    const newItem: Inventory = {
+        ...payload,
+        author: "admin",
+        id: nextId(),
+        assignedTo: payload.assignedTo ?? null,
+        assignedBy: null,
         assignedDate: null,
-        status: "available",
-    });
+        status: payload.status,
+    };
+    mockInventory.unshift(newItem);
+    return { ...newItem };
+};
+
+
+export const updateInventoryMock = async (
+    id: number,
+    updates: UpdateInventoryPayload
+): Promise<Inventory> => {
+    await delay(400);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    mockInventory[idx] = { ...mockInventory[idx], ...updates };
+    return { ...mockInventory[idx] };
+};
+
+
+
+export const assignInventoryMock = async (
+    id: number,
+    assignedTo: string,
+    assignedBy: string
+): Promise<Inventory> => {
+    await delay(400);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    const item = mockInventory[idx];
+    if (item.status !== "DOSTEPNE") {
+        throw new Error("Inventory item must be DOSTEPNE to assign");
+    }
+    mockInventory[idx] = {
+        ...item,
+        assignedTo,
+        assignedBy,
+        assignedDate: new Date().toISOString().split("T")[0],
+        status: "WYDANE",
+    };
+    return { ...mockInventory[idx] };
+};
+
+
+
+export const returnInventoryMock = async (id: number): Promise<Inventory> => {
+    await delay(400);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    const item = mockInventory[idx];
+    if (item.status !== "WYDANE") {
+        throw new Error("Inventory item must be WYDANE to return");
+    }
+    mockInventory[idx] = {
+        ...item,
+        assignedTo: null,
+        assignedBy: null,
+        assignedDate: null,
+        status: "DOSTEPNE",
+    };
+    return { ...mockInventory[idx] };
+};
+
+
+
+export const sendToServiceMock = async (id: number): Promise<Inventory> => {
+    await delay(400);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    const item = mockInventory[idx];
+    if (item.status === "UTYLIZACJA") {
+        throw new Error("Inventory item in UTYLIZACJA cannot be sent to service");
+    }
+    mockInventory[idx] = { ...item, status: "SERWIS" };
+    return { ...mockInventory[idx] };
+};
+
+
+
+export const disposeInventoryMock = async (id: number): Promise<Inventory> => {
+    await delay(400);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    mockInventory[idx] = { ...mockInventory[idx], status: "UTYLIZACJA" };
+    return { ...mockInventory[idx] };
 };

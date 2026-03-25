@@ -36,8 +36,6 @@ export const AppSidebar = () => {
     }
   }
 
-  console.log(location.pathname)
-
   return (
     <Sidebar className="border-r! border-r-border!">
       <SidebarHeader>
