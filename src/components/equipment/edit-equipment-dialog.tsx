@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
@@ -7,10 +7,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Spinner } from '../ui/spinner'
+import { Edit } from 'lucide-react'
 
 import { createInventorySchema, type CreateInventorySchema } from '@/types/create-inventory'
-import type { InventoryItemType, InventoryStatus, CreateInventoryPayload } from '@/types/inventory' 
-import { useCreateInventory } from '@/hooks/inventory/useInventory'
+import type { Inventory, InventoryItemType, InventoryStatus, UpdateInventoryPayload } from '@/types/inventory'
+import { useUpdateInventory } from '@/hooks/inventory/useInventory'
 
 const inventoryTypeLabels: Record<InventoryItemType, string> = {
     LAPTOP: "Laptop",
@@ -33,31 +34,55 @@ const inventoryStatusLabels: Record<InventoryStatus, string> = {
     UTYLIZACJA: "Utylizacja",
 };
 
-const AddEquipmentDialog = () => {
+interface EditEquipmentDialogProps {
+    item: Inventory;
+    showText?: boolean;
+}
+
+const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps) => {
     const [open, setOpen] = useState(false);
-    const { createInventory, isLoading: isCreating } = useCreateInventory();
+    const { updateInventory, isLoading: isUpdating } = useUpdateInventory();
 
     const form = useForm<CreateInventorySchema>({
         resolver: zodResolver(createInventorySchema),
         defaultValues: {
-            name: "",
-            itemType: "LAPTOP",
-            serialNumber: "",
-            status: "DOSTEPNE",
-            location: "",
-            assignedTo: "",
-            assignedDate: "",
-            model: "",
-            boughtDate: "",
-            invoiceNumber: "",
+            name: item.name,
+            itemType: item.itemType,
+            serialNumber: item.serialNumber,
+            status: item.status,
+            model: item.model ?? "",
+            boughtDate: item.boughtDate ?? "",
+            price: item.price ?? undefined,
+            invoiceNumber: item.invoiceNumber ?? "",
+            location: item.location ?? "",
+            assignedTo: item.assignedTo ?? "",
+            assignedDate: item.assignedDate ?? "",
         },
     });
+
+    useEffect(() => {
+        if (open) {
+            form.reset({
+                name: item.name,
+                itemType: item.itemType,
+                serialNumber: item.serialNumber,
+                status: item.status,
+                model: item.model ?? "",
+                boughtDate: item.boughtDate ?? "",
+                price: item.price ?? undefined,
+                invoiceNumber: item.invoiceNumber ?? "",
+                location: item.location ?? "",
+                assignedTo: item.assignedTo ?? "",
+                assignedDate: item.assignedDate ?? "",
+            });
+        }
+    }, [open, item, form]);
 
     const watchedStatus = form.watch("status");
     const isAssigned = watchedStatus === "WYDANE" || watchedStatus === "ZAJETE";
 
-    const handleCreate = async (values: CreateInventorySchema) => {
-        const payload: CreateInventoryPayload = {
+    const handleUpdate = async (values: CreateInventorySchema) => {
+        const updates: UpdateInventoryPayload = {
             name: values.name,
             itemType: values.itemType,
             serialNumber: values.serialNumber,
@@ -71,22 +96,23 @@ const AddEquipmentDialog = () => {
             assignedDate: isAssigned && values.assignedDate ? values.assignedDate : null,
         };
 
-        await createInventory(payload);
+        await updateInventory({ id: item.id, updates });
         setOpen(false);
-        form.reset();
     };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size={"sm"}>Dodaj sprzęt</Button>
+                <Button size={showText ? "sm" : "icon-sm"} variant="outline" className="gap-2 flex-1 xs:flex-none">
+                    <Edit className="w-4 h-4" /> {showText && "Edytuj"}
+                </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xl">
                 <DialogHeader>
-                    <DialogTitle>Dodaj nowy sprzęt</DialogTitle>
+                    <DialogTitle>Edytuj sprzęt</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-4">
                         <FormField
                             control={form.control}
                             name="name"
@@ -108,7 +134,7 @@ const AddEquipmentDialog = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Typ</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Wybierz typ" />
@@ -133,7 +159,7 @@ const AddEquipmentDialog = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Status</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Wybierz status" />
@@ -183,6 +209,73 @@ const AddEquipmentDialog = () => {
                             />
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="model"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Model</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="np. Latitude 5520" {...field} value={field.value || ''} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="price"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Cena (zł)</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                placeholder="np. 4299.99"
+                                                {...field}
+                                                value={field.value ?? ''}
+                                                onChange={e => field.onChange(e.target.value === '' ? null : Number(e.target.value))}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="invoiceNumber"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Numer faktury</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="np. FV/2024/03/0041" {...field} value={field.value || ''} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="boughtDate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Data zakupu</FormLabel>
+                                        <FormControl>
+                                            <Input type="date" {...field} value={field.value || ''} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
                         {isAssigned && (
                             <div className="grid grid-cols-2 gap-4">
                                 <FormField
@@ -217,13 +310,13 @@ const AddEquipmentDialog = () => {
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="outline" size="sm" onClick={() => form.reset()}>
+                                <Button type="button" variant="outline" size="sm">
                                     Anuluj
                                 </Button>
                             </DialogClose>
-                            <Button type="submit" size="sm" disabled={isCreating}>
-                                Dodaj
-                                {isCreating && <Spinner />}
+                            <Button type="submit" size="sm" disabled={isUpdating}>
+                                Zapisz
+                                {isUpdating && <Spinner />}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -233,4 +326,4 @@ const AddEquipmentDialog = () => {
     );
 };
 
-export default AddEquipmentDialog;
+export default EditEquipmentDialog;

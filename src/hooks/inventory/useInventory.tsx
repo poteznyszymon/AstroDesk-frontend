@@ -8,6 +8,8 @@ import {
     returnInventoryMock,
     sendToServiceMock,
     disposeInventoryMock,
+    deleteInventoryMock,
+    addInventoryNoteMock,
 } from "./mock.inventory";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
@@ -132,4 +134,32 @@ export const useDisposeInventory = () => {
         onError: () => toast.error("Błąd podczas oznaczania utylizacji"),
     });
     return { disposeInventory, isLoading };
+};
+
+
+
+export const useDeleteInventory = () => {
+    const { mutateAsync: deleteInventory, isPending: isLoading } = useMutation({
+        mutationFn: (id: number) => deleteInventoryMock(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
+            toast.success("Sprzęt usunięty");
+        },
+        onError: () => toast.error("Błąd podczas usuwania"),
+    });
+    return { deleteInventory, isLoading };
+};
+
+
+
+export const useAddInventoryNote = (inventoryId: number) => {
+    const { mutateAsync: addNote, isPending: isLoading } = useMutation({
+        mutationFn: ({ content, author }: { content: string; author: string }) =>
+            addInventoryNoteMock(inventoryId, content, author),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, inventoryId] });
+        },
+        onError: () => toast.error("Błąd podczas dodawania notatki"),
+    });
+    return { addNote, isLoading };
 };

@@ -1,5 +1,6 @@
 import type {
     Inventory,
+    InventoryNote,
     CreateInventoryPayload,
     UpdateInventoryPayload,
 } from "@/types/inventory";
@@ -20,9 +21,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: "admin",
         assignedDate: "2024-03-15",
         status: "WYDANE",
-        //priority: "HIGH",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 2,
@@ -38,9 +38,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: "admin",
         assignedDate: "2024-01-10",
         status: "WYDANE",
-        //priority: "MEDIUM",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 3,
@@ -56,9 +55,11 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "SERWIS",
-        //priority: "HIGH",
         author: "admin",
-        notes: "Wymiana bębna drukującego – oddana do serwisu 2024-11-20.",
+        notes: [
+            { id: 1, content: "Wymiana bębna drukującego - oddana do serwisu 2024-11-20.", author: "admin", createdAt: "2024-11-20T10:30:00Z" },
+            { id: 2, content: "Serwis poinformował, że naprawa potrwa ok. 2 tygodnie.", author: "Jan Kowalski", createdAt: "2024-11-22T14:15:00Z" },
+        ],
     },
     {
         id: 4,
@@ -74,9 +75,10 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "DOSTEPNE",
-        //priority: "HIGH",
         author: "admin",
-        notes: "Router zapasowy.",
+        notes: [
+            { id: 3, content: "Router zapasowy – nie podłączać bez konsultacji z IT.", author: "admin", createdAt: "2023-09-16T08:00:00Z" },
+        ],
     },
     {
         id: 5,
@@ -92,9 +94,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "ZAJETE",
-        //priority: "HIGH",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 6,
@@ -110,9 +111,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: "admin",
         assignedDate: "2023-11-05",
         status: "WYDANE",
-        //priority: "MEDIUM",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 7,
@@ -128,9 +128,10 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "DOSTEPNE",
-        //priority: "MEDIUM",
         author: "admin",
-        notes: "Nowy, nierozpakowany.",
+        notes: [
+            { id: 4, content: "Nowy, nierozpakowany. Czeka na przypisanie.", author: "admin", createdAt: "2024-02-14T12:00:00Z" },
+        ],
     },
     {
         id: 8,
@@ -146,9 +147,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: "admin",
         assignedDate: "2024-07-05",
         status: "WYDANE",
-        //priority: "HIGH",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 9,
@@ -164,9 +164,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "DOSTEPNE",
-        //priority: "LOW",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 10,
@@ -178,13 +177,12 @@ export const mockInventory: Inventory[] = [
         price: 9299.0,
         invoiceNumber: "FV/2024/10/0110",
         location: "Pokój 210",
-        assignedTo: "dr Magdalena Wiśniewska",
+        assignedTo: "Jan Kowalski",
         assignedBy: "admin",
         assignedDate: "2024-10-03",
         status: "WYDANE",
-        //priority: "HIGH",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 11,
@@ -200,9 +198,8 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "DOSTEPNE",
-        //priority: "LOW",
         author: "admin",
-        notes: null,
+        notes: [],
     },
     {
         id: 12,
@@ -218,9 +215,10 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "UTYLIZACJA",
-        //priority: "LOW",
         author: "admin",
-        notes: "Sprzęt przeznaczony do utylizacji — dysk wymontowany.",
+        notes: [
+            { id: 5, content: "Sprzęt przeznaczony do utylizacji — dysk wymontowany i zniszczony.", author: "admin", createdAt: "2023-06-01T09:00:00Z" },
+        ],
     },
     {
         id: 13,
@@ -236,9 +234,10 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "DO_WYDANIA",
-        //priority: "MEDIUM",
         author: "admin",
-        notes: "Przygotowany do wydania dla nowego pracownika.",
+        notes: [
+            { id: 6, content: "Przygotowany do wydania dla nowego pracownika.", author: "admin", createdAt: "2024-04-01T11:00:00Z" },
+        ],
     },
     {
         id: 14,
@@ -254,9 +253,10 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "PRZYJETY",
-        //priority: "MEDIUM",
         author: "admin",
-        notes: "Przyjęty na stan, czeka na konfigurację.",
+        notes: [
+            { id: 7, content: "Przyjęty na stan, czeka na konfigurację.", author: "admin", createdAt: "2023-08-22T13:00:00Z" },
+        ],
     },
     {
         id: 15,
@@ -272,9 +272,10 @@ export const mockInventory: Inventory[] = [
         assignedBy: null,
         assignedDate: null,
         status: "W_TRAKCIE",
-        //priority: "MEDIUM",
         author: "admin",
-        notes: "W trakcie konfiguracji sieci laboratoryjnej.",
+        notes: [
+            { id: 8, content: "W trakcie konfiguracji sieci laboratoryjnej.", author: "admin", createdAt: "2022-11-06T10:00:00Z" },
+        ],
     },
 ];
 
@@ -282,6 +283,16 @@ const delay = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
 
 const nextId = (): number =>
     mockInventory.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+
+const nextNoteId = (): number => {
+    let max = 0;
+    for (const item of mockInventory) {
+        for (const note of item.notes) {
+            if (note.id > max) max = note.id;
+        }
+    }
+    return max + 1;
+};
 
 
 export const getAllInventoryMock = async (): Promise<Inventory[]> => {
@@ -311,6 +322,7 @@ export const createInventoryMock = async (
         assignedBy: null,
         assignedDate: null,
         status: payload.status,
+        notes: [],
     };
     mockInventory.unshift(newItem);
     return { ...newItem };
@@ -394,4 +406,33 @@ export const disposeInventoryMock = async (id: number): Promise<Inventory> => {
     if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
     mockInventory[idx] = { ...mockInventory[idx], status: "UTYLIZACJA" };
     return { ...mockInventory[idx] };
+};
+
+
+
+export const deleteInventoryMock = async (id: number): Promise<void> => {
+    await delay(400);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    mockInventory.splice(idx, 1);
+};
+
+
+
+export const addInventoryNoteMock = async (
+    id: number,
+    content: string,
+    author: string,
+): Promise<InventoryNote> => {
+    await delay(300);
+    const idx = mockInventory.findIndex(i => i.id === id);
+    if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
+    const note: InventoryNote = {
+        id: nextNoteId(),
+        content,
+        author,
+        createdAt: new Date().toISOString(),
+    };
+    mockInventory[idx].notes.push(note);
+    return { ...note };
 };

@@ -1,29 +1,21 @@
 import React from "react";
-import { 
-  ArrowUpDown, 
-  MoreHorizontal, 
-  Monitor, 
-  Laptop, 
-  Printer, 
-  Smartphone, 
-  Router, 
-  Network 
+import {
+  ArrowUpDown,
+  Monitor,
+  Laptop,
+  Printer,
+  Smartphone,
+  Router,
+  Network
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
+import EditEquipmentDialog from "./edit-equipment-dialog";
 
 import type { Inventory, InventoryItemType, InventoryStatus } from "@/types/inventory";
 
-export const getInventoryColumns = (): ColumnDef<Inventory>[] => {
+export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] => {
   const typeConfig: Record<InventoryItemType, { label: string; icon: React.ElementType }> = {
     LAPTOP: { label: "Laptop", icon: Laptop },
     KOMPUTER: { label: "Komputer", icon: Monitor },
@@ -73,6 +65,7 @@ export const getInventoryColumns = (): ColumnDef<Inventory>[] => {
     {
       accessorKey: "itemType",
       header: "Typ",
+      filterFn: "equals",
       cell: ({ row }) => {
         const type = row.getValue("itemType") as InventoryItemType;
         const config = typeConfig[type];
@@ -82,6 +75,7 @@ export const getInventoryColumns = (): ColumnDef<Inventory>[] => {
     {
       accessorKey: "status",
       header: "Status",
+      filterFn: "equals",
       cell: ({ row }) => {
         const status = row.getValue("status") as InventoryStatus;
         const config = statusConfig[status];
@@ -125,24 +119,12 @@ export const getInventoryColumns = (): ColumnDef<Inventory>[] => {
     {
       id: "actions",
       enableHiding: false,
-      cell: (_) => {
+      cell: ({ row }) => {
+        if (!adminView) return null;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Otwórz menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {/* <DropdownMenuItem>Zobacz szczegóły</DropdownMenuItem> */}
-              <DropdownMenuItem>Edytuj sprzęt</DropdownMenuItem>
-              <DropdownMenuItem>Przypisz do pracownika</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Usuń z inwentarza</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div onClick={(e) => e.stopPropagation()}>
+            <EditEquipmentDialog item={row.original} showText={false} />
+          </div>
         );
       },
     },

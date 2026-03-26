@@ -17,7 +17,6 @@ export const createInventorySchema = z.object({
     location: z.string().nullable().optional(),
     assignedTo: z.string().nullable().optional(),
     assignedDate: z.string().nullable().optional(),
-    notes: z.string().nullable().optional(),
 });
 
 export type CreateInventorySchema = z.infer<typeof createInventorySchema>;

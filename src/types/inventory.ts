@@ -17,6 +17,13 @@ export type InventoryStatus =
     | "SERWIS"
     | "UTYLIZACJA";
 
+export interface InventoryNote {
+    id: number;
+    content: string;
+    author: string;
+    createdAt: string;
+}
+
 export interface Inventory {
     id: number;
     name: string;
@@ -32,12 +39,12 @@ export interface Inventory {
     assignedDate: string | null;
     status: InventoryStatus;
     author: string;
-    notes: string | null;
+    notes: InventoryNote[];
 }
 
 export type CreateInventoryPayload = Omit<
     Inventory,
-    "id" | "author" | "assignedBy"
+    "id" | "author" | "assignedBy" | "notes"
 >;
 
 export type UpdateInventoryPayload = Partial<CreateInventoryPayload>;

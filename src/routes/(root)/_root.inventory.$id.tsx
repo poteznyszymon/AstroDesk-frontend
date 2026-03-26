@@ -1,7 +1,14 @@
+import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { useInventoryById } from '@/hooks/inventory/useInventory';
+import EditEquipmentDialog from '@/components/equipment/edit-equipment-dialog';
+import DeleteEquipmentDialog from '@/components/equipment/delete-equipment-dialog';
+import { useAdmin } from '@/data/mock/admin-context';
+import { useInventoryById, useAddInventoryNote } from '@/hooks/inventory/useInventory';
+import { useMe } from '@/hooks/auth/useAuth';
 import { createFileRoute } from '@tanstack/react-router';
-import { Edit, Trash2, Hash, MapPin, Calendar, DollarSign, FileText, User, Package } from 'lucide-react';
+import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export const Route = createFileRoute('/(root)/_root/inventory/$id')({
   component: RouteComponent,
@@ -19,7 +26,6 @@ const statusMap: Record<string, string> = {
   UTYLIZACJA: 'Utylizacja',
 };
 
-// Znacznie prostsze pole z danymi - bez ramek, po prostu ikona, labelka i wartość
 function Field({
   icon,
   label,
@@ -40,7 +46,6 @@ function Field({
   );
 }
 
-// Sekcja to teraz tylko tytuł i flexbox, zero borderów
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-4">
@@ -52,13 +57,91 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+function FieldSkeleton() {
+  return (
+    <div className="flex items-start gap-3">
+      <Skeleton className="mt-0.5 w-4 h-4 shrink-0" />
+      <div className="flex flex-col gap-1.5">
+        <Skeleton className="h-3.5 w-20" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+    </div>
+  );
+}
+
+function SectionSkeleton({ fields = 4 }: { fields?: number }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <Skeleton className="h-6 w-28" />
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: fields }).map((_, i) => (
+          <FieldSkeleton key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
 function RouteComponent() {
   const { id } = Route.useParams();
-  const { data } = useInventoryById(Number(id));
+  const { data, isLoading } = useInventoryById(Number(id));
+  const { adminView } = useAdmin();
+  const { user } = useMe();
+  const { addNote, isLoading: isSending } = useAddInventoryNote(Number(id));
+  const [noteContent, setNoteContent] = useState('');
+
+  if (isLoading) {
+    return (
+      <div className="space-y-10 p-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-5 w-20 rounded-full" />
+            </div>
+            <Skeleton className="h-4 w-28" />
+          </div>
+          {adminView && (
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
+          <SectionSkeleton fields={4} />
+          <SectionSkeleton fields={3} />
+          <SectionSkeleton fields={3} />
+        </div>
+
+        <div className="pt-4 flex flex-col gap-3">
+          <Skeleton className="h-6 w-20" />
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex gap-3">
+              <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+              <div className="flex flex-col gap-1.5 flex-1">
+                <Skeleton className="h-3.5 w-32" />
+                <Skeleton className="h-4 w-full max-w-xl" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className=" space-y-10 p-2">
-      
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -70,18 +153,16 @@ function RouteComponent() {
           <p className="text-sm text-muted-foreground mt-1">{data?.itemType || "brak"}</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" className="gap-2 flex-1 xs:flex-none">
-            <Edit className="w-4 h-4" /> Edytuj
-          </Button>
-          <Button size="sm" variant="destructive" className="gap-2 flex-1 xs:flex-none">
-            <Trash2 className="w-4 h-4" /> Usuń
-          </Button>
-        </div>
+        {adminView && data && (
+          <div className="flex items-center gap-2">
+            <EditEquipmentDialog item={data} />
+            <DeleteEquipmentDialog id={data.id} name={data.name} />
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
-        
+
         <Section title="Urządzenie">
           <Field icon={<Hash className="w-4 h-4" />} label="Numer seryjny" value={data?.serialNumber || "brak"} />
           <Field icon={<Package className="w-4 h-4" />} label="Model" value={data?.model || "brak"} />
@@ -100,16 +181,78 @@ function RouteComponent() {
           <Field icon={<User className="w-4 h-4" />} label="Przypisano przez" value={data?.assignedBy || "brak"} />
           <Field icon={<Calendar className="w-4 h-4" />} label="Data przypisania" value={data?.assignedDate || "brak"} />
         </Section>
-        
+
       </div>
 
-        <div className="pt-4">
-          <h2 className="text-lg font-semibold text-foreground tracking-tight mb-2">Notatki</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-            {data?.notes || "Brak notatek dla tego sprzętu."}
-          </p>
+        <div className="pt-4 flex flex-col gap-4 max-w-3xl">
+          <h2 className="text-lg font-semibold text-foreground tracking-tight">
+            Notatki
+            {data && data.notes.length > 0 && (
+              <span className="ml-2 text-sm font-normal text-muted-foreground">({data.notes.length})</span>
+            )}
+          </h2>
+
+          {data && data.notes.length === 0 && (
+            <p className="text-sm text-muted-foreground">Brak notatek dla tego sprzętu.</p>
+          )}
+
+          {data && data.notes.length > 0 && (
+            <div className="flex flex-col gap-4">
+              {data.notes.map((note) => (
+                <div key={note.id} className="flex gap-3">
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground shrink-0">
+                    {getInitials(note.author)}
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm font-medium text-foreground">{note.author}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(note.createdAt).toLocaleString('pl-PL', {
+                          day: '2-digit', month: '2-digit', year: 'numeric',
+                          hour: '2-digit', minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-foreground leading-relaxed">{note.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2 pt-2">
+            <Input
+              placeholder="Dodaj notatkę..."
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (noteContent.trim() && user) {
+                    addNote({ content: noteContent.trim(), author: user.name }).then(() =>
+                      setNoteContent('')
+                    );
+                  }
+                }
+              }}
+            />
+            <Button
+              size="sm"
+              className="self-end"
+              disabled={!noteContent.trim() || isSending}
+              onClick={() => {
+                if (noteContent.trim() && user) {
+                  addNote({ content: noteContent.trim(), author: user.name }).then(() =>
+                    setNoteContent('')
+                  );
+                }
+              }}
+            >
+              <Send  />
+            </Button>
+          </div>
         </div>
-      
+
     </div>
   );
 }

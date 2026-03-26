@@ -12,7 +12,7 @@ const AdminEquipmentView = () => {
   const { adminView } = useAdmin();
   const { data, isLoading } = useInventory();
   const { user } = useMe();
-  const columns = getInventoryColumns();
+  const columns = getInventoryColumns(adminView);
   const navigate = useNavigate()
 
   const filteredData = useMemo(() => {

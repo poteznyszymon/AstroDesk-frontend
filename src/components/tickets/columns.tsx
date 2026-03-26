@@ -30,6 +30,7 @@ export const getColumns = (): ColumnDef<Ticket>[] => {
     {
       accessorKey: "status",
       header: "Status",
+      filterFn: "equals",
       cell: ({ row }) => {
         const status = row.getValue("status") as TicketStatus;
         const config = statusConfig[status];
@@ -45,6 +46,7 @@ export const getColumns = (): ColumnDef<Ticket>[] => {
     {
       accessorKey: "priority",
       header: "Priorytet",
+      filterFn: "equals",
       cell: ({ row }) => {
         const priority = row.getValue("priority") as TicketPriority;
         const config = priorityConfig[priority];
