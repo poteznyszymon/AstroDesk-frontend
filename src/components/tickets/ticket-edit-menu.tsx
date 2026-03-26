@@ -10,7 +10,7 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import EditTicketDialog from "./edit-ticket-dialog";
 
-const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
+const TicketEditMenu = ({ ticket, adminView }: { ticket: Ticket; adminView: boolean }) => {
   const [activeDialog, setActiveDialog] = useState<"details" | "edit" | "delete" | null>(null);
   const { deleteTicket, isLoading } = useDeleteTicket()
 
@@ -40,10 +40,14 @@ const TicketEditMenu = ({ ticket }: { ticket: Ticket }) => {
           </DropdownMenuItem> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setActiveDialog("details")}>Zobacz szczegóły</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setActiveDialog("edit")}>Edytuj zgłoszenie</DropdownMenuItem>
-          <DropdownMenuItem className="text-red-600" onClick={() => setActiveDialog("delete")}>
-            Usuń zgłoszenie
-          </DropdownMenuItem>
+          {adminView && (
+            <>
+              <DropdownMenuItem onClick={() => setActiveDialog("edit")}>Edytuj zgłoszenie</DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600" onClick={() => setActiveDialog("delete")}>
+                Usuń zgłoszenie
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

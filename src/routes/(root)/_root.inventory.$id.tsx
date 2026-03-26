@@ -141,7 +141,6 @@ function RouteComponent() {
 
   return (
     <div className=" space-y-10 p-2">
-
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -252,7 +251,6 @@ function RouteComponent() {
             </Button>
           </div>
         </div>
-
     </div>
   );
 }

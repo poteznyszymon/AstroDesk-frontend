@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import TicketEditMenu from "./ticket-edit-menu";
 
-export const getColumns = (): ColumnDef<Ticket>[] => {
+export const getColumns = (adminView: boolean): ColumnDef<Ticket>[] => {
   const columns: ColumnDef<Ticket>[] = [
     // {
     //   accessorKey: "id",
@@ -86,20 +86,14 @@ export const getColumns = (): ColumnDef<Ticket>[] => {
   ];
 
   columns.push({
-  id: "actions",
-  enableHiding: false,
-  cell: ({ row }) => {
-    return (
-      <div
-        onClick={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        onPointerUp={(e) => e.stopPropagation()}
-      >
-        <TicketEditMenu ticket={row.original} />
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => (
+      <div onClick={(e) => e.stopPropagation()}>
+        <TicketEditMenu ticket={row.original} adminView={adminView} />
       </div>
-    );
-  },
-});
+    ),
+  });
 
   return columns;
 };

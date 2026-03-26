@@ -11,8 +11,8 @@ import { useNavigate } from "@tanstack/react-router";
 
 const TicketView = () => {
   const [ticketsType, setTicketsType] = useState<AdminTicketSelectionType>("all");
-  const columns = getColumns();
   const { adminView } = useAdmin();
+  const columns = getColumns(adminView);
   const { user } = useMe();
   const { data, isLoading } = useTickets(user?.name);
   const navigate = useNavigate()

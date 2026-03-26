@@ -33,7 +33,11 @@ const inventoryStatusLabels: Record<InventoryStatus, string> = {
     UTYLIZACJA: "Utylizacja",
 };
 
-const AddEquipmentDialog = () => {
+type AddEquipmentDialogProps = {
+    isLoading?: boolean;
+}
+
+const AddEquipmentDialog = ({ isLoading = false }: AddEquipmentDialogProps) => {
     const [open, setOpen] = useState(false);
     const { createInventory, isLoading: isCreating } = useCreateInventory();
 
@@ -79,7 +83,9 @@ const AddEquipmentDialog = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size={"sm"}>Dodaj sprzęt</Button>
+                <Button size={"sm"} disabled={isLoading}>
+                    Dodaj sprzęt
+                </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xl">
                 <DialogHeader>

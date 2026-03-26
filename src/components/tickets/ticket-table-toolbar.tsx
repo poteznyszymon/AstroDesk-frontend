@@ -40,6 +40,7 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
         />
 
         <Select
+          disabled={isLoading}
           value={statusFilter}
           onValueChange={(val) =>
             table.getColumn("status")?.setFilterValue(val === "ALL" ? "" : val)
@@ -59,6 +60,7 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
         </Select>
 
         <Select
+          disabled={isLoading}
           value={priorityFilter}
           onValueChange={(val) =>
             table.getColumn("priority")?.setFilterValue(val === "ALL" ? "" : val)
@@ -78,7 +80,7 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
         </Select>
 
         {isFiltered && (
-          <Button variant="ghost" size="sm" className="h-8 px-2" onClick={clearFilters}>
+          <Button variant="ghost" size="sm" className="h-8 px-2" onClick={clearFilters} disabled={isLoading}>
             <X className="h-4 w-4" />
             Resetuj
           </Button>
