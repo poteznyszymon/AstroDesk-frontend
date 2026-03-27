@@ -191,7 +191,6 @@ function RouteComponent() {
         )}
       </div>
         <Separator />
-
       <div className="flex flex-col gap-3 max-w-4xl">
         <h2 className="text-lg font-semibold tracking-tight">Opis</h2>
         <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">

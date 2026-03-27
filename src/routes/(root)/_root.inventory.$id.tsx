@@ -23,7 +23,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 
 export const Route = createFileRoute('/(root)/_root/inventory/$id')({
