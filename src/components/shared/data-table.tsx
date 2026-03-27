@@ -15,19 +15,22 @@ import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRo
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import TableSkeleton from "./table-skeleton";
+import { Link } from "@tanstack/react-router";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   toolbar?: React.ComponentType<{ table: Table<TData> }>;
-  onRowClick: (RowData: TData) => void;
+  onRowClick?: (RowData: TData) => void;
+  getRowHref?: (row: TData) => string;
   isLoading: boolean;
+  initialColumnVisibility?: VisibilityState;
 }
 
-export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, isLoading }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, getRowHref, isLoading, initialColumnVisibility }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility ?? {});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
@@ -66,13 +69,31 @@ export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRo
 
           <TableBody>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} onClick={() => onRowClick && onRowClick(row.original)} className={"cursor-pointer hover:bg-muted/50"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const href = getRowHref ? getRowHref(row.original) : undefined;
+                return (
+                  <TableRow
+                    key={row.id}
+                    onClick={!href && onRowClick ? () => onRowClick(row.original) : undefined}
+                    className={onRowClick || href ? "cursor-pointer" : undefined}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const isActionCell = cell.column.id === "actions";
+                      return (
+                        <TableCell key={cell.id} className={href && !isActionCell ? "p-0" : undefined}>
+                          {href && !isActionCell ? (
+                            <Link to={href} className="flex items-center p-2">
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </Link>
+                          ) : (
+                            flexRender(cell.column.columnDef.cell, cell.getContext())
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="text-center h-24">

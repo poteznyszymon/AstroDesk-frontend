@@ -419,12 +419,26 @@ export const deleteInventoryMock = async (id: number): Promise<void> => {
 
 
 
+export const deleteInventoryNoteMock = async (
+    inventoryId: number,
+    noteId: number,
+): Promise<void> => {
+    await delay(800);
+    const idx = mockInventory.findIndex(i => i.id === inventoryId);
+    if (idx === -1) throw new Error(`Inventory item with id ${inventoryId} not found`);
+    const noteIdx = mockInventory[idx].notes.findIndex(n => n.id === noteId);
+    if (noteIdx === -1) throw new Error(`Note with id ${noteId} not found`);
+    mockInventory[idx].notes.splice(noteIdx, 1);
+};
+
+
+
 export const addInventoryNoteMock = async (
     id: number,
     content: string,
     author: string,
 ): Promise<InventoryNote> => {
-    await delay(300);
+    await delay(900);
     const idx = mockInventory.findIndex(i => i.id === id);
     if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
     const note: InventoryNote = {

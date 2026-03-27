@@ -9,7 +9,10 @@ import { Textarea } from '../ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { ticketPriorities, ticketStatuses, statusConfig, priorityConfig, type Ticket } from '@/types/tickets'
 import { Spinner } from '../ui/spinner'
+import { useState } from 'react'
+import { Search } from 'lucide-react'
 import { useUpdateTicket } from '@/hooks/ticket/useTIcekts'
+import { useInventory } from '@/hooks/inventory/useInventory'
 
 interface EditTicketDialogProps {
   ticket: Ticket;
@@ -19,6 +22,8 @@ interface EditTicketDialogProps {
 
 const EditTicketDialog = ({ ticket, open, onOpenChange }: EditTicketDialogProps) => {
   const { updateTicket, isLoading } = useUpdateTicket();
+  const { data: inventory } = useInventory();
+  const [deviceSearch, setDeviceSearch] = useState("");
 
   const form = useForm<EditTicketSchema>({
     resolver: zodResolver(editTicketSchema),
@@ -28,11 +33,12 @@ const EditTicketDialog = ({ ticket, open, onOpenChange }: EditTicketDialogProps)
       status: ticket.status,
       priority: ticket.priority,
       assignee: ticket.assignee,
+      linkedInventoryId: ticket.linkedInventoryId,
     },
   });
 
   const handleSubmit = async (values: EditTicketSchema) => {
-    await updateTicket({ id: ticket.id, ticket: values });
+    await updateTicket({ id: ticket.id, ticket: { ...values, linkedInventoryId: values.linkedInventoryId ?? null } });
     onOpenChange(false);
   };
 
@@ -134,6 +140,48 @@ const EditTicketDialog = ({ ticket, open, onOpenChange }: EditTicketDialogProps)
                       onChange={(e) => field.onChange(e.target.value || null)}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="linkedInventoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Powiązane urządzenie</FormLabel>
+                  <Select
+                    onValueChange={(val) => field.onChange(val === "NONE" ? null : Number(val))}
+                    value={field.value != null ? String(field.value) : "NONE"}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Opcjonalne" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <div className="flex items-center border-b px-2 pb-2 pt-1 gap-2">
+                        <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <input
+                          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                          placeholder="Szukaj urządzenia..."
+                          value={deviceSearch}
+                          onChange={(e) => setDeviceSearch(e.target.value)}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      <SelectItem value="NONE">Brak</SelectItem>
+                      {(inventory ?? [])
+                        .filter((item) =>
+                          item.name.toLowerCase().includes(deviceSearch.toLowerCase())
+                        )
+                        .map((item) => (
+                          <SelectItem key={item.id} value={String(item.id)}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

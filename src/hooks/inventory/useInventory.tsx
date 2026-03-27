@@ -10,6 +10,7 @@ import {
     disposeInventoryMock,
     deleteInventoryMock,
     addInventoryNoteMock,
+    deleteInventoryNoteMock,
 } from "./mock.inventory";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
@@ -148,6 +149,19 @@ export const useDeleteInventory = () => {
         onError: () => toast.error("Błąd podczas usuwania"),
     });
     return { deleteInventory, isLoading };
+};
+
+
+
+export const useDeleteInventoryNote = (inventoryId: number) => {
+    const { mutateAsync: deleteNote, isPending: isLoading } = useMutation({
+        mutationFn: (noteId: number) => deleteInventoryNoteMock(inventoryId, noteId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, inventoryId] });
+        },
+        onError: () => toast.error("Błąd podczas usuwania notatki"),
+    });
+    return { deleteNote, isLoading };
 };
 
 

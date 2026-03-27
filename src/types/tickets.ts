@@ -16,6 +16,7 @@ export interface Ticket {
   createdBy: string;
   createdAt: string;
   updatedAt: string | null;
+  linkedInventoryId: number | null;
 }
 
 export const statusConfig: Record<

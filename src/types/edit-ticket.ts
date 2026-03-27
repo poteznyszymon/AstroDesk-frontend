@@ -7,6 +7,7 @@ export const editTicketSchema = z.object({
   status: z.enum(ticketStatuses),
   priority: z.enum(ticketPriorities),
   assignee: z.string().nullable(),
+  linkedInventoryId: z.number().nullable().optional(),
 });
 
 export type EditTicketSchema = z.infer<typeof editTicketSchema>;

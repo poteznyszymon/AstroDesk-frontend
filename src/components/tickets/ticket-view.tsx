@@ -1,22 +1,21 @@
 import { useMemo, useState } from "react";
 import AdminTicketTypeSelection from "./admin-ticket-type-selection";
-import type { AdminTicketSelectionType, Ticket } from "@/types/tickets";
+import type { AdminTicketSelectionType } from "@/types/tickets";
 import { DataTable } from "../shared/data-table";
 import { TicketTableToolbar } from "./ticket-table-toolbar";
 import { useAdmin } from "@/data/mock/admin-context";
 import { getColumns } from "./columns";
 import { useMe } from "@/hooks/auth/useAuth";
 import { useTickets } from "@/hooks/ticket/useTIcekts";
-import { useNavigate } from "@tanstack/react-router";
+import { useInventory } from "@/hooks/inventory/useInventory";
 
 const TicketView = () => {
   const [ticketsType, setTicketsType] = useState<AdminTicketSelectionType>("all");
   const { adminView } = useAdmin();
-  const columns = getColumns(adminView);
   const { user } = useMe();
   const { data, isLoading } = useTickets(user?.name);
-  const navigate = useNavigate()
-
+  const { data: inventory } = useInventory();
+  const columns = getColumns(adminView, inventory);
   const filteredData = useMemo(() => {
       const tickets = data?.tickets ?? [];
 
@@ -37,12 +36,8 @@ const TicketView = () => {
       }
     }, [ticketsType, data, user?.name, adminView]);
 
-  const handleRowClick = (row: Ticket) => {
-    navigate({to: `/tickets/${row.id}`})
-  }
-
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-2 xs:gap-4">
       {adminView && (
         <AdminTicketTypeSelection
           ticketsType={ticketsType}
@@ -53,7 +48,7 @@ const TicketView = () => {
         columns={columns}
         data={filteredData}
         toolbar={TicketTableToolbar}
-        onRowClick={handleRowClick}
+        getRowHref={(row) => `/tickets/${row.id}`}
         isLoading={isLoading}
       />
     </div>

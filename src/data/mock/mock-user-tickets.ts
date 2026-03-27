@@ -11,6 +11,7 @@ export const mockUserTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-01",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-003",
@@ -22,6 +23,7 @@ export const mockUserTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-29",
     updatedAt: "2025-12-01",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-005",
@@ -33,6 +35,7 @@ export const mockUserTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-25",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-008",
@@ -44,6 +47,7 @@ export const mockUserTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-011",
@@ -55,6 +59,7 @@ export const mockUserTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-014",
@@ -66,5 +71,6 @@ export const mockUserTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
 ];

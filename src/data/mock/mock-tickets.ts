@@ -11,6 +11,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-01",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-002",
@@ -22,6 +23,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Marek Dąbrowski",
     createdAt: "2025-11-30",
     updatedAt: "2025-12-01",
+    linkedInventoryId: 2,
   },
   {
     id: "TKT-003",
@@ -33,6 +35,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-29",
     updatedAt: "2025-12-01",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-004",
@@ -44,6 +47,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Anna Nowak",
     createdAt: "2025-11-28",
     updatedAt: "2025-11-30",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-005",
@@ -55,6 +59,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-25",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-006",
@@ -66,6 +71,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Piotr Wiśniewski",
     createdAt: "2025-12-02",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-007",
@@ -77,6 +83,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Katarzyna Zielińska",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-008",
@@ -88,6 +95,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-009",
@@ -99,6 +107,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Michał Anioł",
     createdAt: "2025-11-27",
     updatedAt: "2025-11-28",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-010",
@@ -110,6 +119,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Ewa Bema",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-011",
@@ -121,6 +131,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-012",
@@ -132,6 +143,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Robert Lewandowski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-013",
@@ -143,6 +155,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Tomasz Kot",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-014",
@@ -154,6 +167,7 @@ export const demoTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-015",
@@ -165,5 +179,6 @@ export const demoTickets: Ticket[] = [
     createdBy: "Krzysztof Ibisz",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
 ];

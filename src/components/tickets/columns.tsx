@@ -2,10 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { priorityConfig, statusConfig, type Ticket, type TicketPriority, type TicketStatus } from "@/types/tickets";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Monitor } from "lucide-react";
 import TicketEditMenu from "./ticket-edit-menu";
+import type { Inventory } from "@/types/inventory";
 
-export const getColumns = (adminView: boolean): ColumnDef<Ticket>[] => {
+export const getColumns = (adminView: boolean, inventory?: Inventory[]): ColumnDef<Ticket>[] => {
   const columns: ColumnDef<Ticket>[] = [
     // {
     //   accessorKey: "id",
@@ -26,6 +27,14 @@ export const getColumns = (adminView: boolean): ColumnDef<Ticket>[] => {
           <div className="text-sm text-muted-foreground truncate max-w-[300px]">{row.original.description}</div>
         </div>
       ),
+      filterFn: (row, _, filterValue: string) => {
+        if (!filterValue) return true;
+        const q = filterValue.toLowerCase();
+        return (
+          (row.getValue('title') as string).toLowerCase().includes(q) ||
+          row.original.description.toLowerCase().includes(q)
+        );
+      },
     },
     {
       accessorKey: "status",
@@ -62,6 +71,7 @@ export const getColumns = (adminView: boolean): ColumnDef<Ticket>[] => {
         </Button>
       ),
       cell: ({ row }) => <div>{row.getValue("assignee")}</div>,
+      filterFn: 'equals',
     },
     {
       accessorKey: "createdBy",
@@ -74,6 +84,25 @@ export const getColumns = (adminView: boolean): ColumnDef<Ticket>[] => {
       cell: ({ row }) => <div>{row.getValue("createdBy")}</div>,
     },
     {
+      accessorKey: "linkedInventoryId",
+      header: "Urządzenie",
+      filterFn: (row, columnId, filterValue: boolean) => {
+        if (!filterValue) return true;
+        return row.getValue(columnId) !== null;
+      },
+      cell: ({ row }) => {
+        const id = row.getValue("linkedInventoryId") as number | null;
+        if (!id) return <span className="text-muted-foreground text-sm">—</span>;
+        const device = inventory?.find((i) => i.id === id);
+        return (
+          <div className="flex items-center gap-1.5 text-sm">
+            <Monitor className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <span>{device?.name ?? `#${id}`}</span>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="-ml-4">
@@ -82,6 +111,17 @@ export const getColumns = (adminView: boolean): ColumnDef<Ticket>[] => {
         </Button>
       ),
       cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
+      filterFn: (row, columnId, filterValue: { from?: Date; to?: Date }) => {
+        if (!filterValue?.from && !filterValue?.to) return true;
+        const date = new Date(row.getValue(columnId) as string);
+        if (filterValue.from && date < filterValue.from) return false;
+        if (filterValue.to) {
+          const to = new Date(filterValue.to);
+          to.setHours(23, 59, 59, 999);
+          if (date > to) return false;
+        }
+        return true;
+      },
     },
   ];
 

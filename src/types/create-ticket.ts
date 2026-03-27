@@ -7,6 +7,7 @@ export const createTicketSchema = z.object({
   priority: z.enum(ticketPriorities),
   assignee: z.string().optional(),
   createdBy: z.string(),
+  linkedInventoryId: z.number().nullable().optional(),
 });
 
 export type CreateTicketSchema = z.infer<typeof createTicketSchema>;

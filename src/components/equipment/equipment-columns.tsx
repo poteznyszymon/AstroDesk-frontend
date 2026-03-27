@@ -50,7 +50,7 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
         const type = row.original.itemType;
         const config = typeConfig[type];
         const TypeIcon = config.icon;
-        
+
         return (
           <div className="flex items-center gap-2 ml-3">
             <TypeIcon className="h-4 w-4 text-muted-foreground" />
@@ -59,6 +59,15 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
               <div className="text-sm text-muted-foreground">{row.original.serialNumber}</div>
             </div>
           </div>
+        );
+      },
+      filterFn: (row, _, filterValue: string) => {
+        if (!filterValue) return true;
+        const q = filterValue.toLowerCase();
+        return (
+          (row.getValue('name') as string).toLowerCase().includes(q) ||
+          (row.original.serialNumber ?? '').toLowerCase().includes(q) ||
+          (row.original.model ?? '').toLowerCase().includes(q)
         );
       },
     },
@@ -94,10 +103,12 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
         const assignedTo = row.getValue("assignedTo") as string | null;
         return assignedTo ? <div className="font-medium">{assignedTo}</div> : <span className="text-muted-foreground">Nieprzypisany</span>;
       },
+      filterFn: 'equals',
     },
     {
       accessorKey: "location",
       header: "Lokalizacja",
+      filterFn: 'equals',
       cell: ({ row }) => {
         const location = row.getValue("location") as string | null;
         return <div>{location || <span className="text-muted-foreground">—</span>}</div>;
@@ -114,6 +125,16 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
       cell: ({ row }) => {
         const date = row.getValue("assignedDate") as string | null;
         return date ? <div>{date}</div> : <span className="text-muted-foreground">—</span>;
+      },
+    },
+    {
+      id: 'hasNotes',
+      accessorFn: (row) => row.notes.length,
+      header: () => null,
+      cell: () => null,
+      filterFn: (row, _, filterValue: boolean) => {
+        if (!filterValue) return true;
+        return row.original.notes.length > 0;
       },
     },
     {

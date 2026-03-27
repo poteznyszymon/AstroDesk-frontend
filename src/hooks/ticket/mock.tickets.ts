@@ -11,6 +11,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-01",
+    linkedInventoryId: 10,
   },
   {
     id: "TKT-002",
@@ -22,6 +23,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Marek Dąbrowski",
     createdAt: "2025-11-30",
     updatedAt: "2025-12-01",
+    linkedInventoryId: 11,
   },
   {
     id: "TKT-003",
@@ -33,6 +35,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-29",
     updatedAt: "2025-12-01",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-004",
@@ -44,6 +47,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Anna Nowak",
     createdAt: "2025-11-28",
     updatedAt: "2025-11-30",
+    linkedInventoryId: 9,
   },
   {
     id: "TKT-005",
@@ -55,6 +59,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-25",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-006",
@@ -66,6 +71,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Piotr Wiśniewski",
     createdAt: "2025-12-02",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-007",
@@ -77,6 +83,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Katarzyna Zielińska",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-008",
@@ -88,6 +95,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-009",
@@ -99,6 +107,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Michał Anioł",
     createdAt: "2025-11-27",
     updatedAt: "2025-11-28",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-010",
@@ -110,6 +119,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Ewa Bema",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-011",
@@ -121,6 +131,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-012",
@@ -132,6 +143,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Robert Lewandowski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-013",
@@ -143,6 +155,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Tomasz Kot",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-014",
@@ -154,6 +167,7 @@ export const mockTickets: Ticket[] = [
     createdBy: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
   {
     id: "TKT-015",
@@ -165,19 +179,24 @@ export const mockTickets: Ticket[] = [
     createdBy: "Krzysztof Ibisz",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
+    linkedInventoryId: null,
   },
 ];
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
+export const getTicketByIdMock = async (id: string): Promise<Ticket> => {
+  await delay(400);
+  const ticket = mockTickets.find(t => t.id === id);
+  if (!ticket) throw new Error(`Ticket ${id} not found`);
+  return { ...ticket };
+};
+
 export const getTicketsMock = async (
   _currentUser: string = "Jan Kowalski"
 ): Promise<{ tickets: Ticket[] }> => {
   await delay(1000);
-
-  let filtered = [...mockTickets];
-
-  return { tickets: filtered };
+  return { tickets: [...mockTickets] };
 };
 
 export const deleteTicketMock = async (id: string) => {
@@ -185,13 +204,13 @@ export const deleteTicketMock = async (id: string) => {
   const idx = mockTickets.findIndex(t => t.id === id);
   if (idx === -1) throw new Error("Ticket not found");
   mockTickets.splice(idx, 1);
-}
+};
 
 export const createTicketMock = async (ticket: Omit<Ticket, "id" | "createdAt">) => {
   await delay(500);
   const newTicket: Ticket = {
     ...ticket,
-    id: String(mockTickets.length + 1),
+    id: `TKT-${String(mockTickets.length + 1).padStart(3, "0")}`,
     createdAt: new Date().toISOString().split("T")[0],
   };
   mockTickets.unshift(newTicket);

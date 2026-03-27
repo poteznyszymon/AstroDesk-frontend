@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createTicketMock, deleteTicketMock, getTicketsMock, updateTicketMock } from "./mock.tickets";
+import { createTicketMock, deleteTicketMock, getTicketByIdMock, getTicketsMock, updateTicketMock } from "./mock.tickets";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { Ticket } from "@/types/tickets";
@@ -14,6 +14,16 @@ export const useTickets = (currentUser?: string) => {
     placeholderData: (prev) => prev,
   });
   return { data, isLoading }
+};
+
+export const useTicketById = (id: string) => {
+  const { data, isLoading } = useQuery({
+    queryKey: [TICKETS_KEY, id],
+    queryFn: () => getTicketByIdMock(id),
+    staleTime: 1000 * 30,
+    enabled: !!id,
+  });
+  return { data, isLoading };
 };
 
 export const useDeleteTicket = () => {
