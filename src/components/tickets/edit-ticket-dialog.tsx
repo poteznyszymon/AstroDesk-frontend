@@ -11,7 +11,7 @@ import { ticketPriorities, ticketStatuses, statusConfig, priorityConfig, type Ti
 import { Spinner } from '../ui/spinner'
 import { useState } from 'react'
 import { Search } from 'lucide-react'
-import { useUpdateTicket } from '@/hooks/ticket/useTIcekts'
+import { useUpdateTicket } from '@/hooks/ticket/useTickets'
 import { useInventory } from '@/hooks/inventory/useInventory'
 
 interface EditTicketDialogProps {

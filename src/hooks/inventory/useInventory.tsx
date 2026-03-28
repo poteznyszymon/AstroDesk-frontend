@@ -12,6 +12,7 @@ import {
     addInventoryNoteMock,
     deleteInventoryNoteMock,
 } from "./mock.inventory";
+import { getInventoryHistoryMock } from "./mock.inventory-history";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { CreateInventoryPayload, UpdateInventoryPayload } from "@/types/inventory";
@@ -176,4 +177,14 @@ export const useAddInventoryNote = (inventoryId: number) => {
         onError: () => toast.error("Błąd podczas dodawania notatki"),
     });
     return { addNote, isLoading };
+};
+
+export const useInventoryHistory = (id: number) => {
+    const { data, isLoading } = useQuery({
+        queryKey: [INVENTORY_KEY, id, 'history'],
+        queryFn: () => getInventoryHistoryMock(id),
+        staleTime: 1000 * 30,
+        enabled: !!id,
+    });
+    return { data, isLoading };
 };

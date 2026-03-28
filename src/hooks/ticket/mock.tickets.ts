@@ -1,4 +1,15 @@
 import type { Ticket } from "@/types/tickets";
+import { statusConfig, priorityConfig } from "@/types/tickets";
+import { mockTicketHistory } from "./mock.ticket-history";
+import type { HistoryEntry } from "@/types/history";
+
+let historyIdCounter = 1000;
+const nextHistoryId = () => `th-gen-${historyIdCounter++}`;
+
+function pushHistory(ticketId: string, entry: Omit<HistoryEntry, 'id'>) {
+  if (!mockTicketHistory[ticketId]) mockTicketHistory[ticketId] = [];
+  mockTicketHistory[ticketId].unshift({ ...entry, id: nextHistoryId() });
+}
 
 export const mockTickets: Ticket[] = [
   {
@@ -204,6 +215,7 @@ export const deleteTicketMock = async (id: string) => {
   const idx = mockTickets.findIndex(t => t.id === id);
   if (idx === -1) throw new Error("Ticket not found");
   mockTickets.splice(idx, 1);
+  delete mockTicketHistory[id];
 };
 
 export const createTicketMock = async (ticket: Omit<Ticket, "id" | "createdAt">) => {
@@ -214,6 +226,11 @@ export const createTicketMock = async (ticket: Omit<Ticket, "id" | "createdAt">)
     createdAt: new Date().toISOString().split("T")[0],
   };
   mockTickets.unshift(newTicket);
+  const now = new Date().toISOString();
+  pushHistory(newTicket.id, { author: 'admin', timestamp: now, type: 'created', description: 'Zgłoszenie zostało utworzone.' });
+  if (newTicket.assignee) {
+    pushHistory(newTicket.id, { author: 'admin', timestamp: now, type: 'assigned', description: `Zgłoszenie przypisano do ${newTicket.assignee}.`, to: newTicket.assignee });
+  }
   return newTicket;
 };
 
@@ -221,6 +238,34 @@ export const updateTicketMock = async (id: string, updates: Partial<Ticket>) => 
   await delay(500);
   const idx = mockTickets.findIndex(t => t.id === id);
   if (idx === -1) throw new Error("Ticket not found");
-  mockTickets[idx] = { ...mockTickets[idx], ...updates };
+  const old = mockTickets[idx];
+  mockTickets[idx] = { ...old, ...updates };
+  const now = new Date().toISOString();
+
+  if (updates.status !== undefined && updates.status !== old.status) {
+    pushHistory(id, { author: 'admin', timestamp: now, type: 'status_changed', description: 'Zmieniono status zgłoszenia.', from: statusConfig[old.status].label, to: statusConfig[updates.status].label });
+  }
+  if (updates.priority !== undefined && updates.priority !== old.priority) {
+    pushHistory(id, { author: 'admin', timestamp: now, type: 'priority_changed', description: 'Zmieniono priorytet zgłoszenia.', from: priorityConfig[old.priority].label, to: priorityConfig[updates.priority].label });
+  }
+  if ('assignee' in updates && updates.assignee !== old.assignee) {
+    if (updates.assignee) {
+      pushHistory(id, { author: 'admin', timestamp: now, type: 'assigned', description: `Zgłoszenie przypisano do ${updates.assignee}.`, from: old.assignee ?? undefined, to: updates.assignee });
+    } else {
+      pushHistory(id, { author: 'admin', timestamp: now, type: 'unassigned', description: 'Usunięto przypisanie zgłoszenia.', from: old.assignee ?? undefined });
+    }
+  }
+  if ('linkedInventoryId' in updates && updates.linkedInventoryId !== old.linkedInventoryId) {
+    if (updates.linkedInventoryId) {
+      pushHistory(id, { author: 'admin', timestamp: now, type: 'linked_device', description: `Powiązano urządzenie ID: ${updates.linkedInventoryId}.`, to: String(updates.linkedInventoryId) });
+    }
+  }
+  if (
+    (updates.title !== undefined && updates.title !== old.title) ||
+    (updates.description !== undefined && updates.description !== old.description)
+  ) {
+    pushHistory(id, { author: 'admin', timestamp: now, type: 'edited', description: 'Edytowano treść zgłoszenia.' });
+  }
+
   return mockTickets[idx];
 };

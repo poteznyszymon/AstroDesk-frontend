@@ -6,7 +6,7 @@ import { TicketTableToolbar } from "./ticket-table-toolbar";
 import { useAdmin } from "@/data/mock/admin-context";
 import { getColumns } from "./columns";
 import { useMe } from "@/hooks/auth/useAuth";
-import { useTickets } from "@/hooks/ticket/useTIcekts";
+import { useTickets } from "@/hooks/ticket/useTickets";
 import { useInventory } from "@/hooks/inventory/useInventory";
 
 const TicketView = () => {

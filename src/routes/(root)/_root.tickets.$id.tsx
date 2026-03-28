@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useTicketById, useDeleteTicket } from '@/hooks/ticket/useTIcekts';
+import { useTicketById, useDeleteTicket, useTicketHistory } from '@/hooks/ticket/useTickets';
 import { useInventoryById } from '@/hooks/inventory/useInventory';
 import { useAdmin } from '@/data/mock/admin-context';
 import { statusConfig, priorityConfig } from '@/types/tickets';
@@ -8,8 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import EditTicketDialog from '@/components/tickets/edit-ticket-dialog';
+import { HistoryTimeline } from '@/components/shared/history-timeline';
 import { Spinner } from '@/components/ui/spinner';
 import { Trash2, Edit, User, Calendar, Clock, Monitor, Link } from 'lucide-react';
 
@@ -56,6 +58,7 @@ function RouteComponent() {
   const { adminView } = useAdmin();
   const { data: linkedDevice, isLoading: isDeviceLoading } = useInventoryById(data?.linkedInventoryId ?? 0);
   const { deleteTicket, isLoading: isDeleting } = useDeleteTicket();
+  const { data: history, isLoading: isHistoryLoading } = useTicketHistory(id);
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -116,7 +119,7 @@ function RouteComponent() {
   const StatusIcon = status.icon;
 
   return (
-    <div className="space-y-10 p-2">
+    <div className="space-y-8 p-2">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs font-mono text-muted-foreground">{data.id}</span>
@@ -144,59 +147,74 @@ function RouteComponent() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-        <Section title="Szczegóły">
-          <Field icon={<Calendar className="w-4 h-4" />} label="Data utworzenia" value={data.createdAt} />
-          {data.updatedAt && (
-            <Field icon={<Clock className="w-4 h-4" />} label="Ostatnia aktualizacja" value={data.updatedAt} />
-          )}
-        </Section>
+      <Tabs defaultValue="details">
+        <TabsList>
+          <TabsTrigger value="details">Szczegóły</TabsTrigger>
+          <TabsTrigger value="history">Historia</TabsTrigger>
+        </TabsList>
 
-        <Section title="Osoby">
-          <Field icon={<User className="w-4 h-4" />} label="Zgłoszone przez" value={data.createdBy} />
-          <Field icon={<User className="w-4 h-4" />} label="Przypisane do" value={data.assignee} />
-        </Section>
+        <TabsContent value="details" className="space-y-10 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            <Section title="Szczegóły">
+              <Field icon={<Calendar className="w-4 h-4" />} label="Data utworzenia" value={data.createdAt} />
+              {data.updatedAt && (
+                <Field icon={<Clock className="w-4 h-4" />} label="Ostatnia aktualizacja" value={data.updatedAt} />
+              )}
+            </Section>
 
-        {data.linkedInventoryId && (
-          <Section title="Powiązane urządzenie">
-            {isDeviceLoading ? (
-              <div className="flex items-start gap-3">
-                <Skeleton className="mt-0.5 w-4 h-4 shrink-0" />
-                <div className="flex flex-col gap-1.5">
-                  <Skeleton className="h-3.5 w-20" />
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-3 w-28" />
-                </div>
-              </div>
-            ) : linkedDevice ? (
-              <a
-                href={`/inventory/${linkedDevice.id}`}
-                onClick={(e) => { e.preventDefault(); navigate({ to: `/inventory/${linkedDevice.id}` }); }}
-                className="flex items-start gap-3 group"
-              >
-                <div className="mt-0.5 text-muted-foreground/70 shrink-0">
-                  <Monitor className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Urządzenie</p>
-                  <p className="text-sm font-medium text-foreground group-hover:underline flex items-center gap-1">
-                    {linkedDevice.name}
-                    <Link className="w-3 h-3 text-muted-foreground" />
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{linkedDevice.serialNumber}</p>
-                </div>
-              </a>
-            ) : null}
-          </Section>
-        )}
-      </div>
-        <Separator />
-      <div className="flex flex-col gap-3 max-w-4xl">
-        <h2 className="text-lg font-semibold tracking-tight">Opis</h2>
-        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-          {data.description || 'Brak opisu.'}
-        </p>
-      </div>
+            <Section title="Osoby">
+              <Field icon={<User className="w-4 h-4" />} label="Zgłoszone przez" value={data.createdBy} />
+              <Field icon={<User className="w-4 h-4" />} label="Przypisane do" value={data.assignee} />
+            </Section>
+
+            {data.linkedInventoryId && (
+              <Section title="Powiązane urządzenie">
+                {isDeviceLoading ? (
+                  <div className="flex items-start gap-3">
+                    <Skeleton className="mt-0.5 w-4 h-4 shrink-0" />
+                    <div className="flex flex-col gap-1.5">
+                      <Skeleton className="h-3.5 w-20" />
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-3 w-28" />
+                    </div>
+                  </div>
+                ) : linkedDevice ? (
+                  <a
+                    href={`/inventory/${linkedDevice.id}`}
+                    onClick={(e) => { e.preventDefault(); navigate({ to: `/inventory/${linkedDevice.id}` }); }}
+                    className="flex items-start gap-3 group"
+                  >
+                    <div className="mt-0.5 text-muted-foreground/70 shrink-0">
+                      <Monitor className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Urządzenie</p>
+                      <p className="text-sm font-medium text-foreground group-hover:underline flex items-center gap-1">
+                        {linkedDevice.name}
+                        <Link className="w-3 h-3 text-muted-foreground" />
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{linkedDevice.serialNumber}</p>
+                    </div>
+                  </a>
+                ) : null}
+              </Section>
+            )}
+          </div>
+
+          <Separator />
+
+          <div className="flex flex-col gap-3 max-w-4xl">
+            <h2 className="text-lg font-semibold tracking-tight">Opis</h2>
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+              {data.description || 'Brak opisu.'}
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-6 max-w-2xl">
+          <HistoryTimeline entries={history} isLoading={isHistoryLoading} />
+        </TabsContent>
+      </Tabs>
 
       <EditTicketDialog
         ticket={data}

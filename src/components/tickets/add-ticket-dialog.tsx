@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { createTicketSchema, type CreateTicketSchema } from '@/types/create-ticket'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMe } from '@/hooks/auth/useAuth'
-import { useCreateTicket, useTickets } from '@/hooks/ticket/useTIcekts'
+import { useCreateTicket, useTickets } from '@/hooks/ticket/useTickets'
 import { useInventory } from '@/hooks/inventory/useInventory'
 import { useAdmin } from '@/data/mock/admin-context'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
@@ -19,9 +19,10 @@ import { TicketPlus, Monitor, Search } from 'lucide-react'
 interface AddTicketDialogProps {
     preselectedDevice?: { id: number; name: string };
     trigger?: React.ReactNode;
+    triggerClassName?: string;
 }
 
-const AddTicketDialog = ({ preselectedDevice, trigger }: AddTicketDialogProps = {}) => {
+const AddTicketDialog = ({ preselectedDevice, trigger, triggerClassName }: AddTicketDialogProps = {}) => {
     const { user } = useMe();
     const { adminView } = useAdmin();
     const { isLoading } = useTickets(user?.name);
@@ -78,7 +79,7 @@ const AddTicketDialog = ({ preselectedDevice, trigger }: AddTicketDialogProps = 
             </Button>
         )
         : (
-            <Button disabled={isLoading} size="sm">Dodaj nowy</Button>
+            <Button disabled={isLoading} size="sm" className={triggerClassName}>Dodaj nowy</Button>
         );
 
     return (

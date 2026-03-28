@@ -5,11 +5,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import type { Table } from "@tanstack/react-table";
 import { useMe } from "@/hooks/auth/useAuth";
-import { useTickets } from "@/hooks/ticket/useTIcekts";
+import { useTickets } from "@/hooks/ticket/useTickets";
 import AddTicketDialog from "./add-ticket-dialog";
 import { ticketStatuses, ticketPriorities, statusConfig, priorityConfig, type TicketStatus, type TicketPriority } from "@/types/tickets";
-import { CalendarIcon, Monitor, X } from "lucide-react";
-import { useMemo } from "react";
+import { CalendarIcon, Monitor, X, Download } from "lucide-react";
+import { exportTickets } from "@/lib/export";
+import type { Ticket } from "@/types/tickets";
+import { ExportDialog } from "@/components/shared/export-dialog";
+import { useMemo, useState } from "react";
 import { useAdmin } from "@/data/mock/admin-context";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -23,6 +26,8 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
   const { adminView } = useAdmin();
   const { user } = useMe();
   const { data, isLoading } = useTickets(user?.name);
+  const [exportOpen, setExportOpen] = useState(false);
+  const filteredTickets = table.getFilteredRowModel().rows.map((r) => r.original as Ticket);
 
   const assignees = useMemo(() => {
     const tickets = data?.tickets ?? [];
@@ -171,9 +176,27 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
         )}
       </div>}
 
-      <div className="flex items-center w-full sm:w-fit justify-end">
-        <AddTicketDialog />
+      <div className="flex items-center gap-2 w-full sm:w-fit justify-end">
+        {adminView && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 flex-1 sm:flex-none"
+            onClick={() => setExportOpen(true)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Eksportuj
+          </Button>
+        )}
+        <AddTicketDialog triggerClassName="flex-1 sm:flex-none" />
       </div>
+
+      <ExportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        rowCount={filteredTickets.length}
+        onExport={(format) => exportTickets(filteredTickets, format)}
+      />
     </div>
   );
 }

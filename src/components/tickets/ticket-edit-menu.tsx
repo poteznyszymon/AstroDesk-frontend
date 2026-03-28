@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { priorityConfig, statusConfig, type Ticket } from "@/types/tickets";
 import { MoreHorizontal } from "lucide-react";
-import { useDeleteTicket } from "@/hooks/ticket/useTIcekts";
+import { useDeleteTicket } from "@/hooks/ticket/useTickets";
 import { Spinner } from "../ui/spinner";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";

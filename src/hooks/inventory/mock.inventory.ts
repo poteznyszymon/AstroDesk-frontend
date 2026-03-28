@@ -1,9 +1,43 @@
 import type {
     Inventory,
     InventoryNote,
+    InventoryStatus,
     CreateInventoryPayload,
     UpdateInventoryPayload,
 } from "@/types/inventory";
+import { mockInventoryHistory } from "./mock.inventory-history";
+import type { HistoryEntry } from "@/types/history";
+
+const statusLabels: Record<InventoryStatus, string> = {
+    DOSTEPNE: 'Dostępne',
+    DO_WYDANIA: 'Do wydania',
+    WYDANE: 'Wydane',
+    ZAJETE: 'Zajęte',
+    W_TRAKCIE: 'W trakcie',
+    PRZYJETY: 'Przyjęty',
+    SERWIS: 'W serwisie',
+    UTYLIZACJA: 'Utylizacja',
+    CANCELLED: 'Anulowane',
+};
+
+const editableFieldLabels: Partial<Record<keyof Inventory, string>> = {
+    name: 'Nazwa',
+    model: 'Model',
+    serialNumber: 'Numer seryjny',
+    location: 'Lokalizacja',
+    boughtDate: 'Data zakupu',
+    price: 'Cena',
+    invoiceNumber: 'Numer faktury',
+    itemType: 'Typ sprzętu',
+};
+
+let historyIdCounter = 1000;
+const nextHistoryId = () => `ih-gen-${historyIdCounter++}`;
+
+function pushHistory(inventoryId: number, entry: Omit<HistoryEntry, 'id'>) {
+    if (!mockInventoryHistory[inventoryId]) mockInventoryHistory[inventoryId] = [];
+    mockInventoryHistory[inventoryId].unshift({ ...entry, id: nextHistoryId() });
+}
 
 
 export const mockInventory: Inventory[] = [
@@ -325,6 +359,8 @@ export const createInventoryMock = async (
         notes: [],
     };
     mockInventory.unshift(newItem);
+    const now = new Date().toISOString();
+    pushHistory(newItem.id, { author: 'admin', timestamp: now, type: 'created', description: 'Sprzęt został dodany do inwentarza.' });
     return { ...newItem };
 };
 
@@ -336,7 +372,25 @@ export const updateInventoryMock = async (
     await delay(400);
     const idx = mockInventory.findIndex(i => i.id === id);
     if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
-    mockInventory[idx] = { ...mockInventory[idx], ...updates };
+    const old = mockInventory[idx];
+    mockInventory[idx] = { ...old, ...updates };
+    const now = new Date().toISOString();
+
+    if (updates.status !== undefined && updates.status !== old.status) {
+        pushHistory(id, { author: 'admin', timestamp: now, type: 'status_changed', description: 'Zmieniono status sprzętu.', from: statusLabels[old.status], to: statusLabels[updates.status] });
+    }
+    const editableFields = Object.keys(editableFieldLabels) as (keyof typeof editableFieldLabels)[];
+    for (const field of editableFields) {
+        const oldVal = old[field];
+        const newVal = updates[field as keyof UpdateInventoryPayload];
+        if (newVal !== undefined && String(newVal) !== String(oldVal ?? '')) {
+            const label = editableFieldLabels[field]!;
+            const fromStr = oldVal != null ? String(oldVal) : undefined;
+            const toStr = String(newVal);
+            pushHistory(id, { author: 'admin', timestamp: now, type: 'edited', description: `Zmieniono pole: ${label}.`, from: fromStr, to: toStr });
+        }
+    }
+
     return { ...mockInventory[idx] };
 };
 
@@ -361,6 +415,7 @@ export const assignInventoryMock = async (
         assignedDate: new Date().toISOString().split("T")[0],
         status: "WYDANE",
     };
+    pushHistory(id, { author: assignedBy, timestamp: new Date().toISOString(), type: 'assigned', description: `Sprzęt wydano użytkownikowi ${assignedTo}.`, to: assignedTo });
     return { ...mockInventory[idx] };
 };
 
@@ -381,6 +436,7 @@ export const returnInventoryMock = async (id: number): Promise<Inventory> => {
         assignedDate: null,
         status: "DOSTEPNE",
     };
+    pushHistory(id, { author: 'admin', timestamp: new Date().toISOString(), type: 'returned', description: `Sprzęt zwrócony do magazynu${item.assignedTo ? ` przez ${item.assignedTo}` : ''}.`, from: item.assignedTo ?? undefined });
     return { ...mockInventory[idx] };
 };
 
@@ -395,6 +451,7 @@ export const sendToServiceMock = async (id: number): Promise<Inventory> => {
         throw new Error("Inventory item in UTYLIZACJA cannot be sent to service");
     }
     mockInventory[idx] = { ...item, status: "SERWIS" };
+    pushHistory(id, { author: 'admin', timestamp: new Date().toISOString(), type: 'sent_to_service', description: 'Sprzęt oddany do serwisu.' });
     return { ...mockInventory[idx] };
 };
 
@@ -405,6 +462,7 @@ export const disposeInventoryMock = async (id: number): Promise<Inventory> => {
     const idx = mockInventory.findIndex(i => i.id === id);
     if (idx === -1) throw new Error(`Inventory item with id ${id} not found`);
     mockInventory[idx] = { ...mockInventory[idx], status: "UTYLIZACJA" };
+    pushHistory(id, { author: 'admin', timestamp: new Date().toISOString(), type: 'disposed', description: 'Sprzęt przeznaczony do utylizacji.' });
     return { ...mockInventory[idx] };
 };
 

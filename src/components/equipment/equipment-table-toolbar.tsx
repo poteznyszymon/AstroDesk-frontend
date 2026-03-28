@@ -6,8 +6,11 @@ import { useAdmin } from "@/data/mock/admin-context";
 import { useInventory } from "@/hooks/inventory/useInventory";
 import AddEquipmentDialog from "@/components/equipment/add-equipment-dialog.tsx";
 import type { InventoryItemType, InventoryStatus } from "@/types/inventory";
-import { FileText, X } from "lucide-react";
-import { useMemo } from "react";
+import { FileText, X, Download } from "lucide-react";
+import { exportInventory } from "@/lib/export";
+import type { Inventory } from "@/types/inventory";
+import { ExportDialog } from "@/components/shared/export-dialog";
+import { useMemo, useState } from "react";
 
 const itemTypeLabels: Record<InventoryItemType, string> = {
   LAPTOP: "Laptop",
@@ -37,6 +40,8 @@ interface DataTableToolbarProps<TData> {
 export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const { adminView } = useAdmin();
   const { data, isLoading } = useInventory();
+  const [exportOpen, setExportOpen] = useState(false);
+  const filteredItems = table.getFilteredRowModel().rows.map((r) => r.original as Inventory);
 
   const locations = useMemo(() => {
     const inventory = data ?? [];
@@ -178,9 +183,27 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
         )}
       </div>}
 
-      <div className="flex items-center w-full sm:w-fit justify-end">
-        {adminView && <AddEquipmentDialog isLoading={isLoading} />}
+      <div className="flex items-center gap-2 w-full sm:w-fit justify-end">
+        {adminView && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 flex-1 sm:flex-none"
+            onClick={() => setExportOpen(true)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Eksportuj
+          </Button>
+        )}
+        {adminView && <AddEquipmentDialog isLoading={isLoading} triggerClassName="flex-1 sm:flex-none" />}
       </div>
+
+      <ExportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        rowCount={filteredItems.length}
+        onExport={(format) => exportInventory(filteredItems, format)}
+      />
     </div>
   );
 }

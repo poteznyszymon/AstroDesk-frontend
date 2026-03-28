@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createTicketMock, deleteTicketMock, getTicketByIdMock, getTicketsMock, updateTicketMock } from "./mock.tickets";
+import { getTicketHistoryMock } from "./mock.ticket-history";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { Ticket } from "@/types/tickets";
@@ -53,7 +54,7 @@ export const useCreateTicket = () => {
 
 export const useUpdateTicket = () => {
   const { mutateAsync: updateTicket, isPending: isLoading } = useMutation({
-    mutationFn: ({ id, ticket }: { id: string; ticket: Partial<Ticket> }) => 
+    mutationFn: ({ id, ticket }: { id: string; ticket: Partial<Ticket> }) =>
       updateTicketMock(id, ticket),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY] });
@@ -63,4 +64,14 @@ export const useUpdateTicket = () => {
   });
 
   return { updateTicket, isLoading };
+};
+
+export const useTicketHistory = (id: string) => {
+  const { data, isLoading } = useQuery({
+    queryKey: [TICKETS_KEY, id, 'history'],
+    queryFn: () => getTicketHistoryMock(id),
+    staleTime: 1000 * 30,
+    enabled: !!id,
+  });
+  return { data, isLoading };
 };
