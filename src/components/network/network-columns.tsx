@@ -39,11 +39,7 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
       header: "Hostname",
       cell: ({ row }) => {
         const hostname = row.getValue("hostname") as string | null;
-        return hostname ? (
-          <span className="text-sm">{hostname}</span>
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
-        );
+        return hostname ? <span className="text-sm">{hostname}</span> : <span className="text-muted-foreground text-sm">—</span>;
       },
     },
     {
@@ -51,11 +47,7 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
       header: "Producent",
       cell: ({ row }) => {
         const vendor = row.getValue("vendor") as string | null;
-        return vendor ? (
-          <span className="text-sm">{vendor}</span>
-        ) : (
-          <span className="text-muted-foreground text-sm">Nieznany</span>
-        );
+        return vendor ? <span className="text-sm">{vendor}</span> : <span className="text-muted-foreground text-sm">Nieznany</span>;
       },
     },
     {
@@ -116,11 +108,7 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
       header: "Zasób IT",
       cell: ({ row }) => {
         const name = row.original.linkedAssetName;
-        return name ? (
-          <span className="text-sm">{name}</span>
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
-        );
+        return name ? <span className="text-sm">{name}</span> : <span className="text-muted-foreground text-sm">—</span>;
       },
     },
     {
@@ -138,14 +126,12 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Akcje</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.macAddress)}>Kopiuj MAC</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.ipAddress)}>Kopiuj IP</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Pokaż historię</DropdownMenuItem>
-              {!item.isImported && (
-                <DropdownMenuItem>Importuj do inwentaryzacji</DropdownMenuItem>
-              )}
-              {item.isImported && (
-                <DropdownMenuItem>Przejdź do zasobu</DropdownMenuItem>
-              )}
+              {!item.isImported && <DropdownMenuItem>Importuj do inwentaryzacji</DropdownMenuItem>}
+              {item.isImported && <DropdownMenuItem>Przejdź do zasobu</DropdownMenuItem>}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600">Usuń wpis</DropdownMenuItem>
             </DropdownMenuContent>
