@@ -15,12 +15,10 @@ const inventoryStatusLabels: Record<InventoryStatus, string> = {
   DOSTEPNE: 'Dostępne',
   DO_WYDANIA: 'Do wydania',
   WYDANE: 'Wydane',
-  ZAJETE: 'Zajęte',
+  WYPORZYCZONE: 'Wypożyczone',
   W_TRAKCIE: 'W trakcie',
-  PRZYJETY: 'Przyjęty',
   SERWIS: 'W serwisie',
   UTYLIZACJA: 'Utylizacja',
-  ANULOWANE: 'Anulowane',
 };
 
 export type ExportFormat = 'xlsx' | 'csv';

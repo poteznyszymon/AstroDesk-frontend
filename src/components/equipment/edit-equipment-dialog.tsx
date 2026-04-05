@@ -23,13 +23,11 @@ const inventoryTypeLabels: Record<InventoryItemType, string> = {
 };
 
 const inventoryStatusLabels: Record<InventoryStatus, string> = {
+    DOSTEPNE: "Dostępne",
     DO_WYDANIA: "Do wydania",
     WYDANE: "Wydane",
-    DOSTEPNE: "Dostępne",
-    ZAJETE: "Zajęte",
+    WYPORZYCZONE: "Wypożyczone",
     W_TRAKCIE: "W trakcie",
-    ANULOWANE: "Anulowane",
-    PRZYJETY: "Przyjęty",
     SERWIS: "W serwisie",
     UTYLIZACJA: "Utylizacja",
 };
@@ -55,8 +53,6 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
             price: item.price ?? undefined,
             invoiceNumber: item.invoiceNumber ?? "",
             location: item.location ?? "",
-            assignedTo: item.assignedTo ?? "",
-            assignedDate: item.assignedDate ?? "",
         },
     });
 
@@ -72,14 +68,9 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
                 price: item.price ?? undefined,
                 invoiceNumber: item.invoiceNumber ?? "",
                 location: item.location ?? "",
-                assignedTo: item.assignedTo ?? "",
-                assignedDate: item.assignedDate ?? "",
             });
         }
     }, [open, item, form]);
-
-    const watchedStatus = form.watch("status");
-    const isAssigned = watchedStatus === "WYDANE" || watchedStatus === "ZAJETE";
 
     const handleUpdate = async (values: CreateInventorySchema) => {
         const updates: UpdateInventoryPayload = {
@@ -92,8 +83,6 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
             price: values.price ?? null,
             invoiceNumber: values.invoiceNumber ?? null,
             location: values.location ?? null,
-            assignedTo: isAssigned && values.assignedTo ? values.assignedTo : null,
-            assignedDate: isAssigned && values.assignedDate ? values.assignedDate : null,
         };
 
         await updateInventory({ id: item.id, updates });
@@ -275,38 +264,6 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
                                 )}
                             />
                         </div>
-
-                        {isAssigned && (
-                            <div className="grid grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="assignedTo"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Przypisany do</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="np. Jan Kowalski" {...field} value={field.value || ''} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="assignedDate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Data przypisania</FormLabel>
-                                            <FormControl>
-                                                <Input type="date" {...field} value={field.value || ''} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        )}
 
                         <DialogFooter>
                             <DialogClose asChild>

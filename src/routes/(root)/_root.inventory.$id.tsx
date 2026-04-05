@@ -5,14 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import EditEquipmentDialog from '@/components/equipment/edit-equipment-dialog';
 import DeleteEquipmentDialog from '@/components/equipment/delete-equipment-dialog';
+import AssignEquipmentDialog from '@/components/equipment/assign-equipment-dialog';
 import AddTicketDialog from '@/components/tickets/add-ticket-dialog';
 import { useAdmin } from '@/data/mock/admin-context';
-import { useInventoryById, useAddInventoryNote, useDeleteInventoryNote, useInventoryHistory } from '@/hooks/inventory/useInventory';
+import { useInventoryById, useAddInventoryNote, useDeleteInventoryNote, useInventoryHistory, useReturnInventory } from '@/hooks/inventory/useInventory';
 import { useTickets } from '@/hooks/ticket/useTickets';
 import { useMe } from '@/hooks/auth/useAuth';
 import { statusConfig, priorityConfig } from '@/types/tickets';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send, TicketCheck, ArrowRight, Trash2, Loader2, StickyNote } from 'lucide-react';
+import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send, TicketCheck, ArrowRight, Trash2, Loader2, StickyNote, Undo2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { HistoryTimeline } from '@/components/shared/history-timeline';
 
 export const Route = createFileRoute('/(root)/_root/inventory/$id')({
@@ -32,15 +34,13 @@ export const Route = createFileRoute('/(root)/_root/inventory/$id')({
 });
 
 const statusMap: Record<string, string> = {
-  DOSTEPNE:   'Dostępne',
-  WYDANE:     'Wydane',
-  DO_WYDANIA: 'Do wydania',
-  ZAJETE:     'Zajęte',
-  W_TRAKCIE:  'W trakcie',
-  CANCELLED:  'Anulowane',
-  PRZYJETY:   'Przyjęty',
-  SERWIS:     'Serwis',
-  UTYLIZACJA: 'Utylizacja',
+  DOSTEPNE:     'Dostępne',
+  DO_WYDANIA:   'Do wydania',
+  WYDANE:       'Wydane',
+  WYPORZYCZONE: 'Wypożyczone',
+  W_TRAKCIE:    'W trakcie',
+  SERWIS:       'W serwisie',
+  UTYLIZACJA:   'Utylizacja',
 };
 
 function Field({
@@ -114,6 +114,7 @@ function RouteComponent() {
   const { user } = useMe();
   const { addNote, isLoading: isSending } = useAddInventoryNote(Number(id));
   const { deleteNote } = useDeleteInventoryNote(Number(id));
+  const { returnInventory, isLoading: isReturning } = useReturnInventory();
   const { data: ticketsData, isLoading: isTicketsLoading } = useTickets();
   const { data: history, isLoading: isHistoryLoading } = useInventoryHistory(Number(id));
   const [noteContent, setNoteContent] = useState('');
@@ -190,6 +191,14 @@ function RouteComponent() {
             <AddTicketDialog preselectedDevice={{ id: data.id, name: data.name }} />
             {adminView && (
               <>
+                {(data.status === 'DOSTEPNE' || data.status === 'DO_WYDANIA') && (
+                  <AssignEquipmentDialog id={data.id} />
+                )}
+                {(data.status === 'WYDANE' || data.status === 'WYPORZYCZONE') && (
+                  <Button size="sm" variant="outline" className="gap-2" disabled={isReturning} onClick={() => returnInventory(data.id)}>
+                    <Undo2 className="w-4 h-4" /> {isReturning ? <Spinner /> : 'Zwróć'}
+                  </Button>
+                )}
                 <EditEquipmentDialog item={data} />
                 <DeleteEquipmentDialog id={data.id} name={data.name} />
               </>
@@ -267,7 +276,6 @@ function RouteComponent() {
                     >
                       <div className="flex flex-col gap-1.5 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-muted-foreground shrink-0">{ticket.id}</span>
                           <span className="text-sm font-medium text-foreground truncate">{ticket.title}</span>
                         </div>
                         <div className="flex items-center gap-2">

@@ -22,13 +22,11 @@ const inventoryTypeLabels: Record<InventoryItemType, string> = {
 };
 
 const inventoryStatusLabels: Record<InventoryStatus, string> = {
+    DOSTEPNE: "Dostępne",
     DO_WYDANIA: "Do wydania",
     WYDANE: "Wydane",
-    DOSTEPNE: "Dostępne",
-    ZAJETE: "Zajęte",
+    WYPORZYCZONE: "Wypożyczone",
     W_TRAKCIE: "W trakcie",
-    ANULOWANE: "Anulowane",
-    PRZYJETY: "Przyjęty",
     SERWIS: "W serwisie",
     UTYLIZACJA: "Utylizacja",
 };
@@ -59,7 +57,7 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
     });
 
     const watchedStatus = form.watch("status");
-    const isAssigned = watchedStatus === "WYDANE" || watchedStatus === "ZAJETE";
+    const isAssigned = watchedStatus === "WYDANE" || watchedStatus === "WYPORZYCZONE";
 
     const handleCreate = async (values: CreateInventorySchema) => {
         const payload: CreateInventoryPayload = {
@@ -67,11 +65,11 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
             itemType: values.itemType,
             serialNumber: values.serialNumber,
             status: values.status,
-            model: values.model ?? null,
-            boughtDate: values.boughtDate ?? null,
+            model: values.model || null,
+            boughtDate: values.boughtDate || null,
             price: values.price ?? null,
-            invoiceNumber: values.invoiceNumber ?? null,
-            location: values.location ?? null,
+            invoiceNumber: values.invoiceNumber || null,
+            location: values.location || null,
             assignedTo: isAssigned && values.assignedTo ? values.assignedTo : null,
             assignedDate: isAssigned && values.assignedDate ? values.assignedDate : null,
         };

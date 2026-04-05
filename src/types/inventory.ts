@@ -7,13 +7,11 @@ export type InventoryItemType =
     | "TELEFON";
 
 export type InventoryStatus =
+    | "DOSTEPNE"
     | "DO_WYDANIA"
     | "WYDANE"
-    | "DOSTEPNE"
-    | "ZAJETE"
+    | "WYPORZYCZONE"
     | "W_TRAKCIE"
-    | "ANULOWANE"
-    | "PRZYJETY"
     | "SERWIS"
     | "UTYLIZACJA";
 

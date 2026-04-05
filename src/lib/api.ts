@@ -14,7 +14,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(`${response.status} ${response.statusText}`);
   }
 
-  if (response.status === 204) {
+  const contentLength = response.headers.get('content-length');
+  const contentType = response.headers.get('content-type');
+  if (response.status === 204 || contentLength === '0' || !contentType?.includes('application/json')) {
     return undefined as T;
   }
 

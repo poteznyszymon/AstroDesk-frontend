@@ -25,12 +25,10 @@ const statusLabels: Record<InventoryStatus, string> = {
   DOSTEPNE: "Dostępne",
   DO_WYDANIA: "Do wydania",
   WYDANE: "Wydane",
-  ZAJETE: "Zajęte",
+  WYPORZYCZONE: "Wypożyczone",
   W_TRAKCIE: "W trakcie",
-  PRZYJETY: "Przyjęty",
   SERWIS: "W serwisie",
   UTYLIZACJA: "Utylizacja",
-  ANULOWANE: "Anulowane",
 };
 
 interface DataTableToolbarProps<TData> {
@@ -45,12 +43,12 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
 
   const locations = useMemo(() => {
     const inventory = data ?? [];
-    return [...new Set(inventory.map((i) => i.location).filter((l): l is string => l !== null))].sort();
+    return [...new Set(inventory.map((i) => i.location).filter((l): l is string => !!l))].sort();
   }, [data]);
 
   const assignees = useMemo(() => {
     const inventory = data ?? [];
-    return [...new Set(inventory.map((i) => i.assignedTo).filter((a): a is string => a !== null))].sort();
+    return [...new Set(inventory.map((i) => i.assignedTo).filter((a): a is string => !!a))].sort();
   }, [data]);
 
   const nameFilter = (table.getColumn("name")?.getFilterValue() as string) ?? "";

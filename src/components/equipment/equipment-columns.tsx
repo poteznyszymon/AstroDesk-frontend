@@ -29,12 +29,10 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
     DOSTEPNE: { label: "Dostępne", variant: "secondary" },
     DO_WYDANIA: { label: "Do wydania", variant: "outline" },
     WYDANE: { label: "Wydane", variant: "default" },
-    ZAJETE: { label: "Zajęte", variant: "default" },
+    WYPORZYCZONE: { label: "Wypożyczone", variant: "default" },
     W_TRAKCIE: { label: "W trakcie", variant: "outline" },
-    PRZYJETY: { label: "Przyjęty", variant: "default" },
     SERWIS: { label: "W serwisie", variant: "destructive" },
     UTYLIZACJA: { label: "Utylizacja", variant: "destructive" },
-    ANULOWANE: { label: "Anulowane", variant: "destructive" },
   };
 
   const columns: ColumnDef<Inventory>[] = [

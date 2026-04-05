@@ -1,18 +1,18 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-    getAllInventoryMock,
-    getInventoryByIdMock,
-    createInventoryMock,
-    updateInventoryMock,
-    assignInventoryMock,
-    returnInventoryMock,
-    sendToServiceMock,
-    disposeInventoryMock,
-    deleteInventoryMock,
-    addInventoryNoteMock,
-    deleteInventoryNoteMock,
-} from "./mock.inventory";
-import { getInventoryHistoryMock } from "./mock.inventory-history";
+    getAllInventory,
+    getInventoryById,
+    createInventory as createInventoryApi,
+    updateInventory as updateInventoryApi,
+    assignInventory as assignInventoryApi,
+    returnInventory as returnInventoryApi,
+    sendToService as sendToServiceApi,
+    disposeInventory as disposeInventoryApi,
+    deleteInventory as deleteInventoryApi,
+    addInventoryNote as addInventoryNoteApi,
+    deleteInventoryNote as deleteInventoryNoteApi,
+    getInventoryHistory,
+} from "./api.inventory";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { CreateInventoryPayload, UpdateInventoryPayload } from "@/types/inventory";
@@ -23,7 +23,7 @@ const INVENTORY_KEY = "inventory";
 export const useInventory = () => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY],
-        queryFn: () => getAllInventoryMock(),
+        queryFn: () => getAllInventory(),
         staleTime: 1000 * 30,
         placeholderData: (prev) => prev,
     });
@@ -35,7 +35,7 @@ export const useInventory = () => {
 export const useInventoryById = (id: number) => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY, id],
-        queryFn: () => getInventoryByIdMock(id),
+        queryFn: () => getInventoryById(id),
         staleTime: 1000 * 30,
         enabled: !!id,
     });
@@ -45,7 +45,7 @@ export const useInventoryById = (id: number) => {
 
 export const useCreateInventory = () => {
     const { mutateAsync: createInventory, isPending: isLoading } = useMutation({
-        mutationFn: (payload: CreateInventoryPayload) => createInventoryMock(payload),
+        mutationFn: (payload: CreateInventoryPayload) => createInventoryApi(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             toast.success("Sprzęt dodany");
@@ -60,7 +60,7 @@ export const useCreateInventory = () => {
 export const useUpdateInventory = () => {
     const { mutateAsync: updateInventory, isPending: isLoading } = useMutation({
         mutationFn: ({ id, updates }: { id: number; updates: UpdateInventoryPayload }) =>
-            updateInventoryMock(id, updates),
+            updateInventoryApi(id, updates),
         onSuccess: (_, { id }) => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, id] });
@@ -83,7 +83,7 @@ export const useAssignInventory = () => {
             id: number;
             assignedTo: string;
             assignedBy: string;
-        }) => assignInventoryMock(id, assignedTo, assignedBy),
+        }) => assignInventoryApi(id, assignedTo, assignedBy),
         onSuccess: (_, { id }) => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, id] });
@@ -97,7 +97,7 @@ export const useAssignInventory = () => {
 
 export const useReturnInventory = () => {
     const { mutateAsync: returnInventory, isPending: isLoading } = useMutation({
-        mutationFn: (id: number) => returnInventoryMock(id),
+        mutationFn: (id: number) => returnInventoryApi(id),
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, data.id] });
@@ -112,7 +112,7 @@ export const useReturnInventory = () => {
 
 export const useSendToService = () => {
     const { mutateAsync: sendToService, isPending: isLoading } = useMutation({
-        mutationFn: (id: number) => sendToServiceMock(id),
+        mutationFn: (id: number) => sendToServiceApi(id),
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, data.id] });
@@ -127,7 +127,7 @@ export const useSendToService = () => {
 
 export const useDisposeInventory = () => {
     const { mutateAsync: disposeInventory, isPending: isLoading } = useMutation({
-        mutationFn: (id: number) => disposeInventoryMock(id),
+        mutationFn: (id: number) => disposeInventoryApi(id),
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, data.id] });
@@ -142,8 +142,9 @@ export const useDisposeInventory = () => {
 
 export const useDeleteInventory = () => {
     const { mutateAsync: deleteInventory, isPending: isLoading } = useMutation({
-        mutationFn: (id: number) => deleteInventoryMock(id),
-        onSuccess: () => {
+        mutationFn: (id: number) => deleteInventoryApi(id),
+        onSuccess: (_, id) => {
+            queryClient.removeQueries({ queryKey: [INVENTORY_KEY, id] });
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
             toast.success("Sprzęt usunięty");
         },
@@ -156,7 +157,7 @@ export const useDeleteInventory = () => {
 
 export const useDeleteInventoryNote = (inventoryId: number) => {
     const { mutateAsync: deleteNote, isPending: isLoading } = useMutation({
-        mutationFn: (noteId: number) => deleteInventoryNoteMock(inventoryId, noteId),
+        mutationFn: (noteId: number) => deleteInventoryNoteApi(inventoryId, noteId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, inventoryId] });
         },
@@ -170,7 +171,7 @@ export const useDeleteInventoryNote = (inventoryId: number) => {
 export const useAddInventoryNote = (inventoryId: number) => {
     const { mutateAsync: addNote, isPending: isLoading } = useMutation({
         mutationFn: ({ content, author }: { content: string; author: string }) =>
-            addInventoryNoteMock(inventoryId, content, author),
+            addInventoryNoteApi(inventoryId, content, author),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, inventoryId] });
         },
@@ -182,7 +183,7 @@ export const useAddInventoryNote = (inventoryId: number) => {
 export const useInventoryHistory = (id: number) => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY, id, 'history'],
-        queryFn: () => getInventoryHistoryMock(id),
+        queryFn: () => getInventoryHistory(id),
         staleTime: 1000 * 30,
         enabled: !!id,
     });
