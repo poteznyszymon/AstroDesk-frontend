@@ -124,7 +124,7 @@ function RouteComponent() {
   const activeTickets = useMemo(() => {
     if (!ticketsData?.tickets) return [];
     return ticketsData.tickets.filter(
-      (t) => t.linkedInventoryId === Number(id) && (t.status === 'open' || t.status === 'in-progress')
+      (t) => t.linkedInventoryId === Number(id) && (t.status === 'OTWARTE' || t.status === 'W_TRAKCIE')
     );
   }, [ticketsData, id]);
 
@@ -262,7 +262,7 @@ function RouteComponent() {
                     <Link
                       key={ticket.id}
                       to="/tickets/$id"
-                      params={{ id: ticket.id }}
+                      params={{ id: ticket.id.toString() }}
                       className="flex items-center justify-between rounded-lg border p-3 gap-3 hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex flex-col gap-1.5 min-w-0">

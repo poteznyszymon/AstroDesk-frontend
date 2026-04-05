@@ -74,14 +74,14 @@ export const getColumns = (adminView: boolean, inventory?: Inventory[]): ColumnD
       filterFn: 'equals',
     },
     {
-      accessorKey: "createdBy",
+      accessorKey: "author",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Zgloszone przez
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("createdBy")}</div>,
+      cell: ({ row }) => <div>{row.getValue("author")}</div>,
     },
     {
       accessorKey: "linkedInventoryId",

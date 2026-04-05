@@ -6,7 +6,7 @@ export const createTicketSchema = z.object({
   description: z.string().min(1, "Opis nie może być pusty"),
   priority: z.enum(ticketPriorities),
   assignee: z.string().optional(),
-  createdBy: z.string(),
+  author: z.string(),
   linkedInventoryId: z.number().nullable().optional(),
 });
 

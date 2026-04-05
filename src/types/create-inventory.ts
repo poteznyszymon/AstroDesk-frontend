@@ -7,8 +7,8 @@ export const createInventorySchema = z.object({
     ], { message: "Typ jest wymagany" }),
     serialNumber: z.string().min(1, "Numer seryjny jest wymagany"),
     status: z.enum([
-        "DO_WYDANIA", "WYDANE", "DOSTEPNE", "ZAJETE", "W_TRAKCIE", 
-        "CANCELLED", "PRZYJETY", "SERWIS", "UTYLIZACJA"
+        "DO_WYDANIA", "WYDANE", "DOSTEPNE", "ZAJETE", "W_TRAKCIE",
+        "ANULOWANE", "PRZYJETY", "SERWIS", "UTYLIZACJA"
     ], { message: "Status jest wymagany" }),
     model: z.string().nullable().optional(),
     boughtDate: z.string().nullable().optional(),

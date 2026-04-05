@@ -30,7 +30,7 @@ const statusLabels: Record<InventoryStatus, string> = {
   PRZYJETY: "Przyjęty",
   SERWIS: "W serwisie",
   UTYLIZACJA: "Utylizacja",
-  CANCELLED: "Anulowane",
+  ANULOWANE: "Anulowane",
 };
 
 interface DataTableToolbarProps<TData> {

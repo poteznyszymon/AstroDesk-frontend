@@ -1,19 +1,34 @@
 import { Clock, CheckCircle2, AlertCircle, Circle } from "lucide-react";
 
-export type TicketStatus = "open" | "in-progress" | "resolved" | "closed";
-export type TicketPriority = "low" | "medium" | "high" | "critical";
+export type TicketStatus =
+  | "OTWARTE"
+  | "W_TRAKCIE"
+  | "ROZWIAZANE"
+  | "ZAMKNIETE"
+  | "ANULOWANE"
+  | "OCZEKIWANIE_NA_AKCEPTACJE";
 
-export const ticketStatuses = ["open", "in-progress", "resolved", "closed"] as const;
-export const ticketPriorities = ["low", "medium", "high", "critical"] as const;
+export type TicketPriority = "LOW" | "MEDIUM" | "HIGH";
+
+export const ticketStatuses = [
+  "OTWARTE",
+  "W_TRAKCIE",
+  "ROZWIAZANE",
+  "ZAMKNIETE",
+  "ANULOWANE",
+  "OCZEKIWANIE_NA_AKCEPTACJE",
+] as const;
+
+export const ticketPriorities = ["LOW", "MEDIUM", "HIGH"] as const;
 
 export interface Ticket {
-  id: string;
+  id: number;
   title: string;
   description: string;
   status: TicketStatus;
   priority: TicketPriority;
   assignee: string | null;
-  createdBy: string;
+  author: string;
   createdAt: string;
   updatedAt: string | null;
   linkedInventoryId: number | null;
@@ -27,17 +42,18 @@ export const statusConfig: Record<
     icon: React.ElementType;
   }
 > = {
-  open: { label: "Otwarty", variant: "destructive", icon: AlertCircle },
-  "in-progress": { label: "W trakcie", variant: "default", icon: Clock },
-  resolved: { label: "Rozwiązany", variant: "secondary", icon: CheckCircle2 },
-  closed: { label: "Zamknięty", variant: "outline", icon: Circle },
+  OTWARTE: { label: "Otwarty", variant: "destructive", icon: AlertCircle },
+  W_TRAKCIE: { label: "W trakcie", variant: "default", icon: Clock },
+  ROZWIAZANE: { label: "Rozwiązany", variant: "secondary", icon: CheckCircle2 },
+  ZAMKNIETE: { label: "Zamknięty", variant: "outline", icon: Circle },
+  ANULOWANE: { label: "Anulowany", variant: "outline", icon: Circle },
+  OCZEKIWANIE_NA_AKCEPTACJE: { label: "Oczekuje", variant: "secondary", icon: Clock },
 };
 
 export const priorityConfig: Record<TicketPriority, { label: string; className: string }> = {
-  low: { label: "Niski", className: "bg-green-100 text-green-800" },
-  medium: { label: "Średni", className: "bg-yellow-100 text-yellow-800" },
-  high: { label: "Wysoki", className: "bg-orange-100 text-orange-800" },
-  critical: { label: "Krytyczny", className: "bg-red-100 text-red-800" },
+  LOW: { label: "Niski", className: "bg-green-100 text-green-800" },
+  MEDIUM: { label: "Średni", className: "bg-yellow-100 text-yellow-800" },
+  HIGH: { label: "Wysoki", className: "bg-orange-100 text-orange-800" },
 };
 
 export type AdminTicketSelectionType = "all" | "not-assigned" | "my-tasks" | "my-tickets";

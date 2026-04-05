@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createTicketMock, deleteTicketMock, getTicketByIdMock, getTicketsMock, updateTicketMock } from "./mock.tickets";
 import { getTicketHistoryMock } from "./mock.ticket-history";
+import { addTicketMessageMock, deleteTicketMessageMock, getTicketMessagesMock, updateTicketMessageMock } from "./mock.ticket-messages";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { Ticket } from "@/types/tickets";
@@ -20,7 +21,7 @@ export const useTickets = (currentUser?: string) => {
 export const useTicketById = (id: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [TICKETS_KEY, id],
-    queryFn: () => getTicketByIdMock(id),
+    queryFn: () => getTicketByIdMock(Number(id)),
     staleTime: 1000 * 30,
     enabled: !!id,
   });
@@ -29,7 +30,7 @@ export const useTicketById = (id: string) => {
 
 export const useDeleteTicket = () => {
   const { mutateAsync: deleteTicket, isPending: isLoading } = useMutation({
-    mutationFn: deleteTicketMock,
+    mutationFn: (id: number) => deleteTicketMock(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY] });
       toast.success("Ticket usunięty");
@@ -54,7 +55,7 @@ export const useCreateTicket = () => {
 
 export const useUpdateTicket = () => {
   const { mutateAsync: updateTicket, isPending: isLoading } = useMutation({
-    mutationFn: ({ id, ticket }: { id: string; ticket: Partial<Ticket> }) =>
+    mutationFn: ({ id, ticket }: { id: number; ticket: Partial<Ticket> }) =>
       updateTicketMock(id, ticket),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY] });
@@ -74,4 +75,49 @@ export const useTicketHistory = (id: string) => {
     enabled: !!id,
   });
   return { data, isLoading };
+};
+
+export const useTicketMessages = (id: string) => {
+  const { data, isLoading } = useQuery({
+    queryKey: [TICKETS_KEY, id, 'messages'],
+    queryFn: () => getTicketMessagesMock(id),
+    staleTime: 1000 * 30,
+    enabled: !!id,
+  });
+  return { data, isLoading };
+};
+
+export const useAddTicketMessage = (ticketId: string) => {
+  const { mutateAsync: addMessage, isPending: isLoading } = useMutation({
+    mutationFn: ({ content, author }: { content: string; author: string }) =>
+      addTicketMessageMock(ticketId, content, author),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TICKETS_KEY, ticketId, 'messages'] });
+    },
+    onError: () => toast.error("Błąd podczas wysyłania wiadomości"),
+  });
+  return { addMessage, isLoading };
+};
+
+export const useDeleteTicketMessage = (ticketId: string) => {
+  const { mutateAsync: deleteMessage, isPending: isLoading } = useMutation({
+    mutationFn: (messageId: string) => deleteTicketMessageMock(ticketId, messageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TICKETS_KEY, ticketId, 'messages'] });
+    },
+    onError: () => toast.error("Błąd podczas usuwania wiadomości"),
+  });
+  return { deleteMessage, isLoading };
+};
+
+export const useUpdateTicketMessage = (ticketId: string) => {
+  const { mutateAsync: updateMessage, isPending: isLoading } = useMutation({
+    mutationFn: ({ messageId, content }: { messageId: string; content: string }) =>
+      updateTicketMessageMock(ticketId, messageId, content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TICKETS_KEY, ticketId, 'messages'] });
+    },
+    onError: () => toast.error("Błąd podczas edytowania wiadomości"),
+  });
+  return { updateMessage, isLoading };
 };

@@ -39,8 +39,8 @@ const AddTicketDialog = ({ preselectedDevice, trigger, triggerClassName }: AddTi
         defaultValues: {
             title: "",
             description: "",
-            priority: "low",
-            createdBy: user?.name,
+            priority: "LOW",
+            author: user?.name,
             linkedInventoryId: preselectedDevice?.id ?? null,
         },
     });
@@ -50,8 +50,8 @@ const AddTicketDialog = ({ preselectedDevice, trigger, triggerClassName }: AddTi
         if (!next) form.reset({
             title: "",
             description: "",
-            priority: "low",
-            createdBy: user?.name,
+            priority: "LOW",
+            author: user?.name,
             linkedInventoryId: preselectedDevice?.id ?? null,
         });
     };
@@ -60,9 +60,9 @@ const AddTicketDialog = ({ preselectedDevice, trigger, triggerClassName }: AddTi
         const newTicket: Omit<Ticket, "id" | "createdAt"> = {
             title: values.title,
             description: values.description,
-            createdBy: user?.name || "",
+            author: user?.name || "",
             priority: values.priority,
-            status: 'open',
+            status: 'OTWARTE',
             updatedAt: null,
             assignee: null,
             linkedInventoryId: values.linkedInventoryId ?? null,

@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import EditTicketDialog from '@/components/tickets/edit-ticket-dialog';
 import { HistoryTimeline } from '@/components/shared/history-timeline';
+import { TicketMessages } from '@/components/tickets/ticket-messages';
 import { Spinner } from '@/components/ui/spinner';
 import { Trash2, Edit, User, Calendar, Clock, Monitor, Link } from 'lucide-react';
 
@@ -64,7 +65,7 @@ function RouteComponent() {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDelete = async () => {
-    await deleteTicket(id);
+    await deleteTicket(Number(id));
     setDeleteOpen(false);
     navigate({ to: '/tickets' });
   };
@@ -122,7 +123,6 @@ function RouteComponent() {
     <div className="space-y-8 p-2">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-mono text-muted-foreground">{data.id}</span>
           <h1 className="text-2xl font-bold text-foreground">{data.title}</h1>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant={status.variant} className="gap-1">
@@ -150,6 +150,7 @@ function RouteComponent() {
       <Tabs defaultValue="details">
         <TabsList>
           <TabsTrigger value="details">Szczegóły</TabsTrigger>
+          <TabsTrigger value="messages">Wiadomości</TabsTrigger>
           <TabsTrigger value="history">Historia</TabsTrigger>
         </TabsList>
 
@@ -163,7 +164,7 @@ function RouteComponent() {
             </Section>
 
             <Section title="Osoby">
-              <Field icon={<User className="w-4 h-4" />} label="Zgłoszone przez" value={data.createdBy} />
+              <Field icon={<User className="w-4 h-4" />} label="Zgłoszone przez" value={data.author} />
               <Field icon={<User className="w-4 h-4" />} label="Przypisane do" value={data.assignee} />
             </Section>
 
@@ -209,6 +210,10 @@ function RouteComponent() {
               {data.description || 'Brak opisu.'}
             </p>
           </div>
+        </TabsContent>
+
+        <TabsContent value="messages" className="mt-6">
+          <TicketMessages ticketId={id} />
         </TabsContent>
 
         <TabsContent value="history" className="mt-6 max-w-2xl">

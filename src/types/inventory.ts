@@ -12,7 +12,7 @@ export type InventoryStatus =
     | "DOSTEPNE"
     | "ZAJETE"
     | "W_TRAKCIE"
-    | "CANCELLED"
+    | "ANULOWANE"
     | "PRZYJETY"
     | "SERWIS"
     | "UTYLIZACJA";

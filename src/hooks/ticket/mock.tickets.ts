@@ -6,188 +6,188 @@ import type { HistoryEntry } from "@/types/history";
 let historyIdCounter = 1000;
 const nextHistoryId = () => `th-gen-${historyIdCounter++}`;
 
-function pushHistory(ticketId: string, entry: Omit<HistoryEntry, 'id'>) {
+function pushHistory(ticketId: number, entry: Omit<HistoryEntry, 'id'>) {
   if (!mockTicketHistory[ticketId]) mockTicketHistory[ticketId] = [];
   mockTicketHistory[ticketId].unshift({ ...entry, id: nextHistoryId() });
 }
 
 export const mockTickets: Ticket[] = [
   {
-    id: "TKT-001",
+    id: 1,
     title: "Błąd logowania do systemu",
     description: "Użytkownik nie może się zalogować do panelu administracyjnego.",
-    status: "open",
-    priority: "high",
+    status: "OTWARTE",
+    priority: "HIGH",
     assignee: "Jan Kowalski",
-    createdBy: "Jan Kowalski",
+    author: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-01",
     linkedInventoryId: 10,
   },
   {
-    id: "TKT-002",
+    id: 2,
     title: "Awaria drukarki w magazynie",
     description: "Drukarka Epson nie drukuje etykiet.",
-    status: "in-progress",
-    priority: "medium",
+    status: "W_TRAKCIE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Marek Dąbrowski",
+    author: "Marek Dąbrowski",
     createdAt: "2025-11-30",
     updatedAt: "2025-12-01",
     linkedInventoryId: 11,
   },
   {
-    id: "TKT-003",
+    id: 3,
     title: "Problem z połączeniem Wi-Fi",
     description: "Słaby sygnał Wi-Fi na drugim piętrze.",
-    status: "open",
-    priority: "critical",
+    status: "OTWARTE",
+    priority: "HIGH",
     assignee: null,
-    createdBy: "Jan Kowalski",
+    author: "Jan Kowalski",
     createdAt: "2025-11-29",
     updatedAt: "2025-12-01",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-004",
+    id: 4,
     title: "Aktualizacja systemu operacyjnego",
     description: "Wymagana aktualizacja Windows na komputerach w dziale HR.",
-    status: "resolved",
-    priority: "low",
+    status: "ROZWIAZANE",
+    priority: "LOW",
     assignee: "Jan Kowalski",
-    createdBy: "Anna Nowak",
+    author: "Anna Nowak",
     createdAt: "2025-11-28",
     updatedAt: "2025-11-30",
     linkedInventoryId: 9,
   },
   {
-    id: "TKT-005",
+    id: 5,
     title: "Brak dostępu do dysku sieciowego",
     description: "Pracownicy nie widzą udziału sieciowego na serwerze NAS.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Jan Kowalski",
+    author: "Jan Kowalski",
     createdAt: "2025-11-25",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-006",
+    id: 6,
     title: "Zgłoszenie nowego pracownika",
     description: "Potrzebne konto i dostęp do systemów dla nowego pracownika.",
-    status: "open",
-    priority: "medium",
+    status: "OTWARTE",
+    priority: "MEDIUM",
     assignee: "Katarzyna Zielińska",
-    createdBy: "Piotr Wiśniewski",
+    author: "Piotr Wiśniewski",
     createdAt: "2025-12-02",
     updatedAt: "2025-12-02",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-007",
+    id: 7,
     title: "Problem z aplikacją mobilną",
     description: "Aplikacja mobilna nie synchronizuje danych.",
-    status: "in-progress",
-    priority: "high",
+    status: "W_TRAKCIE",
+    priority: "HIGH",
     assignee: "Marek Dąbrowski",
-    createdBy: "Katarzyna Zielińska",
+    author: "Katarzyna Zielińska",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-008",
+    id: 8,
     title: "Awaria serwera poczty",
     description: "Brak możliwości wysyłania maili przez pracowników.",
-    status: "open",
-    priority: "critical",
+    status: "OTWARTE",
+    priority: "HIGH",
     assignee: "Piotr Wiśniewski",
-    createdBy: "Jan Kowalski",
+    author: "Jan Kowalski",
     createdAt: "2025-12-01",
     updatedAt: "2025-12-02",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-009",
+    id: 9,
     title: "Prośba o dostęp do VPN",
     description: "Pracownik zdalny potrzebuje dostępu do VPN.",
-    status: "resolved",
-    priority: "low",
+    status: "ROZWIAZANE",
+    priority: "LOW",
     assignee: "Jan Kowalski",
-    createdBy: "Michał Anioł",
+    author: "Michał Anioł",
     createdAt: "2025-11-27",
     updatedAt: "2025-11-28",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-010",
+    id: 10,
     title: "Problem z wydrukiem faktur",
     description: "Faktury nie drukują się poprawnie z systemu ERP.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Ewa Bema",
+    author: "Ewa Bema",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-011",
+    id: 11,
     title: "Problem z wydrukiem faktur (duplikat)",
     description: "Faktury nie drukują się poprawnie z systemu ERP.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Jan Kowalski",
+    author: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-012",
+    id: 12,
     title: "Problem z wydrukiem faktur (v3)",
     description: "Faktury nie drukują się poprawnie z systemu ERP.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Robert Lewandowski",
+    author: "Robert Lewandowski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-013",
+    id: 13,
     title: "Problem z wydrukiem faktur (v4)",
     description: "Faktury nie drukują się poprawnie z systemu ERP.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Tomasz Kot",
+    author: "Tomasz Kot",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-014",
+    id: 14,
     title: "Problem z wydrukiem faktur (v5)",
     description: "Faktury nie drukują się poprawnie z systemu ERP.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Jan Kowalski",
+    author: "Jan Kowalski",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
   },
   {
-    id: "TKT-015",
+    id: 15,
     title: "Problem z wydrukiem faktur (v6)",
     description: "Faktury nie drukują się poprawnie z systemu ERP.",
-    status: "closed",
-    priority: "medium",
+    status: "ZAMKNIETE",
+    priority: "MEDIUM",
     assignee: "Anna Nowak",
-    createdBy: "Krzysztof Ibisz",
+    author: "Krzysztof Ibisz",
     createdAt: "2025-11-26",
     updatedAt: "2025-11-27",
     linkedInventoryId: null,
@@ -196,7 +196,7 @@ export const mockTickets: Ticket[] = [
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export const getTicketByIdMock = async (id: string): Promise<Ticket> => {
+export const getTicketByIdMock = async (id: number): Promise<Ticket> => {
   await delay(400);
   const ticket = mockTickets.find(t => t.id === id);
   if (!ticket) throw new Error(`Ticket ${id} not found`);
@@ -210,7 +210,7 @@ export const getTicketsMock = async (
   return { tickets: [...mockTickets] };
 };
 
-export const deleteTicketMock = async (id: string) => {
+export const deleteTicketMock = async (id: number) => {
   await delay(1000);
   const idx = mockTickets.findIndex(t => t.id === id);
   if (idx === -1) throw new Error("Ticket not found");
@@ -222,7 +222,7 @@ export const createTicketMock = async (ticket: Omit<Ticket, "id" | "createdAt">)
   await delay(500);
   const newTicket: Ticket = {
     ...ticket,
-    id: `TKT-${String(mockTickets.length + 1).padStart(3, "0")}`,
+    id: mockTickets.reduce((max, t) => Math.max(max, t.id), 0) + 1,
     createdAt: new Date().toISOString().split("T")[0],
   };
   mockTickets.unshift(newTicket);
@@ -234,7 +234,7 @@ export const createTicketMock = async (ticket: Omit<Ticket, "id" | "createdAt">)
   return newTicket;
 };
 
-export const updateTicketMock = async (id: string, updates: Partial<Ticket>) => {
+export const updateTicketMock = async (id: number, updates: Partial<Ticket>) => {
   await delay(500);
   const idx = mockTickets.findIndex(t => t.id === id);
   if (idx === -1) throw new Error("Ticket not found");

@@ -20,7 +20,7 @@ const inventoryStatusLabels: Record<InventoryStatus, string> = {
   PRZYJETY: 'Przyjęty',
   SERWIS: 'W serwisie',
   UTYLIZACJA: 'Utylizacja',
-  CANCELLED: 'Anulowane',
+  ANULOWANE: 'Anulowane',
 };
 
 export type ExportFormat = 'xlsx' | 'csv';
@@ -43,7 +43,7 @@ export async function exportTickets(tickets: Ticket[], format: ExportFormat) {
     'Status': statusConfig[t.status].label,
     'Priorytet': priorityConfig[t.priority].label,
     'Przypisany do': t.assignee ?? '—',
-    'Zgłoszone przez': t.createdBy,
+    'Zgłoszone przez': t.author,
     'Data utworzenia': t.createdAt,
     'Ostatnia aktualizacja': t.updatedAt ?? '—',
     'ID urządzenia': t.linkedInventoryId ?? '—',

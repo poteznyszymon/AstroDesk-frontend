@@ -20,7 +20,7 @@ const TicketView = () => {
       const tickets = data?.tickets ?? [];
 
       if (!adminView) {
-        return tickets.filter((t) => t.createdBy === user?.name);
+        return tickets.filter((t) => t.author === user?.name);
       }
 
       switch (ticketsType) {
@@ -29,7 +29,7 @@ const TicketView = () => {
         case "my-tasks":
           return tickets.filter((t) => t.assignee === user?.name);
         case "my-tickets":
-          return tickets.filter((t) => t.createdBy === user?.name);
+          return tickets.filter((t) => t.author === user?.name);
         case "all":
         default:
           return tickets;

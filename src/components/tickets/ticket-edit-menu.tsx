@@ -14,7 +14,7 @@ const TicketEditMenu = ({ ticket, adminView }: { ticket: Ticket; adminView: bool
   const [activeDialog, setActiveDialog] = useState<"details" | "edit" | "delete" | null>(null);
   const { deleteTicket, isLoading } = useDeleteTicket()
 
-  const handleOnDelete = async (ticketId: string) => {
+  const handleOnDelete = async (ticketId: number) => {
     await deleteTicket(ticketId);
     setActiveDialog(null);
   }
@@ -133,7 +133,7 @@ const TicketEditMenu = ({ ticket, adminView }: { ticket: Ticket; adminView: bool
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Utworzony przez</p>
-                <p className="text-sm">{ticket.createdBy}</p>
+                <p className="text-sm">{ticket.author}</p>
               </div>
             </div>
 
