@@ -34,7 +34,7 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
     PRZYJETY: { label: "Przyjęty", variant: "default" },
     SERWIS: { label: "W serwisie", variant: "destructive" },
     UTYLIZACJA: { label: "Utylizacja", variant: "destructive" },
-    CANCELLED: { label: "Anulowane", variant: "destructive" },
+    ANULOWANE: { label: "Anulowane", variant: "destructive" },
   };
 
   const columns: ColumnDef<Inventory>[] = [

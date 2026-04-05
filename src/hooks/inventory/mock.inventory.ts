@@ -17,7 +17,7 @@ const statusLabels: Record<InventoryStatus, string> = {
     PRZYJETY: 'Przyjęty',
     SERWIS: 'W serwisie',
     UTYLIZACJA: 'Utylizacja',
-    CANCELLED: 'Anulowane',
+    ANULOWANE: 'Anulowane',
 };
 
 const editableFieldLabels: Partial<Record<keyof Inventory, string>> = {

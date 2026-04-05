@@ -28,7 +28,7 @@ const inventoryStatusLabels: Record<InventoryStatus, string> = {
     DOSTEPNE: "Dostępne",
     ZAJETE: "Zajęte",
     W_TRAKCIE: "W trakcie",
-    CANCELLED: "Anulowane",
+    ANULOWANE: "Anulowane",
     PRZYJETY: "Przyjęty",
     SERWIS: "W serwisie",
     UTYLIZACJA: "Utylizacja",
