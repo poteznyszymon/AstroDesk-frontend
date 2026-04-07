@@ -45,6 +45,10 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
     {
       accessorKey: "vendor",
       header: "Producent",
+      filterFn: (row, _, filterValue: string[]) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.original.vendor ?? "");
+      },
       cell: ({ row }) => {
         const vendor = row.getValue("vendor") as string | null;
         return vendor ? <span className="text-sm">{vendor}</span> : <span className="text-muted-foreground text-sm">Nieznany</span>;
@@ -88,6 +92,10 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
     {
       accessorKey: "isImported",
       header: "Status",
+      filterFn: (row, _, filterValue: string[]) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(String(row.original.isImported));
+      },
       cell: ({ row }) => {
         const imported = row.getValue("isImported") as boolean;
         return imported ? (
@@ -126,8 +134,6 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.macAddress)}>Kopiuj MAC</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.ipAddress)}>Kopiuj IP</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Pokaż historię</DropdownMenuItem>
               {!item.isImported && <DropdownMenuItem>Importuj do inwentaryzacji</DropdownMenuItem>}
