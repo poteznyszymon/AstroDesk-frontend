@@ -4,7 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import type { Table } from "@tanstack/react-table";
-import { useMe } from "@/hooks/auth/useAuth";
 import { useTickets } from "@/hooks/ticket/useTickets";
 import AddTicketDialog from "./add-ticket-dialog";
 import { ticketStatuses, ticketPriorities, statusConfig, priorityConfig, type TicketStatus, type TicketPriority } from "@/types/tickets";
@@ -23,22 +22,25 @@ interface DataTableToolbarProps<TData> {
 }
 
 export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
-  const { adminView } = useAdmin();
-  const { user } = useMe();
-  const { data, isLoading } = useTickets(user?.name);
+  const { isTicketAdmin: adminView } = useAdmin();
+  const { data, isLoading } = useTickets();
   const [exportOpen, setExportOpen] = useState(false);
   const filteredTickets = table.getFilteredRowModel().rows.map((r) => r.original as Ticket);
 
   const assignees = useMemo(() => {
-    const tickets = data?.tickets ?? [];
-    return [...new Set(tickets.map((t) => t.assignee).filter((a): a is string => a !== null))];
+    const tickets = data ?? [];
+    return [...new Map(
+      tickets
+        .filter((t) => t.assignee != null)
+        .map((t) => [t.assignee!.username, t.assignee!])
+    ).values()];
   }, [data]);
 
   const titleFilter = (table.getColumn("title")?.getFilterValue() as string) ?? "";
   const statusFilter = (table.getColumn("status")?.getFilterValue() as string) ?? "";
   const priorityFilter = (table.getColumn("priority")?.getFilterValue() as string) ?? "";
   const assigneeFilter = (table.getColumn("assignee")?.getFilterValue() as string) ?? "";
-  const dateRange = (table.getColumn("createdAt")?.getFilterValue() as DateRange | undefined);
+  const dateRange = (table.getColumn("date")?.getFilterValue() as DateRange | undefined);
   const linkedFilter = (table.getColumn("linkedInventoryId")?.getFilterValue() as boolean) === true;
 
   const isFiltered =
@@ -54,7 +56,7 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
     table.getColumn("status")?.setFilterValue("");
     table.getColumn("priority")?.setFilterValue("");
     table.getColumn("assignee")?.setFilterValue("");
-    table.getColumn("createdAt")?.setFilterValue(undefined);
+    table.getColumn("date")?.setFilterValue(undefined);
     table.getColumn("linkedInventoryId")?.setFilterValue(undefined);
   };
 
@@ -116,8 +118,8 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
           <SelectContent>
             <SelectItem value="ALL">Wszyscy</SelectItem>
             {assignees.map((a) => (
-              <SelectItem key={a} value={a}>
-                {a}
+              <SelectItem key={a.username} value={a.username}>
+                {`${a.firstName} ${a.lastName}`}
               </SelectItem>
             ))}
           </SelectContent>
@@ -150,7 +152,7 @@ export function TicketTableToolbar<TData>({ table }: DataTableToolbarProps<TData
             <Calendar
               mode="range"
               selected={dateRange}
-              onSelect={(range) => table.getColumn("createdAt")?.setFilterValue(range?.from ? range : undefined)}
+              onSelect={(range) => table.getColumn("date")?.setFilterValue(range?.from ? range : undefined)}
               numberOfMonths={2}
               locale={pl}
             />

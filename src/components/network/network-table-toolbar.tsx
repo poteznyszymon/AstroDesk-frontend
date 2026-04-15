@@ -28,7 +28,7 @@ interface DataTableToolbarProps<TData> {
 }
 
 export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
-  const { adminView } = useAdmin();
+  const { isInventoryAdmin: adminView } = useAdmin();
   const [searchField, setSearchField] = useState<SearchField>("hostname");
   const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);

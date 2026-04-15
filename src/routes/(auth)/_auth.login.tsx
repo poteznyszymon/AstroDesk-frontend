@@ -20,8 +20,8 @@ function RouteComponent() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "jankowalski@gmail.com",
-      password: "jankowalski",
+      username: "",
+      password: "",
     },
   });
 
@@ -36,12 +36,12 @@ function RouteComponent() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 ">
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Nazwa użytkownika</FormLabel>
                 <FormControl>
-                  <Input placeholder="Email" {...field} />
+                  <Input placeholder="Nazwa użytkownika" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

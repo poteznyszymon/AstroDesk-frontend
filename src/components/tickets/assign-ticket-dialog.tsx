@@ -3,26 +3,29 @@ import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogT
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
 import { UserPlus, Check, Search } from 'lucide-react'
-import { useAssignInventory } from '@/hooks/inventory/useInventory'
-import { useMe } from '@/hooks/auth/useAuth'
+import { useAssignTicket } from '@/hooks/ticket/useTickets'
 import { useUsers } from '@/hooks/user/useUsers'
+import { queryClient } from '@/main'
 import { cn } from '@/lib/utils'
 import type { User } from '@/types/user'
 import { Input } from '../ui/input'
 
-interface AssignEquipmentDialogProps {
-    id: number
+interface AssignTicketDialogProps {
+    ticketId: number
 }
 
-const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
+const AssignTicketDialog = ({ ticketId }: AssignTicketDialogProps) => {
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState('')
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const { assignInventory, isLoading } = useAssignInventory()
-    const { user } = useMe()
+    const { assign, isLoading } = useAssignTicket()
     const { data: users, isLoading: isUsersLoading } = useUsers()
 
-    const filtered = (users ?? []).filter((u) => {
+    const admins = (users ?? []).filter((u) =>
+        u.role === 'TICKET_ADMIN' || u.role === 'HEADADMIN'
+    )
+
+    const filtered = admins.filter((u) => {
         const q = search.toLowerCase()
         return (
             u.firstName.toLowerCase().includes(q) ||
@@ -32,18 +35,16 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
     })
 
     const handleAssign = async () => {
-        if (!selectedUser || !user) return
-        await assignInventory({
-            id,
-            assignedTo: `${selectedUser.firstName} ${selectedUser.lastName}`,
-            assignedBy: `${user.firstName} ${user.lastName}`,
-        })
+        if (!selectedUser) return
+        await assign({ ticketId, userId: selectedUser.userId })
         setOpen(false)
     }
 
     const handleOpenChange = (v: boolean) => {
         setOpen(v)
-        if (!v) {
+        if (v) {
+            queryClient.invalidateQueries({ queryKey: ['users'] })
+        } else {
             setSelectedUser(null)
             setSearch('')
         }
@@ -53,19 +54,19 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button size="sm" variant="outline" className="gap-2">
-                    <UserPlus className="w-4 h-4" /> Wydaj
+                    <UserPlus className="w-4 h-4" /> Przypisz
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-sm gap-4">
                 <DialogHeader>
-                    <DialogTitle>Wydaj sprzęt</DialogTitle>
+                    <DialogTitle>Przypisz opiekuna</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-3">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                         <Input
-                            placeholder="Szukaj użytkownika..."
+                            placeholder="Szukaj..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="pl-9"
@@ -84,10 +85,10 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
                             </p>
                         ) : (
                             filtered.map((u) => {
-                                const isSelected = selectedUser?.username === u.username
+                                const isSelected = selectedUser !== null && selectedUser.username === u.username
                                 return (
                                     <button
-                                        key={u.username}
+                                        key={u.userId}
                                         type="button"
                                         onClick={() => setSelectedUser(isSelected ? null : u)}
                                         className={cn(
@@ -124,7 +125,7 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
                         <Button type="button" variant="outline" size="sm">Anuluj</Button>
                     </DialogClose>
                     <Button size="sm" disabled={!selectedUser || isLoading} onClick={handleAssign}>
-                        Wydaj {isLoading && <Spinner />}
+                        Przypisz {isLoading && <Spinner />}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -132,4 +133,4 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
     )
 }
 
-export default AssignEquipmentDialog
+export default AssignTicketDialog

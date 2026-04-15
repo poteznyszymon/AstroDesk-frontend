@@ -1,17 +1,16 @@
 import ThemeIconButton from "@/components/theme/ThemeIconButton";
-import { getMeMock } from "@/hooks/auth/mock.auth";
+import { getMeApi } from "@/hooks/auth/api.auth";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(auth)/_auth")({
   component: RouteComponent,
   beforeLoad: async () => {
     try {
-      const user = await getMeMock();
+      const user = await getMeApi();
       if (user) {
         throw redirect({ to: "/" });
       }
-    } catch (e) {
-      if (e instanceof Response) throw e;
+    } catch {
     }
   },
 });

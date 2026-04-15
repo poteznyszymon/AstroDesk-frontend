@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useTicketById, useDeleteTicket, useTicketHistory } from '@/hooks/ticket/useTickets';
+import { useTicketById, useDeleteTicket, useTicketHistory, useAcceptTicket, useOpenTicket, useResolveTicket, useCloseTicket, useCancelTicket } from '@/hooks/ticket/useTickets';
 import { useInventoryById } from '@/hooks/inventory/useInventory';
 import { useAdmin } from '@/data/mock/admin-context';
 import { statusConfig, priorityConfig } from '@/types/tickets';
@@ -11,10 +11,11 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import EditTicketDialog from '@/components/tickets/edit-ticket-dialog';
+import AssignTicketDialog from '@/components/tickets/assign-ticket-dialog';
 import { HistoryTimeline } from '@/components/shared/history-timeline';
 import { TicketMessages } from '@/components/tickets/ticket-messages';
 import { Spinner } from '@/components/ui/spinner';
-import { Trash2, Edit, User, Calendar, Clock, Monitor, Link } from 'lucide-react';
+import { Trash2, Edit, User, Calendar, Monitor, Link, ArrowRight } from 'lucide-react';
 
 export const Route = createFileRoute('/(root)/_root/tickets/$id')({
   component: RouteComponent,
@@ -56,18 +57,44 @@ function FieldSkeleton() {
 function RouteComponent() {
   const { id } = Route.useParams();
   const { data, isLoading } = useTicketById(id);
-  const { adminView } = useAdmin();
+  const { isTicketAdmin: adminView } = useAdmin();
   const { data: linkedDevice, isLoading: isDeviceLoading } = useInventoryById(data?.linkedInventoryId ?? 0);
   const { deleteTicket, isLoading: isDeleting } = useDeleteTicket();
+  const { accept } = useAcceptTicket();
+  const { open } = useOpenTicket();
+  const { resolve } = useResolveTicket();
+  const { close } = useCloseTicket();
+  const { cancel } = useCancelTicket();
   const { data: history, isLoading: isHistoryLoading } = useTicketHistory(id);
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [statusPending, setStatusPending] = useState(false);
+
+  const MIN_DELAY = 800;
+
+  const withMinDelay = async (fn: () => Promise<unknown>) => {
+    setStatusPending(true);
+    const start = Date.now();
+    try {
+      await fn();
+    } finally {
+      const remaining = MIN_DELAY - (Date.now() - start);
+      if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+      setStatusPending(false);
+    }
+  };
 
   const handleDelete = async () => {
     await deleteTicket(Number(id));
     setDeleteOpen(false);
     navigate({ to: '/tickets' });
+  };
+
+  const handleCancel = async () => {
+    await withMinDelay(() => cancel(Number(id)));
+    setCancelOpen(false);
   };
 
   if (isLoading) {
@@ -119,6 +146,15 @@ function RouteComponent() {
   const priority = priorityConfig[data.priority];
   const StatusIcon = status.icon;
 
+  const nextStep: { label: string; action: (id: number) => Promise<unknown> } | null = {
+    OCZEKIWANIE_NA_AKCEPTACJE: { label: 'Zaakceptuj', action: accept   },
+    OTWARTE:                   { label: 'Rozpocznij', action: open     },
+    W_TRAKCIE:                 { label: 'Rozwiąż',    action: resolve  },
+    ROZWIAZANE:                { label: 'Zamknij',    action: close    },
+    ZAMKNIETE:                 null,
+    ANULOWANE:                 null,
+  }[data.status] ?? null;
+
   return (
     <div className="space-y-8 p-2">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -136,11 +172,39 @@ function RouteComponent() {
         </div>
 
         {adminView && (
-          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-            <Button size="sm" variant="outline" className="gap-2 flex-1 sm:flex-none" onClick={() => setEditOpen(true)}>
+          <div className="flex items-center gap-2 shrink-0">
+            {nextStep && (
+              <>
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  disabled={statusPending}
+                  onClick={() => withMinDelay(() => nextStep.action(data.ticketId))}
+                >
+                  <ArrowRight className="w-4 h-4" />
+                  {nextStep.label}
+                  {statusPending && <Spinner />}
+                </Button>
+                {data.status !== 'ROZWIAZANE' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                    disabled={statusPending}
+                    onClick={() => setCancelOpen(true)}
+                  >
+                    Anuluj zgłoszenie
+                  </Button>
+                )}
+              </>
+            )}
+            {data.status !== 'ZAMKNIETE' && data.status !== 'ANULOWANE' && (
+              <AssignTicketDialog ticketId={data.ticketId} />
+            )}
+            <Button size="sm" variant="outline" className="gap-2" onClick={() => setEditOpen(true)}>
               <Edit className="w-4 h-4" /> Edytuj
             </Button>
-            <Button size="sm" variant="destructive" className="gap-2 flex-1 sm:flex-none" onClick={() => setDeleteOpen(true)}>
+            <Button size="sm" variant="destructive" className="gap-2" onClick={() => setDeleteOpen(true)}>
               <Trash2 className="w-4 h-4" /> Usuń
             </Button>
           </div>
@@ -158,14 +222,11 @@ function RouteComponent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
             <Section title="Szczegóły">
               <Field icon={<Calendar className="w-4 h-4" />} label="Data utworzenia" value={data.createdAt} />
-              {data.updatedAt && (
-                <Field icon={<Clock className="w-4 h-4" />} label="Ostatnia aktualizacja" value={data.updatedAt} />
-              )}
             </Section>
 
             <Section title="Osoby">
-              <Field icon={<User className="w-4 h-4" />} label="Zgłoszone przez" value={data.author} />
-              <Field icon={<User className="w-4 h-4" />} label="Przypisane do" value={data.assignee} />
+              <Field icon={<User className="w-4 h-4" />} label="Zgłoszone przez" value={`${data.author.firstName} ${data.author.lastName}`} />
+              <Field icon={<User className="w-4 h-4" />} label="Przypisane do" value={data.assignee ? `${data.assignee.firstName} ${data.assignee.lastName}` : undefined} />
             </Section>
 
             {data.linkedInventoryId && (
@@ -226,6 +287,27 @@ function RouteComponent() {
         open={editOpen}
         onOpenChange={(open) => !open && setEditOpen(false)}
       />
+
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Anuluj zgłoszenie</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Czy na pewno chcesz anulować{' '}
+            <span className="font-medium text-foreground">{data.title}</span>?
+          </p>
+          <DialogFooter>
+            <Button variant="outline" size="sm" disabled={statusPending} onClick={() => setCancelOpen(false)}>
+              Wróć
+            </Button>
+            <Button variant="destructive" size="sm" disabled={statusPending} onClick={handleCancel}>
+              Anuluj zgłoszenie
+              {statusPending && <Spinner />}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="max-w-sm">

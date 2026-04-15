@@ -36,7 +36,7 @@ interface DataTableToolbarProps<TData> {
 }
 
 export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
-  const { adminView } = useAdmin();
+  const { isInventoryAdmin: adminView } = useAdmin();
   const { data, isLoading } = useInventory();
   const [exportOpen, setExportOpen] = useState(false);
   const filteredItems = table.getFilteredRowModel().rows.map((r) => r.original as Inventory);

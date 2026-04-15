@@ -11,30 +11,31 @@ import { useInventory } from "@/hooks/inventory/useInventory";
 
 const TicketView = () => {
   const [ticketsType, setTicketsType] = useState<AdminTicketSelectionType>("all");
-  const { adminView } = useAdmin();
+  const { isTicketAdmin: adminView } = useAdmin();
   const { user } = useMe();
-  const { data, isLoading } = useTickets(user?.name);
+  const { data, isLoading } = useTickets();
   const { data: inventory } = useInventory();
   const columns = getColumns(adminView, inventory);
+
   const filteredData = useMemo(() => {
-      const tickets = data?.tickets ?? [];
+    const tickets = data ?? [];
 
-      if (!adminView) {
-        return tickets.filter((t) => t.author === user?.name);
-      }
+    if (!adminView) {
+      return tickets.filter((t) => t.author.username === user?.username);
+    }
 
-      switch (ticketsType) {
-        case "not-assigned":
-          return tickets.filter((t) => !t.assignee);
-        case "my-tasks":
-          return tickets.filter((t) => t.assignee === user?.name);
-        case "my-tickets":
-          return tickets.filter((t) => t.author === user?.name);
-        case "all":
-        default:
-          return tickets;
-      }
-    }, [ticketsType, data, user?.name, adminView]);
+    switch (ticketsType) {
+      case "not-assigned":
+        return tickets.filter((t) => !t.assignee);
+      case "my-tasks":
+        return tickets.filter((t) => t.assignee?.username === user?.username);
+      case "my-tickets":
+        return tickets.filter((t) => t.author.username === user?.username);
+      case "all":
+      default:
+        return tickets;
+    }
+  }, [ticketsType, data, user, adminView]);
 
   return (
     <div className="w-full flex flex-col gap-2 xs:gap-4">
@@ -48,7 +49,7 @@ const TicketView = () => {
         columns={columns}
         data={filteredData}
         toolbar={TicketTableToolbar}
-        getRowHref={(row) => `/tickets/${row.id}`}
+        getRowHref={(row) => `/tickets/${row.ticketId}`}
         isLoading={isLoading}
       />
     </div>

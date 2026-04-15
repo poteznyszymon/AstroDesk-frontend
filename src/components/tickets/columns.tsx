@@ -70,18 +70,28 @@ export const getColumns = (adminView: boolean, inventory?: Inventory[]): ColumnD
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("assignee")}</div>,
-      filterFn: 'equals',
+      cell: ({ row }) => {
+        const assignee = row.original.assignee;
+        return <div>{assignee ? `${assignee.firstName} ${assignee.lastName}` : '—'}</div>;
+      },
+      filterFn: (row, _, filterValue: string) => {
+        if (!filterValue) return true;
+        const a = row.original.assignee;
+        return a ? a.username === filterValue : false;
+      },
     },
     {
       accessorKey: "author",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Zgloszone przez
+          Zgłoszone przez
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("author")}</div>,
+      cell: ({ row }) => {
+        const author = row.original.author;
+        return <div>{`${author.firstName} ${author.lastName}`}</div>;
+      },
     },
     {
       accessorKey: "linkedInventoryId",
@@ -103,14 +113,14 @@ export const getColumns = (adminView: boolean, inventory?: Inventory[]): ColumnD
       },
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "date",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="-ml-4">
           Data utworzenia
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
+      cell: ({ row }) => <div>{row.getValue("date")}</div>,
       filterFn: (row, columnId, filterValue: { from?: Date; to?: Date }) => {
         if (!filterValue?.from && !filterValue?.to) return true;
         const date = new Date(row.getValue(columnId) as string);

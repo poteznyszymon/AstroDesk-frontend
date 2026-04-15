@@ -21,11 +21,9 @@ const inventoryTypeLabels: Record<InventoryItemType, string> = {
     TELEFON: "Telefon",
 };
 
-const inventoryStatusLabels: Record<InventoryStatus, string> = {
+const inventoryStatusLabels: Partial<Record<InventoryStatus, string>> = {
     DOSTEPNE: "Dostępne",
     DO_WYDANIA: "Do wydania",
-    WYDANE: "Wydane",
-    WYPORZYCZONE: "Wypożyczone",
     W_TRAKCIE: "W trakcie",
     SERWIS: "W serwisie",
     UTYLIZACJA: "Utylizacja",
@@ -48,16 +46,11 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
             serialNumber: "",
             status: "DOSTEPNE",
             location: "",
-            assignedTo: "",
-            assignedDate: "",
             model: "",
             boughtDate: "",
             invoiceNumber: "",
         },
     });
-
-    const watchedStatus = form.watch("status");
-    const isAssigned = watchedStatus === "WYDANE" || watchedStatus === "WYPORZYCZONE";
 
     const handleCreate = async (values: CreateInventorySchema) => {
         const payload: CreateInventoryPayload = {
@@ -70,8 +63,8 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
             price: values.price ?? null,
             invoiceNumber: values.invoiceNumber || null,
             location: values.location || null,
-            assignedTo: isAssigned && values.assignedTo ? values.assignedTo : null,
-            assignedDate: isAssigned && values.assignedDate ? values.assignedDate : null,
+            assignedTo: null,
+            assignedDate: null,
         };
 
         await createInventory(payload);
@@ -147,7 +140,7 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
                                             <SelectContent>
                                                 {(Object.keys(inventoryStatusLabels) as InventoryStatus[]).map((status) => (
                                                     <SelectItem key={status} value={status}>
-                                                        {inventoryStatusLabels[status]}
+                                                        {inventoryStatusLabels[status]!}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -187,38 +180,6 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
                                 )}
                             />
                         </div>
-
-                        {isAssigned && (
-                            <div className="grid grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="assignedTo"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Przypisany do</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="np. Jan Kowalski" {...field} value={field.value || ''} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="assignedDate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Data przypisania</FormLabel>
-                                            <FormControl>
-                                                <Input type="date" {...field} value={field.value || ''} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        )}
 
                         <DialogFooter>
                             <DialogClose asChild>

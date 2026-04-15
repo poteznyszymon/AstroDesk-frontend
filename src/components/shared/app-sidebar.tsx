@@ -19,14 +19,11 @@ import logo from "@/astrodesk.jpg";
 import { menuItems } from "@/data/app-links";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Switch } from "../ui/switch";
-import { useAdmin } from "@/data/mock/admin-context";
 import { useLogout, useMe } from "@/hooks/auth/useAuth";
 
 export const AppSidebar = () => {
   const { location } = useRouterState();
   const { toggleSidebar, isMobile } = useSidebar();
-  const { adminView, toggleAdminView } = useAdmin();
   const { logout } = useLogout();
   const { user } = useMe();
 
@@ -71,10 +68,10 @@ export const AppSidebar = () => {
                 <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={""} alt={"user avatar"} />
-                    <AvatarFallback className="rounded-lg border">{user?.name.slice(0,2).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="rounded-lg border">{user ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : ""}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user?.name}</span>
+                    <span className="truncate font-medium">{user ? `${user.firstName} ${user.lastName}` : ""}</span>
                     <span className="truncate text-xs">{user?.email}</span>
                   </div>
                 </SidebarMenuButton>
@@ -85,18 +82,18 @@ export const AppSidebar = () => {
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage src={""} alt={"user avatar"} />
-                        <AvatarFallback className="rounded-lg border">{user?.name.slice(0,2).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="rounded-lg border">{user ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : ""}</AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">{user?.name}</span>
+                        <span className="truncate font-medium">{user ? `${user.firstName} ${user.lastName}` : ""}</span>
                         <span className="truncate text-xs">{user?.email}</span>
                       </div>
                     </div>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup className="flex items-center justify-between p-1 text-xs">
-                  Set admin view <Switch checked={adminView} onCheckedChange={toggleAdminView} />
+                <DropdownMenuGroup className="p-1 text-xs text-muted-foreground">
+                  {user?.role ?? "USER"}
                 </DropdownMenuGroup>
                 <DropdownMenuGroup>
                   <DropdownMenuItem

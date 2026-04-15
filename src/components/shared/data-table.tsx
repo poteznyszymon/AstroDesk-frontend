@@ -25,10 +25,11 @@ interface DataTableProps<TData, TValue> {
   getRowHref?: (row: TData) => string;
   isLoading: boolean;
   initialColumnVisibility?: VisibilityState;
+  initialSorting?: SortingState;
 }
 
-export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, getRowHref, isLoading, initialColumnVisibility }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, getRowHref, isLoading, initialColumnVisibility, initialSorting }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility ?? {});
   const [rowSelection, setRowSelection] = useState({});

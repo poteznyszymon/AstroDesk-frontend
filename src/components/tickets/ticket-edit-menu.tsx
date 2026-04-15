@@ -16,6 +16,7 @@ const TicketEditMenu = ({ ticket, adminView }: { ticket: Ticket; adminView: bool
 
   const handleOnDelete = async (ticketId: number) => {
     await deleteTicket(ticketId);
+
     setActiveDialog(null);
   }
 
@@ -63,10 +64,7 @@ const TicketEditMenu = ({ ticket, adminView }: { ticket: Ticket; adminView: bool
             <Button variant="outline" size={"sm"} onClick={() => setActiveDialog(null)}>
               Anuluj
             </Button>
-            <Button variant="destructive" size={"sm"} disabled={isLoading} onClick={() => {
-              handleOnDelete(ticket.id);
-              
-            }}>
+            <Button variant="destructive" size={"sm"} disabled={isLoading} onClick={() => handleOnDelete(ticket.ticketId)}>
               Usuń
               {isLoading && <Spinner />}
             </Button>
@@ -129,25 +127,19 @@ const TicketEditMenu = ({ ticket, adminView }: { ticket: Ticket; adminView: bool
             <div className="flex gap-6 items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Przypisany do</p>
-                <p className="text-sm">{ticket.assignee ?? <span className="italic text-muted-foreground">Brak</span>}</p>
+                <p className="text-sm">{ticket.assignee ? `${ticket.assignee.firstName} ${ticket.assignee.lastName}` : <span className="italic text-muted-foreground">Brak</span>}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Utworzony przez</p>
-                <p className="text-sm">{ticket.author}</p>
+                <p className="text-sm">{`${ticket.author.firstName} ${ticket.author.lastName}`}</p>
               </div>
             </div>
 
             <div className="flex gap-6 items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Data utworzenia</p>
-                <p className="text-sm">{new Date(ticket.createdAt).toLocaleString("pl-PL")}</p>
+                <p className="text-sm">{ticket.createdAt}</p>
               </div>
-              {ticket.updatedAt && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">Ostatnia aktualizacja</p>
-                  <p className="text-sm">{new Date(ticket.updatedAt).toLocaleString("pl-PL")}</p>
-                </div>
-              )}
             </div>
 
           </div>

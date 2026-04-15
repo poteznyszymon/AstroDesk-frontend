@@ -96,9 +96,9 @@ export function TicketMessages({ ticketId }: TicketMessagesProps) {
 
   const handleSend = async () => {
     const trimmed = content.trim();
-    if (!trimmed || !user?.name) return;
+    if (!trimmed || !user) return;
     setContent('');
-    await addMessage({ content: trimmed, author: user.name });
+    await addMessage({ content: trimmed, author: `${user.firstName} ${user.lastName}` });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -148,7 +148,7 @@ export function TicketMessages({ ticketId }: TicketMessagesProps) {
               <MessageBubble
                 key={msg.id}
                 msg={msg}
-                isOwn={msg.author === user?.name}
+                isOwn={msg.author === (user ? `${user.firstName} ${user.lastName}` : undefined)}
                 onDeleteRequest={setDeleteTarget}
                 onEditRequest={openEdit}
               />

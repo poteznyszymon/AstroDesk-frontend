@@ -12,12 +12,10 @@ const statusLabels: Record<InventoryStatus, string> = {
     DOSTEPNE: 'Dostępne',
     DO_WYDANIA: 'Do wydania',
     WYDANE: 'Wydane',
-    ZAJETE: 'Zajęte',
+    WYPORZYCZONE: 'Wypożyczone',
     W_TRAKCIE: 'W trakcie',
-    PRZYJETY: 'Przyjęty',
     SERWIS: 'W serwisie',
     UTYLIZACJA: 'Utylizacja',
-    ANULOWANE: 'Anulowane',
 };
 
 const editableFieldLabels: Partial<Record<keyof Inventory, string>> = {
@@ -127,7 +125,7 @@ export const mockInventory: Inventory[] = [
         assignedTo: null,
         assignedBy: null,
         assignedDate: null,
-        status: "ZAJETE",
+        status: "DOSTEPNE",
         author: "admin",
         notes: [],
     },
@@ -286,7 +284,7 @@ export const mockInventory: Inventory[] = [
         assignedTo: null,
         assignedBy: null,
         assignedDate: null,
-        status: "PRZYJETY",
+        status: "DO_WYDANIA",
         author: "admin",
         notes: [
             { id: 7, content: "Przyjęty na stan, czeka na konfigurację.", author: "admin", createdAt: "2023-08-22T13:00:00Z" },

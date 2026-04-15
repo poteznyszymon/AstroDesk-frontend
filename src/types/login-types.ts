@@ -1,6 +1,6 @@
 import z from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().min(1, "Email nie może być pusty").email("Zły format email"),
+  username: z.string().min(1, "Nazwa użytkownika nie może być pusta"),
   password: z.string().min(1, "Hasło nie może być puste"),
 });

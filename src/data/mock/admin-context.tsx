@@ -1,39 +1,27 @@
-import { createContext, useState, useContext, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
+import { useMe } from "@/hooks/auth/useAuth";
 
 interface AdminContextType {
-  adminView: boolean;
-  toggleAdminView: () => void;
-  setAdminView: (value: boolean) => void;
+  isTicketAdmin: boolean;
+  isInventoryAdmin: boolean;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
-interface AdminProviderProps {
-  children: ReactNode;
-}
+export const AdminProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useMe();
 
-export const AdminProvider = ({ children }: AdminProviderProps) => {
-  const [adminView, setAdminView] = useState<boolean>(true);
+  const isTicketAdmin = user?.role === "TICKET_ADMIN" || user?.role === "HEADADMIN";
+  const isInventoryAdmin = user?.role === "ASSET_ADMIN" || user?.role === "HEADADMIN";
 
-  const toggleAdminView = () => {
-    setAdminView((prev) => !prev);
-  };
-
-  const value: AdminContextType = {
-    adminView,
-    toggleAdminView,
-    setAdminView,
-  };
-
-  return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
+  return (
+    <AdminContext.Provider value={{ isTicketAdmin, isInventoryAdmin }}>
+      {children}
+    </AdminContext.Provider>
+  );
 };
 
 export const useAdmin = (): AdminContextType => {
   const context = useContext(AdminContext);
-
-  if (context === undefined) {
-    throw new Error("useAdmin must be used within an AdminProvider");
-  }
-
-  return context;
+  return context ?? { isTicketAdmin: false, isInventoryAdmin: false };
 };

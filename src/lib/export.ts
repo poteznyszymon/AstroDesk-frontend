@@ -35,15 +35,14 @@ async function writeFile(rows: Record<string, unknown>[], sheetName: string, fil
 
 export async function exportTickets(tickets: Ticket[], format: ExportFormat) {
   const rows = tickets.map((t) => ({
-    'ID': t.id,
+    'ID': t.ticketId,
     'Tytuł': t.title,
     'Opis': t.description,
     'Status': statusConfig[t.status].label,
     'Priorytet': priorityConfig[t.priority].label,
-    'Przypisany do': t.assignee ?? '—',
-    'Zgłoszone przez': t.author,
+    'Przypisany do': t.assignee ? `${t.assignee.firstName} ${t.assignee.lastName}` : '—',
+    'Zgłoszone przez': `${t.author.firstName} ${t.author.lastName}`,
     'Data utworzenia': t.createdAt,
-    'Ostatnia aktualizacja': t.updatedAt ?? '—',
     'ID urządzenia': t.linkedInventoryId ?? '—',
   }));
   await writeFile(rows, 'Zgłoszenia', `zgłoszenia_${today()}`, format);

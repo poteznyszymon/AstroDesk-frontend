@@ -1,4 +1,5 @@
 import { Clock, CheckCircle2, AlertCircle, Circle } from "lucide-react";
+import type { User } from "@/types/user";
 
 export type TicketStatus =
   | "OTWARTE"
@@ -22,16 +23,16 @@ export const ticketStatuses = [
 export const ticketPriorities = ["LOW", "MEDIUM", "HIGH"] as const;
 
 export interface Ticket {
-  id: number;
+  ticketId: number;
   title: string;
   description: string;
   status: TicketStatus;
   priority: TicketPriority;
-  assignee: string | null;
-  author: string;
+  author: User;
   createdAt: string;
-  updatedAt: string | null;
-  linkedInventoryId: number | null;
+  updatedAt: string;
+  assignee?: User | null;
+  linkedInventoryId?: number | null;
 }
 
 export const statusConfig: Record<

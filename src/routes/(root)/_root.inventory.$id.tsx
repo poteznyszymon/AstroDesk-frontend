@@ -110,7 +110,7 @@ function getInitials(name: string) {
 function RouteComponent() {
   const { id } = Route.useParams();
   const { data, isLoading } = useInventoryById(Number(id));
-  const { adminView } = useAdmin();
+  const { isInventoryAdmin: adminView } = useAdmin();
   const { user } = useMe();
   const { addNote, isLoading: isSending } = useAddInventoryNote(Number(id));
   const { deleteNote } = useDeleteInventoryNote(Number(id));
@@ -123,9 +123,9 @@ function RouteComponent() {
   const NOTES_PER_PAGE = 3;
 
   const activeTickets = useMemo(() => {
-    if (!ticketsData?.tickets) return [];
-    return ticketsData.tickets.filter(
-      (t) => t.linkedInventoryId === Number(id) && (t.status === 'OTWARTE' || t.status === 'W_TRAKCIE')
+    return (ticketsData ?? []).filter(
+      (t) => t.linkedInventoryId === Number(id) &&
+        (t.status === 'OTWARTE' || t.status === 'W_TRAKCIE' || t.status === 'OCZEKIWANIE_NA_AKCEPTACJE')
     );
   }, [ticketsData, id]);
 
@@ -269,9 +269,9 @@ function RouteComponent() {
                   const StatusIcon = status.icon;
                   return (
                     <Link
-                      key={ticket.id}
+                      key={ticket.ticketId}
                       to="/tickets/$id"
-                      params={{ id: ticket.id.toString() }}
+                      params={{ id: ticket.ticketId.toString() }}
                       className="flex items-center justify-between rounded-lg border p-3 gap-3 hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex flex-col gap-1.5 min-w-0">
@@ -287,7 +287,7 @@ function RouteComponent() {
                             {priority.label}
                           </span>
                           {ticket.assignee && (
-                            <span className="text-xs text-muted-foreground truncate">{ticket.assignee}</span>
+                            <span className="text-xs text-muted-foreground truncate">{`${ticket.assignee.firstName} ${ticket.assignee.lastName}`}</span>
                           )}
                         </div>
                       </div>
@@ -319,7 +319,7 @@ function RouteComponent() {
                     if (e.key === 'Enter') {
                       e.preventDefault();
                       if (noteContent.trim() && user) {
-                        addNote({ content: noteContent.trim(), author: user.name }).then(() => {
+                        addNote({ content: noteContent.trim(), author: `${user.firstName} ${user.lastName}` }).then(() => {
                           setNoteContent('');
                           setNotesPage(0);
                         });
@@ -333,7 +333,7 @@ function RouteComponent() {
                   disabled={!noteContent.trim() || isSending}
                   onClick={() => {
                     if (noteContent.trim() && user) {
-                      addNote({ content: noteContent.trim(), author: user.name }).then(() => {
+                      addNote({ content: noteContent.trim(), author: `${user.firstName} ${user.lastName}` }).then(() => {
                         setNoteContent('');
                         setNotesPage(0);
                       });
@@ -371,7 +371,7 @@ function RouteComponent() {
                               })}
                             </span>
                           </div>
-                          {(adminView || note.author === user?.name) && (
+                          {(adminView || note.author === (user ? `${user.firstName} ${user.lastName}` : undefined)) && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <button

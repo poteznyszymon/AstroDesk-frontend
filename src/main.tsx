@@ -9,7 +9,6 @@ import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { ThemeProvider } from "./components/theme/theme-provider.tsx";
 import { SidebarProvider } from "./components/ui/sidebar.tsx";
-import { AdminProvider } from "./data/mock/admin-context.tsx";
 
 import {
   QueryClient,
@@ -44,11 +43,9 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <AdminProvider>
-            <SidebarProvider>
-              <RouterProvider router={router} />
-            </SidebarProvider>
-          </AdminProvider>
+          <SidebarProvider>
+            <RouterProvider router={router} />
+          </SidebarProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </StrictMode>,
