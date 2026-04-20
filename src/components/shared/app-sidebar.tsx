@@ -20,6 +20,17 @@ import { menuItems } from "@/data/app-links";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useLogout, useMe } from "@/hooks/auth/useAuth";
+import type { UserRole } from "@/types/user";
+
+const roleLabel = (role: UserRole) => {
+  const labels: Record<UserRole, string> = {
+    USER: "Użytkownik",
+    TICKET_ADMIN: "Admin ticketów",
+    ASSET_ADMIN: "Admin sprzętu",
+    HEADADMIN: "Główny admin",
+  };
+  return labels[role];
+};
 
 export const AppSidebar = () => {
   const { location } = useRouterState();
@@ -93,7 +104,7 @@ export const AppSidebar = () => {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup className="p-1 text-xs text-muted-foreground">
-                  {user?.role ?? "USER"}
+                  {roleLabel(user?.role ?? "USER")}
                 </DropdownMenuGroup>
                 <DropdownMenuGroup>
                   <DropdownMenuItem

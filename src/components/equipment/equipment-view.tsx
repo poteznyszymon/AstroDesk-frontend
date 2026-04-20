@@ -16,7 +16,7 @@ const AdminEquipmentView = () => {
       const equipment = data ?? [];
 
       const result = !adminView
-        ? equipment.filter((e) => e.assignedTo == (user ? `${user.firstName} ${user.lastName}` : undefined))
+        ? equipment.filter((e) => e.assignedTo?.username === user?.username)
         : equipment;
 
       return [...result].sort((a, b) => b.id - a.id);

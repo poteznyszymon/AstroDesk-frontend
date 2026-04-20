@@ -7,8 +7,18 @@ import { useAssignTicket } from '@/hooks/ticket/useTickets'
 import { useUsers } from '@/hooks/user/useUsers'
 import { queryClient } from '@/main'
 import { cn } from '@/lib/utils'
-import type { User } from '@/types/user'
+import type { User, UserRole } from '@/types/user'
 import { Input } from '../ui/input'
+
+const roleLabel = (role: UserRole) => {
+    const labels: Record<UserRole, string> = {
+        USER: 'Użytkownik',
+        TICKET_ADMIN: 'Admin ticketów',
+        ASSET_ADMIN: 'Admin sprzętu',
+        HEADADMIN: 'Główny admin',
+    }
+    return labels[role]
+}
 
 interface AssignTicketDialogProps {
     ticketId: number
@@ -107,12 +117,13 @@ const AssignTicketDialog = ({ ticketId }: AssignTicketDialogProps) => {
                                                 ? <Check className="w-3.5 h-3.5" />
                                                 : `${u.firstName[0]}${u.lastName[0]}`}
                                         </div>
-                                        <div className="flex flex-col min-w-0">
+                                        <div className="flex flex-col min-w-0 flex-1">
                                             <span className="text-sm font-medium leading-tight">
                                                 {u.firstName} {u.lastName}
                                             </span>
                                             <span className="text-xs text-muted-foreground truncate">{u.email}</span>
                                         </div>
+                                        <span className="text-xs text-muted-foreground/70 shrink-0">{roleLabel(u.role)}</span>
                                     </button>
                                 )
                             })

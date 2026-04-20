@@ -48,7 +48,7 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
 
   const assignees = useMemo(() => {
     const inventory = data ?? [];
-    return [...new Set(inventory.map((i) => i.assignedTo).filter((a): a is string => !!a))].sort();
+    return [...new Set(inventory.map((i) => i.assignedTo ? `${i.assignedTo.firstName} ${i.assignedTo.lastName}` : null).filter((a): a is string => !!a))].sort();
   }, [data]);
 
   const nameFilter = (table.getColumn("name")?.getFilterValue() as string) ?? "";

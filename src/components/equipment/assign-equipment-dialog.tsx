@@ -7,8 +7,18 @@ import { useAssignInventory } from '@/hooks/inventory/useInventory'
 import { useMe } from '@/hooks/auth/useAuth'
 import { useUsers } from '@/hooks/user/useUsers'
 import { cn } from '@/lib/utils'
-import type { User } from '@/types/user'
+import type { User, UserRole } from '@/types/user'
 import { Input } from '../ui/input'
+
+const roleLabel = (role: UserRole) => {
+    const labels: Record<UserRole, string> = {
+        USER: 'Użytkownik',
+        TICKET_ADMIN: 'Admin ticketów',
+        ASSET_ADMIN: 'Admin sprzętu',
+        HEADADMIN: 'Główny admin',
+    }
+    return labels[role]
+}
 
 interface AssignEquipmentDialogProps {
     id: number
@@ -35,8 +45,8 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
         if (!selectedUser || !user) return
         await assignInventory({
             id,
-            assignedTo: `${selectedUser.firstName} ${selectedUser.lastName}`,
-            assignedBy: `${user.firstName} ${user.lastName}`,
+            assignedTo: selectedUser.username,
+            assignedBy: user.username,
         })
         setOpen(false)
     }
@@ -106,12 +116,13 @@ const AssignEquipmentDialog = ({ id }: AssignEquipmentDialogProps) => {
                                                 ? <Check className="w-3.5 h-3.5" />
                                                 : `${u.firstName[0]}${u.lastName[0]}`}
                                         </div>
-                                        <div className="flex flex-col min-w-0">
+                                        <div className="flex flex-col min-w-0 flex-1">
                                             <span className="text-sm font-medium leading-tight">
                                                 {u.firstName} {u.lastName}
                                             </span>
                                             <span className="text-xs text-muted-foreground truncate">{u.email}</span>
                                         </div>
+                                        <span className="text-xs text-muted-foreground/70 shrink-0">{roleLabel(u.role)}</span>
                                     </button>
                                 )
                             })

@@ -60,31 +60,17 @@ function RouteComponent() {
   const { isTicketAdmin: adminView } = useAdmin();
   const { data: linkedDevice, isLoading: isDeviceLoading } = useInventoryById(data?.linkedInventoryId ?? 0);
   const { deleteTicket, isLoading: isDeleting } = useDeleteTicket();
-  const { accept } = useAcceptTicket();
-  const { open } = useOpenTicket();
-  const { resolve } = useResolveTicket();
-  const { close } = useCloseTicket();
-  const { cancel } = useCancelTicket();
+  const { accept, isLoading: isAccepting } = useAcceptTicket();
+  const { open, isLoading: isOpening } = useOpenTicket();
+  const { resolve, isLoading: isResolving } = useResolveTicket();
+  const { close, isLoading: isClosing } = useCloseTicket();
+  const { cancel, isLoading: isCancelling } = useCancelTicket();
   const { data: history, isLoading: isHistoryLoading } = useTicketHistory(id);
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [statusPending, setStatusPending] = useState(false);
-
-  const MIN_DELAY = 800;
-
-  const withMinDelay = async (fn: () => Promise<unknown>) => {
-    setStatusPending(true);
-    const start = Date.now();
-    try {
-      await fn();
-    } finally {
-      const remaining = MIN_DELAY - (Date.now() - start);
-      if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
-      setStatusPending(false);
-    }
-  };
+  const statusPending = isAccepting || isOpening || isResolving || isClosing || isCancelling;
 
   const handleDelete = async () => {
     await deleteTicket(Number(id));
@@ -93,7 +79,7 @@ function RouteComponent() {
   };
 
   const handleCancel = async () => {
-    await withMinDelay(() => cancel(Number(id)));
+    await cancel(Number(id));
     setCancelOpen(false);
   };
 
@@ -179,11 +165,11 @@ function RouteComponent() {
                   size="sm"
                   className="gap-2"
                   disabled={statusPending}
-                  onClick={() => withMinDelay(() => nextStep.action(data.ticketId))}
+                  onClick={() => nextStep.action(data.ticketId)}
                 >
                   <ArrowRight className="w-4 h-4" />
                   {nextStep.label}
-                  {statusPending && <Spinner />}
+                  {statusPending && !isCancelling && <Spinner />}
                 </Button>
                 {data.status !== 'ROZWIAZANE' && (
                   <Button
@@ -298,12 +284,12 @@ function RouteComponent() {
             <span className="font-medium text-foreground">{data.title}</span>?
           </p>
           <DialogFooter>
-            <Button variant="outline" size="sm" disabled={statusPending} onClick={() => setCancelOpen(false)}>
+            <Button variant="outline" size="sm" disabled={isCancelling} onClick={() => setCancelOpen(false)}>
               Wróć
             </Button>
-            <Button variant="destructive" size="sm" disabled={statusPending} onClick={handleCancel}>
+            <Button variant="destructive" size="sm" disabled={isCancelling} onClick={handleCancel}>
               Anuluj zgłoszenie
-              {statusPending && <Spinner />}
+              {isCancelling && <Spinner />}
             </Button>
           </DialogFooter>
         </DialogContent>

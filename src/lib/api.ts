@@ -1,6 +1,9 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  await delay(500);
   const response = await fetch(`${BASE_URL}${path}`, {
     credentials: 'include',
     headers: {

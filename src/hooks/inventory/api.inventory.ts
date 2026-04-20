@@ -81,7 +81,7 @@ export const getInventoryById = (id: number): Promise<Inventory> =>
     api.get<Inventory>(`/inventory/${id}`);
 
 export const createInventory = (payload: CreateInventoryPayload): Promise<Inventory> =>
-    api.post<Inventory>("/inventory", { ...payload, author: "admin" });
+    api.post<Inventory>("/inventory", payload);
 
 export const updateInventory = (id: number, updates: UpdateInventoryPayload): Promise<Inventory> =>
     api.patch<Inventory>(`/inventory/${id}`, updates);
@@ -99,7 +99,7 @@ export const disposeInventory = (id: number): Promise<Inventory> =>
     api.patch<Inventory>(`/inventory/${id}/dispose`);
 
 export const deleteInventory = (id: number): Promise<void> =>
-    api.delete<void>(`/inventory/${id}?deletedBy=admin`);
+    api.delete<void>(`/inventory/${id}`);
 
 export const getInventoryNotes = (inventoryId: number): Promise<InventoryNote[]> =>
     api.get<InventoryNote[]>(`/inventory/${inventoryId}/notes`);

@@ -22,6 +22,15 @@ export interface InventoryNote {
     createdAt: string;
 }
 
+export interface UserRef {
+    userId: number;
+    username: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+}
+
 export interface Inventory {
     id: number;
     name: string;
@@ -32,11 +41,11 @@ export interface Inventory {
     price: number | null;
     invoiceNumber: string | null;
     location: string | null;
-    assignedTo: string | null;
-    assignedBy: string | null;
+    assignedTo: UserRef | null;
+    assignedBy: UserRef | null;
     assignedDate: string | null;
     status: InventoryStatus;
-    author: string;
+    author: UserRef;
     notes: InventoryNote[];
 }
 

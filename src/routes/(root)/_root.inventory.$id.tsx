@@ -219,7 +219,7 @@ function RouteComponent() {
               <Field icon={<Hash className="w-4 h-4" />} label="Numer seryjny" value={data?.serialNumber || "brak"} />
               <Field icon={<Package className="w-4 h-4" />} label="Model" value={data?.model || "brak"} />
               <Field icon={<MapPin className="w-4 h-4" />} label="Lokalizacja" value={data?.location || "brak"} />
-              <Field icon={<User className="w-4 h-4" />} label="Dodane przez" value={data?.author || "brak"} />
+              <Field icon={<User className="w-4 h-4" />} label="Dodane przez" value={data?.author ? `${data.author.firstName} ${data.author.lastName}` : "brak"} />
             </Section>
 
             <Section title="Finanse">
@@ -229,8 +229,8 @@ function RouteComponent() {
             </Section>
 
             <Section title="Przypisanie">
-              <Field icon={<User className="w-4 h-4" />} label="Przypisano do" value={data?.assignedTo || "brak"} />
-              <Field icon={<User className="w-4 h-4" />} label="Przypisano przez" value={data?.assignedBy || "brak"} />
+              <Field icon={<User className="w-4 h-4" />} label="Przypisano do" value={data?.assignedTo ? `${data.assignedTo.firstName} ${data.assignedTo.lastName}` : "brak"} />
+              <Field icon={<User className="w-4 h-4" />} label="Przypisano przez" value={data?.assignedBy ? `${data.assignedBy.firstName} ${data.assignedBy.lastName}` : "brak"} />
               <Field icon={<Calendar className="w-4 h-4" />} label="Data przypisania" value={data?.assignedDate || "brak"} />
             </Section>
           </div>

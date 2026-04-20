@@ -90,7 +90,8 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
       },
     },
     {
-      accessorKey: "assignedTo",
+      id: "assignedTo",
+      accessorFn: (row) => row.assignedTo ? `${row.assignedTo.firstName} ${row.assignedTo.lastName}` : null,
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Przypisany do
@@ -98,8 +99,8 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
         </Button>
       ),
       cell: ({ row }) => {
-        const assignedTo = row.getValue("assignedTo") as string | null;
-        return assignedTo ? <div className="font-medium">{assignedTo}</div> : <span className="text-muted-foreground">Nieprzypisany</span>;
+        const assignedTo = row.original.assignedTo;
+        return assignedTo ? <div className="font-medium">{`${assignedTo.firstName} ${assignedTo.lastName}`}</div> : <span className="text-muted-foreground">Nieprzypisany</span>;
       },
       filterFn: 'equals',
     },
