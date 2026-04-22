@@ -19,3 +19,26 @@ export interface HistoryEntry {
   from?: string;
   to?: string;
 }
+
+export type HistoryTargetType = 'INVENTORY' | 'TICKET';
+
+export interface HistoryRecord {
+  id: number;
+  targetType: HistoryTargetType;
+  targetId: number;
+  fieldName: string | null;
+  oldValue: string | null;
+  newValue: string | null;
+  message: string | null;
+  changedBy: string;
+  changedAt: string;
+}
+
+export interface HistoryQuery {
+  targetType?: HistoryTargetType;
+  targetId?: number;
+  changedBy?: string;
+  fieldName?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}

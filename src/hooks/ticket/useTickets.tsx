@@ -12,6 +12,11 @@ import {
     deleteTicket,
     assignTicket,
     getTicketHistory,
+    getTicketMessages,
+    addTicketMessage,
+    deleteTicketMessage,
+    updateTicketMessage,
+    type TicketMessageDTO,
 } from "./api.ticket";
 import { addTicketMessageMock, deleteTicketMessageMock, getTicketMessagesMock, updateTicketMessageMock } from "./mock.ticket-messages";
 import { queryClient } from "@/main";
@@ -165,7 +170,7 @@ export const useAssignTicket = () => {
 export const useTicketMessages = (id: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [TICKETS_KEY, id, "messages"],
-    queryFn: () => getTicketMessagesMock(id),
+    queryFn: () => getTicketMessages(Number(id)),
     staleTime: 1000 * 30,
     enabled: !!id,
   });
@@ -174,8 +179,8 @@ export const useTicketMessages = (id: string) => {
 
 export const useAddTicketMessage = (ticketId: string) => {
   const { mutateAsync: addMessage, isPending: isLoading } = useMutation({
-    mutationFn: ({ content, author }: { content: string; author: string }) =>
-      addTicketMessageMock(ticketId, content, author),
+    mutationFn: ({ content }: { content: string }) =>
+      addTicketMessage(Number(ticketId), content),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY, ticketId, "messages"] });
     },
@@ -186,7 +191,7 @@ export const useAddTicketMessage = (ticketId: string) => {
 
 export const useDeleteTicketMessage = (ticketId: string) => {
   const { mutateAsync: deleteMessage, isPending: isLoading } = useMutation({
-    mutationFn: (messageId: string) => deleteTicketMessageMock(ticketId, messageId),
+    mutationFn: (messageId: string) => deleteTicketMessage(Number(ticketId), messageId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY, ticketId, "messages"] });
     },
@@ -198,7 +203,7 @@ export const useDeleteTicketMessage = (ticketId: string) => {
 export const useUpdateTicketMessage = (ticketId: string) => {
   const { mutateAsync: updateMessage, isPending: isLoading } = useMutation({
     mutationFn: ({ messageId, content }: { messageId: string; content: string }) =>
-      updateTicketMessageMock(ticketId, messageId, content),
+      updateTicketMessage(Number(ticketId), messageId, content),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TICKETS_KEY, ticketId, "messages"] });
     },
@@ -206,3 +211,5 @@ export const useUpdateTicketMessage = (ticketId: string) => {
   });
   return { updateMessage, isLoading };
 };
+
+export type { TicketMessageDTO };

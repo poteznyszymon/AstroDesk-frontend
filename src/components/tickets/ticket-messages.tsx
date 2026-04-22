@@ -11,7 +11,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Trash2, Send, Pencil, MoreHorizontal } from 'lucide-react';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import type { TicketMessage } from '@/hooks/ticket/mock.ticket-messages';
+import type { TicketMessageDTO } from '@/hooks/ticket/useTickets';
 
 interface TicketMessagesProps {
   ticketId: string;
@@ -23,20 +23,20 @@ function MessageBubble({
   onDeleteRequest,
   onEditRequest,
 }: {
-  msg: TicketMessage;
+  msg: TicketMessageDTO;
   isOwn: boolean;
-  onDeleteRequest: (msg: TicketMessage) => void;
-  onEditRequest: (msg: TicketMessage) => void;
+  onDeleteRequest: (msg: TicketMessageDTO) => void;
+  onEditRequest: (msg: TicketMessageDTO) => void;
 }) {
   return (
     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex flex-col gap-1 max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
         <div className="flex items-center gap-2">
-          {!isOwn && <span className="text-xs text-muted-foreground">{msg.author}</span>}
+          {!isOwn && <span className="text-xs text-muted-foreground">{msg.sender.firstName} {msg.sender.lastName}</span>}
           <span className="text-xs text-muted-foreground">
-            {format(new Date(msg.createdAt), 'dd.MM.yyyy HH:mm', { locale: pl })}
+            {format(new Date(msg.timestamp), 'dd.MM.yyyy HH:mm', { locale: pl })}
           </span>
-          {isOwn && <span className="text-xs text-muted-foreground">{msg.author}</span>}
+          {isOwn && <span className="text-xs text-muted-foreground">{msg.sender.firstName} {msg.sender.lastName}</span>}
         </div>
         <div className={`group flex items-center gap-1.5 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
           <div
@@ -85,9 +85,9 @@ export function TicketMessages({ ticketId }: TicketMessagesProps) {
   const { updateMessage, isLoading: isUpdating } = useUpdateTicketMessage(ticketId);
   const { user } = useMe();
   const [content, setContent] = useState('');
-  const [editTarget, setEditTarget] = useState<TicketMessage | null>(null);
+  const [editTarget, setEditTarget] = useState<TicketMessageDTO | null>(null);
   const [editContent, setEditContent] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<TicketMessage | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TicketMessageDTO | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export function TicketMessages({ ticketId }: TicketMessagesProps) {
     const trimmed = content.trim();
     if (!trimmed || !user) return;
     setContent('');
-    await addMessage({ content: trimmed, author: `${user.firstName} ${user.lastName}` });
+    await addMessage({ content: trimmed });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -148,7 +148,7 @@ export function TicketMessages({ ticketId }: TicketMessagesProps) {
               <MessageBubble
                 key={msg.id}
                 msg={msg}
-                isOwn={msg.author === (user ? `${user.firstName} ${user.lastName}` : undefined)}
+                isOwn={user ? msg.sender.userId === user.userId : false}
                 onDeleteRequest={setDeleteTarget}
                 onEditRequest={openEdit}
               />

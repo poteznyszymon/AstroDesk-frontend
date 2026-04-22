@@ -1,5 +1,6 @@
 import type { Ticket } from '@/types/tickets';
 import type { Inventory, InventoryItemType, InventoryStatus } from '@/types/inventory';
+import type { HistoryRecord } from '@/types/history';
 import { statusConfig, priorityConfig } from '@/types/tickets';
 
 const itemTypeLabels: Record<InventoryItemType, string> = {
@@ -46,6 +47,21 @@ export async function exportTickets(tickets: Ticket[], format: ExportFormat) {
     'ID urządzenia': t.linkedInventoryId ?? '—',
   }));
   await writeFile(rows, 'Zgłoszenia', `zgłoszenia_${today()}`, format);
+}
+
+export async function exportHistory(records: HistoryRecord[], format: ExportFormat) {
+  const rows = records.map((r) => ({
+    'ID': r.id,
+    'Typ obiektu': r.targetType === 'INVENTORY' ? 'Sprzęt' : 'Ticket',
+    'ID obiektu': r.targetId,
+    'Pole': r.fieldName ?? '—',
+    'Poprzednia wartość': r.oldValue ?? '—',
+    'Nowa wartość': r.newValue ?? '—',
+    'Wiadomość': r.message ?? '—',
+    'Zmienione przez': r.changedBy,
+    'Data zmiany': r.changedAt,
+  }));
+  await writeFile(rows, 'Historia zmian', `historia_zmian_${today()}`, format);
 }
 
 export async function exportInventory(items: Inventory[], format: ExportFormat) {

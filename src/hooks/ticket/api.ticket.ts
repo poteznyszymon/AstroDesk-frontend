@@ -91,6 +91,32 @@ export const deleteTicket = (id: number): Promise<void> =>
 export const assignTicket = (ticketId: number, userId: number): Promise<Ticket> =>
     api.patch<Ticket>(`/tickets/${ticketId}/assign`, { userId });
 
+export interface TicketMessageDTO {
+    id: string;
+    content: string;
+    timestamp: string;
+    sender: {
+        userId: number;
+        username: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        role: string;
+    };
+}
+
+export const getTicketMessages = (ticketId: number): Promise<TicketMessageDTO[]> =>
+    api.get<TicketMessageDTO[]>(`/tickets/${ticketId}/messages`);
+
+export const addTicketMessage = (ticketId: number, content: string): Promise<TicketMessageDTO> =>
+    api.post<TicketMessageDTO>(`/tickets/${ticketId}/messages`, { content });
+
+export const deleteTicketMessage = (ticketId: number, messageId: string): Promise<void> =>
+    api.delete<void>(`/tickets/${ticketId}/messages/${messageId}`);
+
+export const updateTicketMessage = (ticketId: number, messageId: string, content: string): Promise<TicketMessageDTO> =>
+    api.patch<TicketMessageDTO>(`/tickets/${ticketId}/messages/${messageId}`, { content });
+
 export const getTicketHistory = async (id: number): Promise<HistoryEntry[]> => {
     const entries = await api.get<BackendHistoryEntry[]>(`/tickets/${id}/history`);
     return entries.map(mapHistoryEntry);

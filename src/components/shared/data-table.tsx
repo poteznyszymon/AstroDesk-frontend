@@ -26,9 +26,10 @@ interface DataTableProps<TData, TValue> {
   isLoading: boolean;
   initialColumnVisibility?: VisibilityState;
   initialSorting?: SortingState;
+  pageSize?: number;
 }
 
-export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, getRowHref, isLoading, initialColumnVisibility, initialSorting }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRowClick, getRowHref, isLoading, initialColumnVisibility, initialSorting, pageSize = 10 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility ?? {});
@@ -37,6 +38,9 @@ export function DataTable<TData, TValue>({ columns, data, toolbar: Toolbar, onRo
   const table = useReactTable({
     data,
     columns,
+    initialState: {
+      pagination: { pageSize },
+    },
     state: {
       sorting,
       columnFilters,

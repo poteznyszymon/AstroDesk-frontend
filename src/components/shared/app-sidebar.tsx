@@ -57,7 +57,9 @@ export const AppSidebar = () => {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {menuItems
+                .filter((item) => !item.roles || (user && item.roles.includes(user.role)))
+                .map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className={location.pathname.includes(item.url) ? "text-foreground bg-sidebar-accent outline-solid outline-1 outline-border" : "text-muted-foreground"}>
                     <Link to={item.url} onClick={handleLinkClick}>
