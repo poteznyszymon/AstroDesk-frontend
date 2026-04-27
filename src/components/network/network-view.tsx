@@ -9,22 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { Link as LinkIcon, Monitor, MapPin, Clock, ArrowRight } from "lucide-react";
 
 const NetworkView = () => {
-  const columns = getNetworkColumns();
   const [selectedItem, setSelectedItem] = useState<NetworkItem | null>(null);
 
-  const history = selectedItem
-    ? mockNetworkHistory.filter((h) => h.macAddress === selectedItem.macAddress)
-    : [];
+  // Przekazujemy funkcję setSelectedItem do kolumn
+  const columns = getNetworkColumns((item) => setSelectedItem(item));
+
+  const history = selectedItem ? mockNetworkHistory.filter((h) => h.macAddress === selectedItem.macAddress) : [];
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <DataTable
-        isLoading={false}
-        columns={columns}
-        data={mockNetworkItems}
-        toolbar={NetworkTableToolbar}
-        onRowClick={(row) => setSelectedItem(row)}
-      />
+      <DataTable isLoading={false} columns={columns} data={mockNetworkItems} toolbar={NetworkTableToolbar} onRowClick={(row) => setSelectedItem(row)} />
 
       <Sheet
         open={!!selectedItem}
@@ -32,95 +26,94 @@ const NetworkView = () => {
           if (!isOpen) setSelectedItem(null);
         }}
       >
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto px-6">
+        {/* ZWIĘKSZONY PADDING: px-10 zamiast px-6 odsuwa treść od czerwonej kreski */}
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto px-5">
           {selectedItem && (
-            <>
-              <SheetHeader className="mb-6">
-                <SheetTitle className="font-mono text-base">{selectedItem.macAddress}</SheetTitle>
-                <SheetDescription>{selectedItem.hostname ?? "Brak hostname"}</SheetDescription>
+            <div className="flex flex-col gap-8 py-4">
+              <SheetHeader className="text-left">
+                <div className="flex items-center gap-2 mb-2">
+                  <Monitor className="h-5 w-5 text-primary" />
+                  <Badge variant={selectedItem.isImported ? "default" : "outline"}>{selectedItem.isImported ? "Powiązany z IT" : "Nieznany"}</Badge>
+                </div>
+                <SheetTitle className="text-xl font-mono break-all">{selectedItem.macAddress}</SheetTitle>
+                <SheetDescription>Szczegóły urządzenia i historia lokalizacji w sieci</SheetDescription>
               </SheetHeader>
 
-              <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Adres IP</span>
-                    <span className="font-mono font-medium">{selectedItem.ipAddress}</span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Producent</span>
-                    <span>{selectedItem.vendor ?? "—"}</span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Switch</span>
-                    <span className="font-mono text-sm">{selectedItem.switchName ?? "—"}</span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Port</span>
-                    <span className="font-mono text-sm">{selectedItem.switchPort ?? "—"}</span>
-                  </div>
-                  <div className="flex flex-col gap-1 col-span-2">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Ostatnio widziany</span>
-                    <span className="text-sm">
-                      {new Date(selectedItem.lastSeenAt).toLocaleString("pl-PL")}
-                    </span>
-                  </div>
+              {/* Informacje o urządzeniu */}
+              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Adres IP</span>
+                  <p className="text-sm font-mono font-medium">{selectedItem.ipAddress}</p>
                 </div>
-
-                {selectedItem.isImported && selectedItem.linkedAssetName ? (
-                  <div className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-muted/40">
-                    <LinkIcon className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="text-muted-foreground">Powiązany zasób:</span>
-                    <span className="font-medium">{selectedItem.linkedAssetName}</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground">
-                    <Monitor className="h-4 w-4 shrink-0" />
-                    <span>Nie zaimportowano do inwentaryzacji</span>
-                  </div>
-                )}
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Producent</span>
+                  <p className="text-sm">{selectedItem.vendor || "Nieznany"}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Hostname</span>
+                  <p className="text-sm italic">{selectedItem.hostname || "Brak danych"}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Ostatnio widziany</span>
+                  <p className="text-sm">{new Date(selectedItem.lastSeenAt).toLocaleDateString("pl-PL")}</p>
+                </div>
               </div>
 
-              <div>
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              {/* Zasób IT */}
+              {selectedItem.isImported && (
+                <div className="rounded-xl bg-muted/40 p-4 border border-border/60">
+                  <div className="flex items-center gap-2 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <LinkIcon className="h-3.5 w-3.5" />
+                    Powiązany zasób IT
+                  </div>
+                  <div className="text-sm font-semibold text-primary">{selectedItem.linkedAssetName}</div>
+                </div>
+              )}
+
+              {/* Historia - Odsunięta dodatkowo od lewej krawędzi */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  Historia lokalizacji
-                </h3>
+                  Historia podłączeń
+                </div>
 
                 {history.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Brak historii dla tego urządzenia.</p>
+                  <div className="text-sm text-muted-foreground italic pl-2">Brak zarejestrowanej historii.</div>
                 ) : (
-                  <div className="relative">
-                    <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
-                    <div className="space-y-4 pl-6">
-                      {history.map((entry, idx) => (
-                        <div key={entry.id} className="relative">
-                          <div
-                            className={`absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 ${
-                              idx === 0 ? "bg-primary border-primary" : "bg-background border-border"
-                            }`}
-                          />
-                          <div className="rounded-md border px-4 py-3 text-sm space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="font-mono font-medium text-sm">{entry.ipAddress}</span>
-                              {idx === 0 && <Badge variant="default" className="text-xs">Aktualny</Badge>}
-                            </div>
-                            <div className="flex items-center gap-1 text-muted-foreground text-xs">
-                              <MapPin className="h-3 w-3" />
-                              <span>{entry.switchName}</span>
+                  <div className="relative space-y-6 before:absolute before:inset-0 before:ml-2.5 before:h-full before:w-px before:bg-border ml-1">
+                    {history.map((entry, idx) => (
+                      <div key={idx} className="relative pl-10">
+                        <div
+                          className={`absolute left-0 top-2 h-5 w-5 -translate-x-1/2 rounded-full border-4 border-background z-10 ${
+                            idx === 0 ? "bg-primary shadow-[0_0_10px_rgba(var(--primary),0.4)]" : "bg-muted"
+                          }`}
+                        />
+
+                        <div className="rounded-xl border bg-card p-4 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="font-mono font-bold text-sm">{entry.ipAddress}</span>
+                            {idx === 0 && <Badge className="bg-emerald-500/10 text-emerald-600 border-none hover:bg-emerald-500/10 text-[10px] font-bold">AKTUALNY</Badge>}
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-3.5 w-3.5 text-primary/60" />
+                              <span className="font-semibold text-foreground/80">{entry.switchName}</span>
                               <ArrowRight className="h-3 w-3" />
-                              <span className="font-mono">{entry.switchPort}</span>
+                              <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-[10px]">{entry.switchPort}</span>
                             </div>
-                            <div className="text-xs text-muted-foreground">
-                              {new Date(entry.seenAt).toLocaleString("pl-PL")}
+                            <div className="flex items-center gap-2 pt-1">
+                              <Clock className="h-3.5 w-3.5 text-muted-foreground/60" />
+                              <span>{new Date(entry.seenAt).toLocaleString("pl-PL", { dateStyle: "medium", timeStyle: "short" })}</span>
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </SheetContent>
       </Sheet>

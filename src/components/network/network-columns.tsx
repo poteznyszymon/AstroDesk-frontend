@@ -1,6 +1,8 @@
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import type { NetworkItem } from "@/types/network";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Link as LinkIcon, Unlink, Laptop, Monitor, Printer, Server, HardDrive } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Link as LinkIcon, Unlink, Laptop, Monitor, Printer, Server, HardDrive, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -8,16 +10,53 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 const getVendorIcon = (vendor: string | null) => {
   if (!vendor) return HardDrive;
   const v = vendor.toLowerCase();
-  if (v.includes("apple")) return Laptop;
-  if (v.includes("dell") || v.includes("lenovo") || v.includes("hp") || v.includes("asus") || v.includes("acer")) return Laptop;
+  if (v.includes("apple") || v.includes("dell") || v.includes("lenovo") || v.includes("hp") || v.includes("asus") || v.includes("acer")) return Laptop;
   if (v.includes("cisco") || v.includes("mikrotik") || v.includes("tp-link")) return Server;
   if (v.includes("canon") || v.includes("epson") || v.includes("brother")) return Printer;
   if (v.includes("samsung") && !v.includes("server")) return Monitor;
   return HardDrive;
 };
 
-export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
-  const columns: ColumnDef<NetworkItem>[] = [
+// Dodaliśmy prop onShowHistory
+function ActionsCell({ item, onShowHistory }: { item: NetworkItem; onShowHistory: (item: NetworkItem) => void }) {
+  const navigate = useNavigate();
+
+  const handleGoToAsset = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Zapobiegamy otwarciu bocznego panelu przy przechodzeniu do zasobu
+    if (!item.isImported) {
+      toast.error("Zasób nie jest powiązany z żadnym urządzeniem w inwentaryzacji.");
+      return;
+    }
+    navigate({ to: "/inventory" });
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+          <span className="sr-only">Otwórz menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+        <DropdownMenuLabel>Akcje</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => onShowHistory(item)}>
+          <History className="mr-2 h-4 w-4" />
+          Pokaż historię
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleGoToAsset}>
+          <LinkIcon className="mr-2 h-4 w-4" />
+          Przejdź do zasobu
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Dodajemy parametr onRowAction do generatora kolumn
+export const getNetworkColumns = (onRowAction: (item: NetworkItem) => void): ColumnDef<NetworkItem>[] => {
+  return [
     {
       accessorKey: "macAddress",
       header: "Adres MAC",
@@ -45,10 +84,6 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
     {
       accessorKey: "vendor",
       header: "Producent",
-      filterFn: (row, _, filterValue: string[]) => {
-        if (!filterValue || filterValue.length === 0) return true;
-        return filterValue.includes(row.original.vendor ?? "");
-      },
       cell: ({ row }) => {
         const vendor = row.getValue("vendor") as string | null;
         return vendor ? <span className="text-sm">{vendor}</span> : <span className="text-muted-foreground text-sm">Nieznany</span>;
@@ -92,10 +127,6 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
     {
       accessorKey: "isImported",
       header: "Status",
-      filterFn: (row, _, filterValue: string[]) => {
-        if (!filterValue || filterValue.length === 0) return true;
-        return filterValue.includes(String(row.original.isImported));
-      },
       cell: ({ row }) => {
         const imported = row.getValue("isImported") as boolean;
         return imported ? (
@@ -112,40 +143,9 @@ export const getNetworkColumns = (): ColumnDef<NetworkItem>[] => {
       },
     },
     {
-      accessorKey: "linkedAssetName",
-      header: "Zasób IT",
-      cell: ({ row }) => {
-        const name = row.original.linkedAssetName;
-        return name ? <span className="text-sm">{name}</span> : <span className="text-muted-foreground text-sm">—</span>;
-      },
-    },
-    {
       id: "actions",
       enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original;
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Otwórz menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Pokaż historię</DropdownMenuItem>
-              {!item.isImported && <DropdownMenuItem>Importuj do inwentaryzacji</DropdownMenuItem>}
-              {item.isImported && <DropdownMenuItem>Przejdź do zasobu</DropdownMenuItem>}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">Usuń wpis</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
+      cell: ({ row }) => <ActionsCell item={row.original} onShowHistory={onRowAction} />,
     },
   ];
-
-  return columns;
 };
