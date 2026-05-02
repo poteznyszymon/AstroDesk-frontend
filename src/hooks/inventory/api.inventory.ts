@@ -1,4 +1,5 @@
-import { api } from "@/lib/api";
+import { api, uploadFile } from "@/lib/api";
+import type { ImportValidationResult, ImportSummary } from "@/types/import";
 import type { Inventory, CreateInventoryPayload, UpdateInventoryPayload, InventoryNote, AssignableInventory } from "@/types/inventory";
 import type { HistoryEntry } from "@/types/history";
 
@@ -112,6 +113,12 @@ export const addInventoryNote = (inventoryId: number, content: string, author: s
 
 export const deleteInventoryNote = (inventoryId: number, noteId: number): Promise<void> =>
     api.delete<void>(`/inventory/${inventoryId}/notes/${noteId}`);
+
+export const validateInventoryImport = (file: File): Promise<ImportValidationResult> =>
+    uploadFile<ImportValidationResult>('/import/inventory/validate', file);
+
+export const importInventory = (file: File, skipErrors: boolean): Promise<ImportSummary> =>
+    uploadFile<ImportSummary>(`/import/inventory?skipErrors=${skipErrors}`, file);
 
 export const getInventoryHistory = async (inventoryId: number): Promise<HistoryEntry[]> => {
     const entries = await api.get<BackendHistoryEntry[]>(`/inventory/${inventoryId}/history`);

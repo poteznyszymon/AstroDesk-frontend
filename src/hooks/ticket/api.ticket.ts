@@ -1,4 +1,5 @@
-import { api } from "@/lib/api";
+import { api, uploadFile } from "@/lib/api";
+import type { ImportValidationResult, ImportSummary } from "@/types/import";
 import type { Ticket, TicketPriority } from "@/types/tickets";
 import type { HistoryEntry } from "@/types/history";
 
@@ -116,6 +117,12 @@ export const deleteTicketMessage = (ticketId: number, messageId: string): Promis
 
 export const updateTicketMessage = (ticketId: number, messageId: string, content: string): Promise<TicketMessageDTO> =>
     api.patch<TicketMessageDTO>(`/tickets/${ticketId}/messages/${messageId}`, { content });
+
+export const validateTicketsImport = (file: File): Promise<ImportValidationResult> =>
+    uploadFile<ImportValidationResult>('/import/tickets/validate', file);
+
+export const importTickets = (file: File, skipErrors: boolean): Promise<ImportSummary> =>
+    uploadFile<ImportSummary>(`/import/tickets?skipErrors=${skipErrors}`, file);
 
 export const getTicketHistory = async (id: number): Promise<HistoryEntry[]> => {
     const entries = await api.get<BackendHistoryEntry[]>(`/tickets/${id}/history`);

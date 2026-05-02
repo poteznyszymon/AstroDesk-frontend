@@ -11,7 +11,7 @@ const targetHref = (row: HistoryRecord) =>
 export default function HistoryView() {
   const [filters, setFilters] = useState<Pick<HistoryQuery, "targetType" | "changedBy" | "targetId">>({});
 
-  const { data, isLoading } = useAllHistory(filters);
+  const { data, total, isLoading } = useAllHistory(filters);
 
   const columns = getHistoryColumns();
   const rows = data ?? [];
@@ -32,6 +32,7 @@ export default function HistoryView() {
         onReset={onResetFilters}
         isLoading={isLoading}
         data={rows}
+        totalCount={total}
       />
       <DataTable
         columns={columns}

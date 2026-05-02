@@ -21,5 +21,5 @@ export const useAllHistory = (query: Pick<HistoryQuery, "targetType" | "changedB
         });
     }, [data, query.targetType, query.targetId, query.changedBy]);
 
-    return { data: filtered, isLoading };
+    return { data: filtered, total: data?.length ?? 0, isLoading };
 };

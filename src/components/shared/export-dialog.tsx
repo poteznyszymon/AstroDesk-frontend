@@ -48,8 +48,7 @@ export function ExportDialog({ open, onOpenChange, rowCount, onExport }: ExportD
 
         <p className="text-sm text-muted-foreground">
           Zostanie wyeksportowanych{' '}
-          <span className="font-medium text-foreground">{rowCount} {rowCount === 1 ? 'rekord' : rowCount < 5 ? 'rekordy' : 'rekordów'}</span>
-          {' '}(zgodnie z aktywnymi filtrami).
+          <span className="font-medium text-foreground">{rowCount} {rowCount === 1 ? 'rekord' : rowCount < 5 ? 'rekordy' : 'rekordów'}</span>.
         </p>
 
         <div className="flex flex-col gap-2">

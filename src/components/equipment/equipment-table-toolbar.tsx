@@ -1,16 +1,19 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Table } from "@tanstack/react-table";
 import { useAdmin } from "@/data/mock/admin-context";
 import { useInventory } from "@/hooks/inventory/useInventory";
 import AddEquipmentDialog from "@/components/equipment/add-equipment-dialog.tsx";
 import type { InventoryItemType, InventoryStatus } from "@/types/inventory";
-import { FileText, X, Download } from "lucide-react";
+import { FileText, X, Download, Upload, ChevronDown } from "lucide-react";
 import { exportInventory } from "@/lib/export";
-import type { Inventory } from "@/types/inventory";
+import { validateInventoryImport, importInventory as importInventoryApi } from "@/hooks/inventory/api.inventory";
 import { ExportDialog } from "@/components/shared/export-dialog";
+import { ImportDialog } from "@/components/shared/import-dialog";
 import { useMemo, useState } from "react";
+import { queryClient } from "@/main";
 
 const itemTypeLabels: Record<InventoryItemType, string> = {
   LAPTOP: "Laptop",
@@ -39,7 +42,7 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
   const { isInventoryAdmin: adminView } = useAdmin();
   const { data, isLoading } = useInventory();
   const [exportOpen, setExportOpen] = useState(false);
-  const filteredItems = table.getFilteredRowModel().rows.map((r) => r.original as Inventory);
+  const [importOpen, setImportOpen] = useState(false);
 
   const locations = useMemo(() => {
     const inventory = data ?? [];
@@ -183,15 +186,24 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
 
       <div className="flex items-center gap-2 w-full sm:w-fit justify-end">
         {adminView && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 flex-1 sm:flex-none"
-            onClick={() => setExportOpen(true)}
-          >
-            <Download className="h-3.5 w-3.5" />
-            Eksportuj
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-1.5 flex-1 sm:flex-none">
+                Dane
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setExportOpen(true)}>
+                <Download className="h-3.5 w-3.5 mr-2" />
+                Eksportuj
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setImportOpen(true)}>
+                <Upload className="h-3.5 w-3.5 mr-2" />
+                Importuj
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         {adminView && <AddEquipmentDialog isLoading={isLoading} triggerClassName="flex-1 sm:flex-none" />}
       </div>
@@ -199,8 +211,16 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
       <ExportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        rowCount={filteredItems.length}
-        onExport={(format) => exportInventory(filteredItems, format)}
+        rowCount={data?.length ?? 0}
+        onExport={(format) => exportInventory(format)}
+      />
+
+      <ImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        validateFn={(file) => validateInventoryImport(file)}
+        importFn={(file, skipErrors) => importInventoryApi(file, skipErrors)}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['inventory'] })}
       />
     </div>
   );

@@ -10,6 +10,7 @@ import type { HistoryQuery, HistoryRecord, HistoryTargetType } from "@/types/his
 import { ExportDialog } from "@/components/shared/export-dialog";
 import { exportHistory } from "@/lib/export";
 import { useUsers } from "@/hooks/user/useUsers";
+import type { ExportFormat } from "@/lib/export";
 
 type HistoryFilters = Pick<HistoryQuery, "targetType" | "changedBy" | "targetId">;
 
@@ -19,9 +20,10 @@ interface Props {
   onReset: () => void;
   isLoading: boolean;
   data: HistoryRecord[];
+  totalCount: number;
 }
 
-export function HistoryTableToolbar({ query, onChange, onReset, isLoading, data }: Props) {
+export function HistoryTableToolbar({ query, onChange, onReset, isLoading, data, totalCount }: Props) {
   const isFiltered = !!(query.targetType || query.changedBy || query.targetId);
   const [exportOpen, setExportOpen] = useState(false);
   const [authorOpen, setAuthorOpen] = useState(false);
@@ -121,8 +123,8 @@ export function HistoryTableToolbar({ query, onChange, onReset, isLoading, data 
       <ExportDialog
         open={exportOpen}
         onOpenChange={setExportOpen}
-        rowCount={data.length}
-        onExport={(format) => exportHistory(data, format)}
+        rowCount={totalCount}
+        onExport={(format: ExportFormat) => exportHistory(format)}
       />
     </div>
   );
