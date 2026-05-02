@@ -55,3 +55,11 @@ export type CreateInventoryPayload = Omit<
 >;
 
 export type UpdateInventoryPayload = Partial<CreateInventoryPayload>;
+
+export interface AssignableInventory {
+    id: number;
+    name: string;
+    serialNumber: string;
+    itemType: InventoryItemType;
+    status: InventoryStatus;
+}

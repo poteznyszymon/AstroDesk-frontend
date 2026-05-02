@@ -188,7 +188,9 @@ function RouteComponent() {
 
         {data && (
           <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-            <AddTicketDialog preselectedDevice={{ id: data.id, name: data.name }} />
+            {(adminView || data.assignedTo?.userId === user?.userId) && (
+              <AddTicketDialog preselectedDevice={{ id: data.id, name: data.name }} />
+            )}
             {adminView && (
               <>
                 {(data.status === 'DOSTEPNE' || data.status === 'DO_WYDANIA') && (

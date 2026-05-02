@@ -22,6 +22,12 @@ export const ticketStatuses = [
 
 export const ticketPriorities = ["LOW", "MEDIUM", "HIGH"] as const;
 
+export const ticketPriorityLabels: Record<TicketPriority, string> = {
+  LOW: "Niski",
+  MEDIUM: "Średni",
+  HIGH: "Wysoki",
+};
+
 export interface Ticket {
   ticketId: number;
   title: string;

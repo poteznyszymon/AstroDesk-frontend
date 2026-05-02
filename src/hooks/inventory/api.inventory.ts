@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import type { Inventory, CreateInventoryPayload, UpdateInventoryPayload, InventoryNote } from "@/types/inventory";
+import type { Inventory, CreateInventoryPayload, UpdateInventoryPayload, InventoryNote, AssignableInventory } from "@/types/inventory";
 import type { HistoryEntry } from "@/types/history";
 
 interface BackendHistoryEntry {
@@ -76,6 +76,9 @@ const mapHistoryEntry = (entry: BackendHistoryEntry): HistoryEntry => {
 
 export const getAllInventory = (): Promise<Inventory[]> =>
     api.get<Inventory[]>("/inventory");
+
+export const getAssignableInventory = (): Promise<AssignableInventory[]> =>
+    api.get<AssignableInventory[]>("/inventory/assignable");
 
 export const getInventoryById = (id: number): Promise<Inventory> =>
     api.get<Inventory>(`/inventory/${id}`);

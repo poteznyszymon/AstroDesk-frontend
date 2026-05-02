@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
     getAllInventory,
+    getAssignableInventory,
     getInventoryById,
     createInventory as createInventoryApi,
     updateInventory as updateInventoryApi,
@@ -30,6 +31,17 @@ export const useInventory = () => {
     return { data, isLoading };
 };
 
+
+
+export const useAssignableInventory = (enabled: boolean = true) => {
+    const { data, isLoading } = useQuery({
+        queryKey: [INVENTORY_KEY, "assignable"],
+        queryFn: getAssignableInventory,
+        staleTime: 1000 * 30,
+        enabled,
+    });
+    return { data, isLoading };
+};
 
 
 export const useInventoryById = (id: number) => {

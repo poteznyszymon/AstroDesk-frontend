@@ -9,7 +9,6 @@ export const useAllHistory = (query: Pick<HistoryQuery, "targetType" | "changedB
     const { data, isLoading } = useQuery({
         queryKey: [HISTORY_KEY],
         queryFn: getAllHistory,
-        staleTime: 1000 * 60 * 2,
     });
 
     const filtered = useMemo(() => {
