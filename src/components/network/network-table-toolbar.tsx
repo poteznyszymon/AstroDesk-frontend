@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,56 +8,97 @@ import type { Table } from "@tanstack/react-table";
 import { RefreshCw, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAdmin } from "@/data/mock/admin-context";
+import { triggerNetworkScan } from "./use-network";
+import type { NetworkFilters } from "./use-network";
 
 type SearchField = "hostname" | "macAddress" | "switchName";
 
 const SEARCH_FIELDS: { value: SearchField; label: string }[] = [
-  { value: "hostname", label: "Hostname" },
-  { value: "macAddress", label: "Adres MAC" },
-  { value: "switchName", label: "Switch" },
+  { value: "hostname",   label: "Hostname"   },
+  { value: "macAddress", label: "Adres MAC"  },
+  { value: "switchName", label: "Switch"     },
 ];
 
-const VENDORS = ["Dell", "HP", "Apple", "Lenovo", "Cisco", "Epson"];
+const VENDORS  = ["Dell", "HP", "Apple", "Lenovo", "Cisco", "Epson"];
 const STATUSES = [
-  { value: "true", label: "Powiązany" },
+  { value: "true",  label: "Powiązany"    },
   { value: "false", label: "Niepowiązany" },
 ];
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  // New props wired from NetworkView
+  onFiltersChange: (filters: NetworkFilters) => void;
+  onScanComplete:  () => void;
 }
 
-export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function NetworkTableToolbar<TData>({
+  table,
+  onFiltersChange,
+  onScanComplete,
+}: DataTableToolbarProps<TData>) {
   const { isInventoryAdmin: adminView } = useAdmin();
-  const [searchField, setSearchField] = useState<SearchField>("hostname");
-  const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
+
+  const [searchField,      setSearchField]      = useState<SearchField>("hostname");
+  const [searchValue,      setSearchValue]      = useState("");
+  const [selectedVendors,  setSelectedVendors]  = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [isScanning,       setIsScanning]       = useState(false);
+
+  // Push filter state up to NetworkView whenever anything changes
+  useEffect(() => {
+    const filters: NetworkFilters = {};
+
+    if (searchValue) filters[searchField] = searchValue;
+    if (selectedVendors.length)  filters.vendors    = selectedVendors;
+    if (selectedStatuses.length === 1) {
+      filters.isImported = selectedStatuses[0] === "true";
+    }
+
+    onFiltersChange(filters);
+  }, [searchField, searchValue, selectedVendors, selectedStatuses]);
 
   const handleSearchFieldChange = (field: SearchField) => {
-    table.getColumn(searchField)?.setFilterValue(undefined);
+    setSearchValue("");
     setSearchField(field);
   };
 
-  const searchValue = (table.getColumn(searchField)?.getFilterValue() as string) ?? "";
-
   const toggleVendor = (vendor: string) => {
-    const next = selectedVendors.includes(vendor) ? selectedVendors.filter((v) => v !== vendor) : [...selectedVendors, vendor];
-    setSelectedVendors(next);
-    table.getColumn("vendor")?.setFilterValue(next.length > 0 ? next : undefined);
+    setSelectedVendors((prev) =>
+      prev.includes(vendor) ? prev.filter((v) => v !== vendor) : [...prev, vendor]
+    );
   };
 
   const toggleStatus = (value: string) => {
-    const next = selectedStatuses.includes(value) ? selectedStatuses.filter((s) => s !== value) : [...selectedStatuses, value];
-    setSelectedStatuses(next);
-    table.getColumn("isImported")?.setFilterValue(next.length > 0 ? next : undefined);
+    setSelectedStatuses((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    );
   };
 
   const clearFilters = () => {
-    table.getColumn(searchField)?.setFilterValue(undefined);
-    table.getColumn("vendor")?.setFilterValue(undefined);
-    table.getColumn("isImported")?.setFilterValue(undefined);
+    setSearchValue("");
     setSelectedVendors([]);
     setSelectedStatuses([]);
+    // Also clear TanStack column filters (for any client-side columns)
+    table.resetColumnFilters();
+  };
+
+  const handleScanNow = async () => {
+    setIsScanning(true);
+    try {
+      await triggerNetworkScan();
+      toast("Skanowanie sieci zostało uruchomione.", {
+        action: { label: "Zamknij", onClick: () => {} },
+      });
+      // Wait a moment then refresh the list
+      setTimeout(() => {
+        onScanComplete();
+        setIsScanning(false);
+      }, 2000);
+    } catch {
+      toast.error("Nie udało się uruchomić skanowania.");
+      setIsScanning(false);
+    }
   };
 
   const hasActiveFilters = searchValue || selectedVendors.length > 0 || selectedStatuses.length > 0;
@@ -73,16 +114,14 @@ export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TDat
             </SelectTrigger>
             <SelectContent>
               {SEARCH_FIELDS.map((f) => (
-                <SelectItem key={f.value} value={f.value}>
-                  {f.label}
-                </SelectItem>
+                <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Input
             placeholder={`Szukaj po ${SEARCH_FIELDS.find((f) => f.value === searchField)?.label.toLowerCase()}...`}
             value={searchValue}
-            onChange={(e) => table.getColumn(searchField)?.setFilterValue(e.target.value)}
+            onChange={(e) => setSearchValue(e.target.value)}
             className="w-full"
           />
         </div>
@@ -96,9 +135,7 @@ export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TDat
                 <Filter className="h-4 w-4" />
                 Producent
                 {selectedVendors.length > 0 && (
-                  <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">
-                    {selectedVendors.length}
-                  </Badge>
+                  <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">{selectedVendors.length}</Badge>
                 )}
               </Button>
             </DropdownMenuTrigger>
@@ -120,9 +157,7 @@ export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TDat
                 <Filter className="h-4 w-4" />
                 Status
                 {selectedStatuses.length > 0 && (
-                  <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">
-                    {selectedStatuses.length}
-                  </Badge>
+                  <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-xs">{selectedStatuses.length}</Badge>
                 )}
               </Button>
             </DropdownMenuTrigger>
@@ -147,18 +182,9 @@ export function NetworkTableToolbar<TData>({ table }: DataTableToolbarProps<TDat
 
           {/* Scan now */}
           {adminView && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() =>
-                toast("Skanowanie sieci zostało uruchomione ręcznie.", {
-                  action: { label: "Zamknij", onClick: () => {} },
-                })
-              }
-            >
-              <RefreshCw className="h-4 w-4" />
-              Skanuj teraz
+            <Button variant="outline" size="sm" className="gap-2" onClick={handleScanNow} disabled={isScanning}>
+              <RefreshCw className={`h-4 w-4 ${isScanning ? "animate-spin" : ""}`} />
+              {isScanning ? "Skanowanie..." : "Skanuj teraz"}
             </Button>
           )}
         </div>
