@@ -1,6 +1,6 @@
 import { api, uploadFile } from "@/lib/api";
 import type { ImportValidationResult, ImportSummary } from "@/types/import";
-import type { Inventory, CreateInventoryPayload, UpdateInventoryPayload, InventoryNote, AssignableInventory } from "@/types/inventory";
+import type { Inventory, CreateInventoryPayload, UpdateInventoryPayload, InventoryNote, AssignableInventory, InventoryConnection } from "@/types/inventory";
 import type { HistoryEntry } from "@/types/history";
 
 interface BackendHistoryEntry {
@@ -119,6 +119,15 @@ export const validateInventoryImport = (file: File): Promise<ImportValidationRes
 
 export const importInventory = (file: File, skipErrors: boolean): Promise<ImportSummary> =>
     uploadFile<ImportSummary>(`/import/inventory?skipErrors=${skipErrors}`, file);
+
+export const getInventoryConnections = (deviceId: number): Promise<InventoryConnection[]> =>
+    api.get<InventoryConnection[]>(`/inventory/${deviceId}/connections`);
+
+export const addInventoryConnection = (deviceId: number, otherDeviceId: number): Promise<InventoryConnection> =>
+    api.post<InventoryConnection>(`/inventory/${deviceId}/connections/${otherDeviceId}`, {});
+
+export const removeInventoryConnection = (deviceId: number, connectionId: number): Promise<void> =>
+    api.delete<void>(`/inventory/${deviceId}/connections/${connectionId}`);
 
 export const getInventoryHistory = async (inventoryId: number): Promise<HistoryEntry[]> => {
     const entries = await api.get<BackendHistoryEntry[]>(`/inventory/${inventoryId}/history`);

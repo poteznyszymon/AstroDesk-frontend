@@ -47,14 +47,26 @@ export interface Inventory {
     status: InventoryStatus;
     author: UserRef;
     notes: InventoryNote[];
+    connectionsCount: number;
 }
 
 export type CreateInventoryPayload = Omit<
     Inventory,
-    "id" | "author" | "assignedBy" | "notes"
+    "id" | "author" | "assignedBy" | "notes" | "connectionsCount"
 >;
 
 export type UpdateInventoryPayload = Partial<CreateInventoryPayload>;
+
+export interface InventoryConnection {
+    connectionId: number;
+    connectedDeviceId: number;
+    connectedDeviceName: string;
+    connectedDeviceSerialNumber: string;
+    connectedDeviceItemType: InventoryItemType;
+    connectedDeviceStatus: InventoryStatus;
+    createdBy: UserRef;
+    createdAt: string;
+}
 
 export interface AssignableInventory {
     id: number;

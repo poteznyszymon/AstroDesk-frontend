@@ -127,6 +127,14 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
       },
     },
     {
+      accessorKey: "connectionsCount",
+      header: "Powiązania",
+      cell: ({ row }) => {
+        const count = row.getValue("connectionsCount") as number;
+        return <span className="text-sm">{count}</span>;
+      },
+    },
+    {
       id: 'hasNotes',
       accessorFn: (row) => row.notes.length,
       header: () => null,

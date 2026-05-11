@@ -7,13 +7,15 @@ import EditEquipmentDialog from '@/components/equipment/edit-equipment-dialog';
 import DeleteEquipmentDialog from '@/components/equipment/delete-equipment-dialog';
 import AssignEquipmentDialog from '@/components/equipment/assign-equipment-dialog';
 import AddTicketDialog from '@/components/tickets/add-ticket-dialog';
+import LinkDevicesDialog from '@/components/equipment/link-devices-dialog';
 import { useAdmin } from '@/data/mock/admin-context';
-import { useInventoryById, useAddInventoryNote, useDeleteInventoryNote, useInventoryHistory, useReturnInventory } from '@/hooks/inventory/useInventory';
+import { useInventoryById, useAddInventoryNote, useDeleteInventoryNote, useInventoryHistory, useReturnInventory, useInventoryConnections, useRemoveInventoryConnection } from '@/hooks/inventory/useInventory';
 import { useTickets } from '@/hooks/ticket/useTickets';
 import { useMe } from '@/hooks/auth/useAuth';
 import { statusConfig, priorityConfig } from '@/types/tickets';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send, TicketCheck, ArrowRight, Trash2, Loader2, StickyNote, Undo2 } from 'lucide-react';
+import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send, TicketCheck, ArrowRight, Trash2, Loader2, StickyNote, Undo2, Link2, Monitor, Laptop, Printer, Smartphone, Router, Network } from 'lucide-react';
+import type { InventoryItemType } from '@/types/inventory';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -107,6 +109,15 @@ function getInitials(name: string) {
     .join('');
 }
 
+const deviceTypeConfig: Record<InventoryItemType, { label: string; icon: React.ElementType }> = {
+  LAPTOP:   { label: 'Laptop',   icon: Laptop },
+  KOMPUTER: { label: 'Komputer', icon: Monitor },
+  DRUKARKA: { label: 'Drukarka', icon: Printer },
+  ROUTER:   { label: 'Router',   icon: Router },
+  SWITCH:   { label: 'Switch',   icon: Network },
+  TELEFON:  { label: 'Telefon',  icon: Smartphone },
+}
+
 function RouteComponent() {
   const { id } = Route.useParams();
   const { data, isLoading } = useInventoryById(Number(id));
@@ -117,6 +128,8 @@ function RouteComponent() {
   const { returnInventory, isLoading: isReturning } = useReturnInventory();
   const { data: ticketsData, isLoading: isTicketsLoading } = useTickets();
   const { data: history, isLoading: isHistoryLoading } = useInventoryHistory(Number(id));
+  const { data: connections, isLoading: isConnectionsLoading } = useInventoryConnections(Number(id));
+  const { removeConnection } = useRemoveInventoryConnection(Number(id));
   const [noteContent, setNoteContent] = useState('');
   const [deletingNoteId, setDeletingNoteId] = useState<number | null>(null);
   const [notesPage, setNotesPage] = useState(0);
@@ -235,6 +248,88 @@ function RouteComponent() {
               <Field icon={<User className="w-4 h-4" />} label="Przypisano przez" value={data?.assignedBy ? `${data.assignedBy.firstName} ${data.assignedBy.lastName}` : "brak"} />
               <Field icon={<Calendar className="w-4 h-4" />} label="Data przypisania" value={data?.assignedDate || "brak"} />
             </Section>
+          </div>
+
+          <div className="flex flex-col gap-4 max-w-3xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-foreground tracking-tight flex items-center gap-2">
+                <Link2 className="w-5 h-5 text-muted-foreground" />
+                Powiązane urządzenia
+                {!isConnectionsLoading && connections && connections.length > 0 && (
+                  <span className="text-sm font-normal text-muted-foreground">({connections.length})</span>
+                )}
+              </h2>
+              {adminView && data && (
+                <LinkDevicesDialog deviceId={data.id} existingConnections={connections ?? []} />
+              )}
+            </div>
+
+            {isConnectionsLoading ? (
+              <div className="flex flex-col gap-2">
+                {[1, 2].map((i) => (
+                  <div key={i} className="flex items-center justify-between rounded-lg border p-3 gap-3">
+                    <div className="flex items-center gap-3 flex-1">
+                      <Skeleton className="w-8 h-8 rounded-full shrink-0" />
+                      <div className="flex flex-col gap-1.5 flex-1">
+                        <Skeleton className="h-4 w-36" />
+                        <Skeleton className="h-3.5 w-24" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-4 w-4 shrink-0" />
+                  </div>
+                ))}
+              </div>
+            ) : !connections || connections.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Brak powiązanych urządzeń.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {connections.map((conn) => {
+                  const config = deviceTypeConfig[conn.connectedDeviceItemType]
+                  const TypeIcon = config.icon
+                  return (
+                    <div key={conn.connectionId} className="flex items-center gap-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                      <Link
+                        to="/inventory/$id"
+                        params={{ id: conn.connectedDeviceId.toString() }}
+                        className="flex items-center gap-3 flex-1 min-w-0"
+                      >
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground shrink-0">
+                          <TypeIcon className="w-4 h-4" />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-medium text-foreground truncate">{conn.connectedDeviceName}</span>
+                          <span className="text-xs text-muted-foreground">{conn.connectedDeviceSerialNumber} · {config.label}</span>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0 ml-auto" />
+                      </Link>
+                      {adminView && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer shrink-0 ml-1">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Usuń powiązanie</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Czy na pewno chcesz usunąć powiązanie z urządzeniem <strong>{conn.connectedDeviceName}</strong>?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel size="sm">Anuluj</AlertDialogCancel>
+                              <AlertDialogAction size="sm" onClick={() => removeConnection(conn.connectionId)}>
+                                Usuń
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-4 max-w-3xl">

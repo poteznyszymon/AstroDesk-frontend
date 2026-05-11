@@ -80,7 +80,7 @@ export function ImportDialog({ open, onOpenChange, validateFn, importFn, onSucce
 
         {(step === 'upload' || step === 'validating') && (
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Prześlij plik CSV lub Excel (.xlsx). Nagłówki kolumn muszą być zgodne z formatem eksportu.
             </p>
 

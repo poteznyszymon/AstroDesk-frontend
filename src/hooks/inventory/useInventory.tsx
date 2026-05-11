@@ -13,6 +13,9 @@ import {
     addInventoryNote as addInventoryNoteApi,
     deleteInventoryNote as deleteInventoryNoteApi,
     getInventoryHistory,
+    getInventoryConnections,
+    addInventoryConnection as addInventoryConnectionApi,
+    removeInventoryConnection as removeInventoryConnectionApi,
 } from "./api.inventory";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
@@ -25,7 +28,6 @@ export const useInventory = () => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY],
         queryFn: () => getAllInventory(),
-        staleTime: 1000 * 30,
         placeholderData: (prev) => prev,
     });
     return { data, isLoading };
@@ -37,7 +39,6 @@ export const useAssignableInventory = (enabled: boolean = true) => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY, "assignable"],
         queryFn: getAssignableInventory,
-        staleTime: 1000 * 30,
         enabled,
     });
     return { data, isLoading };
@@ -48,7 +49,7 @@ export const useInventoryById = (id: number) => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY, id],
         queryFn: () => getInventoryById(id),
-        staleTime: 1000 * 30,
+
         enabled: !!id,
     });
     return { data, isLoading };
@@ -192,11 +193,47 @@ export const useAddInventoryNote = (inventoryId: number) => {
     return { addNote, isLoading };
 };
 
+export const useInventoryConnections = (deviceId: number) => {
+    const { data, isLoading } = useQuery({
+        queryKey: [INVENTORY_KEY, deviceId, 'connections'],
+        queryFn: () => getInventoryConnections(deviceId),
+
+        enabled: !!deviceId,
+    });
+    return { data, isLoading };
+};
+
+export const useAddInventoryConnection = (deviceId: number) => {
+    const { mutateAsync: addConnection, isPending: isLoading } = useMutation({
+        mutationFn: (otherDeviceId: number) => addInventoryConnectionApi(deviceId, otherDeviceId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, deviceId, 'connections'] });
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
+            toast.success("Powiązanie dodane");
+        },
+        onError: () => toast.error("Błąd podczas dodawania powiązania"),
+    });
+    return { addConnection, isLoading };
+};
+
+export const useRemoveInventoryConnection = (deviceId: number) => {
+    const { mutateAsync: removeConnection, isPending: isLoading } = useMutation({
+        mutationFn: (connectionId: number) => removeInventoryConnectionApi(deviceId, connectionId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY, deviceId, 'connections'] });
+            queryClient.invalidateQueries({ queryKey: [INVENTORY_KEY] });
+            toast.success("Powiązanie usunięte");
+        },
+        onError: () => toast.error("Błąd podczas usuwania powiązania"),
+    });
+    return { removeConnection, isLoading };
+};
+
 export const useInventoryHistory = (id: number) => {
     const { data, isLoading } = useQuery({
         queryKey: [INVENTORY_KEY, id, 'history'],
         queryFn: () => getInventoryHistory(id),
-        staleTime: 1000 * 30,
+
         enabled: !!id,
     });
     return { data, isLoading };

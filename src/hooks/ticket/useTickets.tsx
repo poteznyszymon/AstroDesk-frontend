@@ -29,7 +29,6 @@ export const useTickets = () => {
   const { data, isLoading } = useQuery({
     queryKey: [TICKETS_KEY],
     queryFn: getTickets,
-    staleTime: 1000 * 30,
     placeholderData: (prev) => prev,
   });
   return { data, isLoading };
@@ -39,7 +38,6 @@ export const useTicketById = (id: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [TICKETS_KEY, id],
     queryFn: () => getTicketById(Number(id)),
-    staleTime: 1000 * 30,
     enabled: !!id,
   });
   return { data, isLoading };
@@ -148,7 +146,6 @@ export const useTicketHistory = (id: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [TICKETS_KEY, id, "history"],
     queryFn: () => getTicketHistory(Number(id)),
-    staleTime: 1000 * 30,
     enabled: !!id,
   });
   return { data, isLoading };
@@ -171,7 +168,6 @@ export const useTicketMessages = (id: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [TICKETS_KEY, id, "messages"],
     queryFn: () => getTicketMessages(Number(id)),
-    staleTime: 1000 * 30,
     enabled: !!id,
   });
   return { data, isLoading };
