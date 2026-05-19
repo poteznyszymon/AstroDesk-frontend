@@ -1,10 +1,7 @@
-import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
 import type { NetworkItem } from "@/types/network";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Link as LinkIcon, Unlink, Laptop, Monitor, Printer, Server, HardDrive, History } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Laptop, Monitor, Printer, Server, HardDrive, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const getVendorIcon = (vendor: string | null) => {
@@ -17,19 +14,7 @@ const getVendorIcon = (vendor: string | null) => {
   return HardDrive;
 };
 
-// Dodaliśmy prop onShowHistory
 function ActionsCell({ item, onShowHistory }: { item: NetworkItem; onShowHistory: (item: NetworkItem) => void }) {
-  const navigate = useNavigate();
-
-  const handleGoToAsset = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Zapobiegamy otwarciu bocznego panelu przy przechodzeniu do zasobu
-    if (!item.isImported) {
-      toast.error("Zasób nie jest powiązany z żadnym urządzeniem w inwentaryzacji.");
-      return;
-    }
-    navigate({ to: "/inventory" });
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,16 +30,11 @@ function ActionsCell({ item, onShowHistory }: { item: NetworkItem; onShowHistory
           <History className="mr-2 h-4 w-4" />
           Pokaż historię
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleGoToAsset}>
-          <LinkIcon className="mr-2 h-4 w-4" />
-          Przejdź do zasobu
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-// Dodajemy parametr onRowAction do generatora kolumn
 export const getNetworkColumns = (onRowAction: (item: NetworkItem) => void): ColumnDef<NetworkItem>[] => {
   return [
     {
@@ -121,24 +101,6 @@ export const getNetworkColumns = (onRowAction: (item: NetworkItem) => void): Col
             <div>{date.toLocaleDateString("pl-PL")}</div>
             <div className="text-xs text-muted-foreground">{date.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}</div>
           </div>
-        );
-      },
-    },
-    {
-      accessorKey: "isImported",
-      header: "Status",
-      cell: ({ row }) => {
-        const imported = row.getValue("isImported") as boolean;
-        return imported ? (
-          <Badge variant="default" className="gap-1">
-            <LinkIcon className="h-3 w-3" />
-            Powiązany
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="gap-1 text-muted-foreground">
-            <Unlink className="h-3 w-3" />
-            Niepowiązany
-          </Badge>
         );
       },
     },

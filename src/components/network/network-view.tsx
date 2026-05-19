@@ -4,13 +4,11 @@ import { NetworkTableToolbar } from "./network-table-toolbar";
 import type { NetworkItem } from "@/types/network";
 import { useState, useMemo, useCallback } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Monitor, MapPin, Clock, ArrowRight, Loader2, Pencil, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Link as LinkIcon, Monitor, MapPin, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useNetworkDevices, useNetworkHistory } from "./use-network";
 import type { NetworkFilters } from "./use-network";
-
-import { Pencil, Check, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
 function EditableHostname({ deviceId, hostname, onUpdated }: { deviceId: number; hostname: string | null; onUpdated: (newHostname: string) => void }) {
   const [editing, setEditing] = useState(false);
@@ -29,7 +27,6 @@ function EditableHostname({ deviceId, hostname, onUpdated }: { deviceId: number;
       onUpdated(value);
       setEditing(false);
     } catch {
-      // zostaw edycję otwartą przy błędzie
     } finally {
       setSaving(false);
     }
@@ -53,22 +50,10 @@ function EditableHostname({ deviceId, hostname, onUpdated }: { deviceId: number;
 
   return (
     <div className="flex items-center gap-1">
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className="h-7 text-sm py-0"
-        autoFocus
-        onKeyDown={(e) => {
-          if (e.key === "Enter") save();
-          if (e.key === "Escape") cancel();
-        }}
-      />
-      <button onClick={save} disabled={saving} className="text-green-600 hover:text-green-700">
-        <Check className="h-4 w-4" />
-      </button>
-      <button onClick={cancel} className="text-muted-foreground hover:text-foreground">
-        <X className="h-4 w-4" />
-      </button>
+      <Input value={value} onChange={(e) => setValue(e.target.value)} className="h-7 text-sm py-0" autoFocus
+        onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") cancel(); }} />
+      <button onClick={save} disabled={saving} className="text-green-600 hover:text-green-700"><Check className="h-4 w-4" /></button>
+      <button onClick={cancel} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
     </div>
   );
 }
@@ -76,28 +61,26 @@ function EditableHostname({ deviceId, hostname, onUpdated }: { deviceId: number;
 const NetworkView = () => {
   const [selectedItem, setSelectedItem] = useState<NetworkItem | null>(null);
 
-  // Trzymamy filtry jako osobne pola zamiast obiektu — unikamy tworzenia nowego obiektu przy każdym renderze
-  const [hostname, setHostname] = useState<string | undefined>(undefined);
+  const [hostname, setHostname]     = useState<string | undefined>(undefined);
   const [macAddress, setMacAddress] = useState<string | undefined>(undefined);
   const [switchName, setSwitchName] = useState<string | undefined>(undefined);
-  const [vendors, setVendors] = useState<string[] | undefined>(undefined);
-  const [isImported, setIsImported] = useState<boolean | undefined>(undefined);
+  const [vendors, setVendors]       = useState<string[] | undefined>(undefined);
 
-  // useMemo zapewnia że obiekt filters zmienia referencję TYLKO gdy faktycznie zmieniły się wartości
-  const filters = useMemo<NetworkFilters>(() => ({ hostname, macAddress, switchName, vendors, isImported }), [hostname, macAddress, switchName, vendors, isImported]);
+  const filters = useMemo<NetworkFilters>(
+    () => ({ hostname, macAddress, switchName, vendors }),
+    [hostname, macAddress, switchName, vendors]
+  );
 
   const { data, isLoading, refetch } = useNetworkDevices(filters);
   const { history, isLoading: historyLoading } = useNetworkHistory(selectedItem?.macAddress ?? null);
 
   const columns = useMemo(() => getNetworkColumns((item) => setSelectedItem(item)), []);
 
-  // Stabilna referencja do handlera filtrów — nie tworzy nowej funkcji przy każdym renderze
   const handleFiltersChange = useCallback((f: NetworkFilters) => {
     setHostname(f.hostname);
     setMacAddress(f.macAddress);
     setSwitchName(f.switchName);
     setVendors(f.vendors && f.vendors.length > 0 ? f.vendors : undefined);
-    setIsImported(f.isImported);
   }, []);
 
   return (
@@ -110,19 +93,13 @@ const NetworkView = () => {
         onRowClick={(row) => setSelectedItem(row)}
       />
 
-      <Sheet
-        open={!!selectedItem}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) setSelectedItem(null);
-        }}
-      >
+      <Sheet open={!!selectedItem} onOpenChange={(isOpen) => { if (!isOpen) setSelectedItem(null); }}>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto px-5">
           {selectedItem && (
             <div className="flex flex-col gap-8 py-4">
               <SheetHeader className="text-left">
                 <div className="flex items-center gap-2 mb-2">
                   <Monitor className="h-5 w-5 text-primary" />
-                  <Badge variant={selectedItem.isImported ? "default" : "outline"}>{selectedItem.isImported ? "Powiązany z IT" : "Nieznany"}</Badge>
                 </div>
                 <SheetTitle className="text-xl font-mono break-all">{selectedItem.macAddress}</SheetTitle>
                 <SheetDescription>Szczegóły urządzenia i historia lokalizacji w sieci</SheetDescription>
@@ -139,23 +116,17 @@ const NetworkView = () => {
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Hostname</span>
-                  <EditableHostname deviceId={selectedItem.id} hostname={selectedItem.hostname} onUpdated={(newHostname) => setSelectedItem({ ...selectedItem, hostname: newHostname })} />
+                  <EditableHostname
+                    deviceId={selectedItem.id}
+                    hostname={selectedItem.hostname}
+                    onUpdated={(newHostname) => setSelectedItem({ ...selectedItem, hostname: newHostname })}
+                  />
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Ostatnio widziany</span>
                   <p className="text-sm">{new Date(selectedItem.lastSeenAt).toLocaleDateString("pl-PL")}</p>
                 </div>
               </div>
-
-              {selectedItem.isImported && (
-                <div className="rounded-xl bg-muted/40 p-4 border border-border/60">
-                  <div className="flex items-center gap-2 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                    <LinkIcon className="h-3.5 w-3.5" />
-                    Powiązany zasób IT
-                  </div>
-                  <div className="text-sm font-semibold text-primary">{selectedItem.linkedAssetName}</div>
-                </div>
-              )}
 
               <div className="space-y-6">
                 <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
@@ -174,11 +145,7 @@ const NetworkView = () => {
                   <div className="relative space-y-6 before:absolute before:inset-0 before:ml-2.5 before:h-full before:w-px before:bg-border ml-1">
                     {history.map((entry, idx) => (
                       <div key={entry.id ?? idx} className="relative pl-10">
-                        <div
-                          className={`absolute left-0 top-2 h-5 w-5 -translate-x-1/2 rounded-full border-4 border-background z-10 ${
-                            idx === 0 ? "bg-primary shadow-[0_0_10px_rgba(var(--primary),0.4)]" : "bg-muted"
-                          }`}
-                        />
+                        <div className={`absolute left-0 top-2 h-5 w-5 -translate-x-1/2 rounded-full border-4 border-background z-10 ${idx === 0 ? "bg-primary shadow-[0_0_10px_rgba(var(--primary),0.4)]" : "bg-muted"}`} />
                         <div className="rounded-xl border bg-card p-4 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
                           <div className="flex items-center justify-between mb-3">
                             <span className="font-mono font-bold text-sm">{entry.ipAddress}</span>
