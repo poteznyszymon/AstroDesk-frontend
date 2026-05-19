@@ -113,14 +113,18 @@ export const getColumns = (adminView: boolean, inventory?: Inventory[]): ColumnD
       },
     },
     {
-      accessorKey: "date",
+      accessorKey: "createdAt",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="-ml-4">
           Data utworzenia
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue("date")}</div>,
+      cell: ({ row }) => {
+        const raw = row.getValue("createdAt") as string | null;
+        if (!raw) return <span className="text-muted-foreground">—</span>;
+        return <div>{raw}</div>;
+      },
       filterFn: (row, columnId, filterValue: { from?: Date; to?: Date }) => {
         if (!filterValue?.from && !filterValue?.to) return true;
         const date = new Date(row.getValue(columnId) as string);

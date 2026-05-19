@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createInventorySchema = z.object({
     name: z.string().min(1, "Nazwa jest wymagana"),
     itemType: z.enum([
-        "LAPTOP", "KOMPUTER", "DRUKARKA", "ROUTER", "SWITCH", "TELEFON"
+        "LAPTOP", "KOMPUTER", "DRUKARKA", "ROUTER", "SWITCH", "TELEFON", "SFP"
     ], { message: "Typ jest wymagany" }),
     serialNumber: z.string().min(1, "Numer seryjny jest wymagany"),
     status: z.enum([
@@ -14,6 +14,7 @@ export const createInventorySchema = z.object({
     price: z.number().nullable().optional(),
     invoiceNumber: z.string().nullable().optional(),
     location: z.string().nullable().optional(),
+    port: z.string().nullable().optional(),
 });
 
 export type CreateInventorySchema = z.infer<typeof createInventorySchema>;

@@ -20,6 +20,7 @@ const inventoryTypeLabels: Record<InventoryItemType, string> = {
     ROUTER: "Router",
     SWITCH: "Switch",
     TELEFON: "Telefon",
+    SFP: "SFP",
 };
 
 const inventoryStatusLabels: Record<InventoryStatus, string> = {
@@ -53,6 +54,7 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
             price: item.price ?? undefined,
             invoiceNumber: item.invoiceNumber ?? "",
             location: item.location ?? "",
+            port: item.port ?? "",
         },
     });
 
@@ -68,6 +70,7 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
                 price: item.price ?? undefined,
                 invoiceNumber: item.invoiceNumber ?? "",
                 location: item.location ?? "",
+                port: item.port ?? "",
             });
         }
     }, [open, item, form]);
@@ -83,6 +86,7 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
             price: values.price ?? null,
             invoiceNumber: values.invoiceNumber ?? null,
             location: values.location ?? null,
+            port: values.port ?? null,
         };
 
         await updateInventory({ id: item.id, updates });
@@ -264,6 +268,20 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
                                 )}
                             />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="port"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Port</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Port urządzenia" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <DialogFooter>
                             <DialogClose asChild>

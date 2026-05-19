@@ -6,7 +6,8 @@ import {
   Printer,
   Smartphone,
   Router,
-  Network
+  Network,
+  Cable
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
@@ -23,6 +24,7 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
     ROUTER: { label: "Router", icon: Router },
     SWITCH: { label: "Switch", icon: Network },
     TELEFON: { label: "Telefon", icon: Smartphone },
+    SFP: { label: "SFP", icon: Cable },
   };
 
   const statusConfig: Record<InventoryStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {

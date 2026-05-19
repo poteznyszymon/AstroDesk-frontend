@@ -22,6 +22,7 @@ const itemTypeLabels: Record<InventoryItemType, string> = {
   ROUTER: "Router",
   SWITCH: "Switch",
   TELEFON: "Telefon",
+  SFP: "SFP",
 };
 
 const statusLabels: Record<InventoryStatus, string> = {

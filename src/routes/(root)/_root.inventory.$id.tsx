@@ -14,7 +14,7 @@ import { useTickets } from '@/hooks/ticket/useTickets';
 import { useMe } from '@/hooks/auth/useAuth';
 import { statusConfig, priorityConfig } from '@/types/tickets';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send, TicketCheck, ArrowRight, Trash2, Loader2, StickyNote, Undo2, Link2, Monitor, Laptop, Printer, Smartphone, Router, Network } from 'lucide-react';
+import { Hash, MapPin, Calendar, DollarSign, FileText, User, Package, Send, TicketCheck, ArrowRight, Trash2, Loader2, StickyNote, Undo2, Link2, Monitor, Laptop, Printer, Smartphone, Router, Network, Cable } from 'lucide-react';
 import type { InventoryItemType } from '@/types/inventory';
 import {
   AlertDialog,
@@ -116,6 +116,7 @@ const deviceTypeConfig: Record<InventoryItemType, { label: string; icon: React.E
   ROUTER:   { label: 'Router',   icon: Router },
   SWITCH:   { label: 'Switch',   icon: Network },
   TELEFON:  { label: 'Telefon',  icon: Smartphone },
+  SFP:      { label: 'SFP',      icon: Cable },
 }
 
 function RouteComponent() {
@@ -234,6 +235,7 @@ function RouteComponent() {
               <Field icon={<Hash className="w-4 h-4" />} label="Numer seryjny" value={data?.serialNumber || "brak"} />
               <Field icon={<Package className="w-4 h-4" />} label="Model" value={data?.model || "brak"} />
               <Field icon={<MapPin className="w-4 h-4" />} label="Lokalizacja" value={data?.location || "brak"} />
+              <Field icon={<Cable className="w-4 h-4" />} label="Port" value={data?.port || "brak"} />
               <Field icon={<User className="w-4 h-4" />} label="Dodane przez" value={data?.author ? `${data.author.firstName} ${data.author.lastName}` : "brak"} />
             </Section>
 

@@ -4,7 +4,8 @@ export type InventoryItemType =
     | "DRUKARKA"
     | "ROUTER"
     | "SWITCH"
-    | "TELEFON";
+    | "TELEFON"
+    | "SFP";
 
 export type InventoryStatus =
     | "DOSTEPNE"
@@ -41,6 +42,7 @@ export interface Inventory {
     price: number | null;
     invoiceNumber: string | null;
     location: string | null;
+    port: string | null;
     assignedTo: UserRef | null;
     assignedBy: UserRef | null;
     assignedDate: string | null;

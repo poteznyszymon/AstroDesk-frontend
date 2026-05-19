@@ -19,6 +19,7 @@ const inventoryTypeLabels: Record<InventoryItemType, string> = {
     ROUTER: "Router",
     SWITCH: "Switch",
     TELEFON: "Telefon",
+    SFP: "SFP",
 };
 
 const inventoryStatusLabels: Partial<Record<InventoryStatus, string>> = {
@@ -63,6 +64,7 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
             price: values.price ?? null,
             invoiceNumber: values.invoiceNumber || null,
             location: values.location || null,
+            port: values.port || null,
             assignedTo: null,
             assignedDate: null,
         };
@@ -180,6 +182,20 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
                                 )}
                             />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="port"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Port</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Port urządzenia" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <DialogFooter>
                             <DialogClose asChild>
