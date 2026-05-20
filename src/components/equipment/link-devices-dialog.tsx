@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
-import { Link2, Check, Search, Monitor, Laptop, Printer, Smartphone, Router, Network } from 'lucide-react'
+import { Link2, Check, Search, Monitor, Laptop, Printer, Smartphone, Router, Network, Cable } from 'lucide-react'
 import { Input } from '../ui/input'
 import { cn } from '@/lib/utils'
 import { useInventory, useAddInventoryConnection } from '@/hooks/inventory/useInventory'
@@ -15,6 +15,7 @@ const typeConfig: Record<InventoryItemType, { label: string; icon: React.Element
     ROUTER:    { label: 'Router',    icon: Router },
     SWITCH:    { label: 'Switch',    icon: Network },
     TELEFON:   { label: 'Telefon',   icon: Smartphone },
+    SFP:       { label: 'SFP',       icon: Cable },
 }
 
 interface LinkDevicesDialogProps {
