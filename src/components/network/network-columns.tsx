@@ -70,22 +70,6 @@ export const getNetworkColumns = (onRowAction: (item: NetworkItem) => void): Col
       },
     },
     {
-      accessorKey: "switchName",
-      header: "Switch / Port",
-      cell: ({ row }) => {
-        const sw = row.original.switchName;
-        const port = row.original.switchPort;
-        return sw ? (
-          <div>
-            <div className="text-sm font-medium">{sw}</div>
-            <div className="text-xs text-muted-foreground font-mono">{port}</div>
-          </div>
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
-        );
-      },
-    },
-    {
       accessorKey: "lastSeenAt",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="-ml-4">

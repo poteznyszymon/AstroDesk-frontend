@@ -24,7 +24,7 @@ const AdminEquipmentView = () => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <DataTable isLoading={isLoading} columns={columns} data={filteredData} toolbar={EquipmentTableToolbar} getRowHref={(row) => `/inventory/${row.id}`} initialColumnVisibility={{ hasNotes: false }} />
+      <DataTable isLoading={isLoading} columns={columns} data={filteredData} toolbar={(props) => <EquipmentTableToolbar {...props} />} getRowHref={(row) => `/inventory/${row.id}`} initialColumnVisibility={{ hasNotes: false }} />
     </div>
   );
 };

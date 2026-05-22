@@ -4,7 +4,7 @@ import { NetworkTableToolbar } from "./network-table-toolbar";
 import type { NetworkItem } from "@/types/network";
 import { useState, useMemo, useCallback } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Monitor, MapPin, Clock, ArrowRight, Loader2, Pencil, Check, X } from "lucide-react";
+import { Monitor, Clock, Loader2, Pencil, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useNetworkDevices, useNetworkHistory } from "./use-network";
@@ -58,29 +58,39 @@ function EditableHostname({ deviceId, hostname, onUpdated }: { deviceId: number;
   );
 }
 
+const NO_VENDOR = "Brak informacji";
+
 const NetworkView = () => {
   const [selectedItem, setSelectedItem] = useState<NetworkItem | null>(null);
 
-  const [hostname, setHostname]     = useState<string | undefined>(undefined);
-  const [macAddress, setMacAddress] = useState<string | undefined>(undefined);
-  const [switchName, setSwitchName] = useState<string | undefined>(undefined);
-  const [vendors, setVendors]       = useState<string[] | undefined>(undefined);
+  const [hostname,         setHostname]         = useState<string | undefined>(undefined);
+  const [macAddress,       setMacAddress]        = useState<string | undefined>(undefined);
+  const [selectedVendors,  setSelectedVendors]   = useState<string[]>([]);
 
-  const filters = useMemo<NetworkFilters>(
-    () => ({ hostname, macAddress, switchName, vendors }),
-    [hostname, macAddress, switchName, vendors]
+  const apiFilters = useMemo<NetworkFilters>(
+    () => ({ hostname, macAddress }),
+    [hostname, macAddress]
   );
 
-  const { data, isLoading, refetch } = useNetworkDevices(filters);
+  const { data: allData, isLoading, refetch } = useNetworkDevices(apiFilters);
   const { history, isLoading: historyLoading } = useNetworkHistory(selectedItem?.macAddress ?? null);
+
+  const availableVendors = useMemo(() =>
+    Array.from(new Set(allData.map(d => d.vendor ?? NO_VENDOR))).sort(),
+    [allData]
+  );
+
+  const data = useMemo(() => {
+    if (selectedVendors.length === 0) return allData;
+    return allData.filter(d => selectedVendors.includes(d.vendor ?? NO_VENDOR));
+  }, [allData, selectedVendors]);
 
   const columns = useMemo(() => getNetworkColumns((item) => setSelectedItem(item)), []);
 
   const handleFiltersChange = useCallback((f: NetworkFilters) => {
     setHostname(f.hostname);
     setMacAddress(f.macAddress);
-    setSwitchName(f.switchName);
-    setVendors(f.vendors && f.vendors.length > 0 ? f.vendors : undefined);
+    setSelectedVendors(f.vendors ?? []);
   }, []);
 
   return (
@@ -89,7 +99,14 @@ const NetworkView = () => {
         isLoading={isLoading}
         columns={columns}
         data={data}
-        toolbar={(props) => <NetworkTableToolbar {...props} onFiltersChange={handleFiltersChange} onScanComplete={refetch} />}
+        toolbar={(props) => (
+          <NetworkTableToolbar
+            {...props}
+            availableVendors={availableVendors}
+            onFiltersChange={handleFiltersChange}
+            onScanComplete={refetch}
+          />
+        )}
         onRowClick={(row) => setSelectedItem(row)}
       />
 
@@ -152,12 +169,6 @@ const NetworkView = () => {
                             {idx === 0 && <Badge className="bg-emerald-500/10 text-emerald-600 border-none hover:bg-emerald-500/10 text-[10px] font-bold">AKTUALNY</Badge>}
                           </div>
                           <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-3.5 w-3.5 text-primary/60" />
-                              <span className="font-semibold text-foreground/80">{entry.switchName}</span>
-                              <ArrowRight className="h-3 w-3" />
-                              <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-[10px]">{entry.switchPort}</span>
-                            </div>
                             <div className="flex items-center gap-2 pt-1">
                               <Clock className="h-3.5 w-3.5 text-muted-foreground/60" />
                               <span>{new Date(entry.seenAt).toLocaleString("pl-PL", { dateStyle: "medium", timeStyle: "short" })}</span>

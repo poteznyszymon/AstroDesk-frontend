@@ -48,7 +48,7 @@ const TicketView = () => {
       <DataTable
         columns={columns}
         data={filteredData}
-        toolbar={TicketTableToolbar}
+        toolbar={(props) => <TicketTableToolbar {...props} />}
         getRowHref={(row) => `/tickets/${row.ticketId}`}
         isLoading={isLoading}
       />

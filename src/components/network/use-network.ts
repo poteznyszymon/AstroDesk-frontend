@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import type { NetworkItem, NetworkHistory } from "@/types/network";
+import type { NetworkItem, NetworkHistory, SubnetInfo } from "@/types/network";
 
 interface PageResponse<T> {
   content: T[];
@@ -84,7 +84,17 @@ export function useNetworkHistory(macAddress: string | null) {
   return { history, isLoading };
 }
 
-export async function triggerNetworkScan(): Promise<void> {
-  const res = await fetch("/api/network/scan", { method: "POST" });
+export async function fetchAvailableSubnets(): Promise<SubnetInfo[]> {
+  const res = await fetch("/api/network/available-subnets");
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+export async function triggerNetworkScan(subnets: string[]): Promise<void> {
+  const res = await fetch("/api/network/scan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ subnets }),
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 }

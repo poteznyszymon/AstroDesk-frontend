@@ -20,7 +20,7 @@ import { Link } from "@tanstack/react-router";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  toolbar?: React.ComponentType<{ table: Table<TData> }>;
+  toolbar?: (props: { table: Table<TData> }) => React.ReactNode;
   onRowClick?: (RowData: TData) => void;
   getRowHref?: (row: TData) => string;
   isLoading: boolean;
@@ -32,7 +32,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  toolbar: Toolbar,
+  toolbar,
   onRowClick,
   getRowHref,
   isLoading,
@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {Toolbar && <Toolbar table={table} />}
+      {toolbar && toolbar({ table })}
       {!isLoading && (
         <div className="overflow-hidden rounded-md border">
           <UITable>

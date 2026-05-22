@@ -17,3 +17,8 @@ export interface NetworkHistory {
   switchPort: string | null;
   seenAt: string;
 }
+
+export interface SubnetInfo {
+  interfaceName: string;
+  subnet: string;
+}
