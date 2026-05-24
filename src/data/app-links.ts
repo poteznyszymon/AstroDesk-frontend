@@ -12,6 +12,6 @@ interface MenuLink {
 export const menuItems: MenuLink[] = [
   { title: "System ticketowy", url: "/tickets", icon: Ticket },
   { title: "System inwentaryzacyjny", url: "/inventory", icon: Package },
-  { title: "System mapy sieci", url: "/network", icon: Network },
-  { title: "Historia zmian", url: "/history", icon: History, roles: ["HEADADMIN", "TICKET_ADMIN", "ASSET_ADMIN"] },
+  { title: "System mapy sieci", url: "/network", icon: Network, roles: ["HEADADMIN"] },
+  { title: "Historia zmian", url: "/history", icon: History, roles: ["HEADADMIN"] },
 ];

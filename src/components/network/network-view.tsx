@@ -7,28 +7,24 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Monitor, Clock, Loader2, Pencil, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useNetworkDevices, useNetworkHistory } from "./use-network";
-import type { NetworkFilters } from "./use-network";
+import {
+  useNetworkDevices,
+  useNetworkHistory,
+  useUpdateNetworkDeviceHostname,
+} from "@/hooks/network/useNetwork";
+import type { NetworkFilters } from "@/hooks/network/api.network";
 
 function EditableHostname({ deviceId, hostname, onUpdated }: { deviceId: number; hostname: string | null; onUpdated: (newHostname: string) => void }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(hostname ?? "");
-  const [saving, setSaving] = useState(false);
+  const { updateHostname, isLoading: saving } = useUpdateNetworkDeviceHostname();
 
   const save = async () => {
-    setSaving(true);
     try {
-      const res = await fetch(`/api/network/devices/${deviceId}/hostname`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hostname: value }),
-      });
-      if (!res.ok) throw new Error();
+      await updateHostname({ deviceId, hostname: value });
       onUpdated(value);
       setEditing(false);
     } catch {
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -72,7 +68,7 @@ const NetworkView = () => {
     [hostname, macAddress]
   );
 
-  const { data: allData, isLoading, refetch } = useNetworkDevices(apiFilters);
+  const { data: allData, isLoading } = useNetworkDevices(apiFilters);
   const { history, isLoading: historyLoading } = useNetworkHistory(selectedItem?.macAddress ?? null);
 
   const availableVendors = useMemo(() =>
@@ -104,7 +100,6 @@ const NetworkView = () => {
             {...props}
             availableVendors={availableVendors}
             onFiltersChange={handleFiltersChange}
-            onScanComplete={refetch}
           />
         )}
         onRowClick={(row) => setSelectedItem(row)}

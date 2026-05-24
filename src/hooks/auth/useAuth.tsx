@@ -11,6 +11,7 @@ export const useLogin = () => {
         mutationFn: loginApi,
         onSuccess: (user) => {
             queryClient.setQueryData(["me"], user);
+            queryClient.invalidateQueries({ predicate: (q) => q.queryKey[0] !== "me" });
             toast.success("Zalogowano pomyślnie!");
             navigate({ to: "/" });
         },
@@ -41,7 +42,8 @@ export const useLogout = () => {
   const { mutate: logout } = useMutation({
     mutationFn: logoutApi,
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.cancelQueries({ queryKey: ["me"] });
+      queryClient.clear();
       navigate({ to: "/login" });
     },
     onError: () => {

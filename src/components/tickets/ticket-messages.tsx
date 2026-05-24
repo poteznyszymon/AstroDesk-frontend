@@ -105,7 +105,7 @@ export function TicketMessages({ ticketId }: TicketMessagesProps) {
     if (e.key === 'Enter') { e.preventDefault(); handleSend(); }
   };
 
-  const openEdit = (msg: TicketMessage) => {
+  const openEdit = (msg: TicketMessageDTO) => {
     setEditTarget(msg);
     setEditContent(msg.content);
   };

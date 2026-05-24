@@ -8,7 +8,7 @@ import type { Table } from "@tanstack/react-table";
 import { RefreshCw, Filter, X } from "lucide-react";
 import { useAdmin } from "@/data/mock/admin-context";
 import { NetworkScanDialog } from "./network-scan-dialog";
-import type { NetworkFilters } from "./use-network";
+import type { NetworkFilters } from "@/hooks/network/api.network";
 
 type SearchField = "hostname" | "macAddress";
 
@@ -21,10 +21,9 @@ interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   availableVendors: string[];
   onFiltersChange: (filters: NetworkFilters) => void;
-  onScanComplete:  () => void;
 }
 
-export function NetworkTableToolbar<TData>({ table, availableVendors, onFiltersChange, onScanComplete }: DataTableToolbarProps<TData>) {
+export function NetworkTableToolbar<TData>({ table, availableVendors, onFiltersChange }: DataTableToolbarProps<TData>) {
   const { isInventoryAdmin: adminView } = useAdmin();
 
   const [searchField,     setSearchField]     = useState<SearchField>("hostname");
@@ -122,7 +121,6 @@ export function NetworkTableToolbar<TData>({ table, availableVendors, onFiltersC
               <NetworkScanDialog
                 open={scanDialogOpen}
                 onOpenChange={setScanDialogOpen}
-                onScanComplete={onScanComplete}
               />
             </>
           )}

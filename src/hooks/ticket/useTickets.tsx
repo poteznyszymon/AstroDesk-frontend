@@ -18,7 +18,6 @@ import {
     updateTicketMessage,
     type TicketMessageDTO,
 } from "./api.ticket";
-import { addTicketMessageMock, deleteTicketMessageMock, getTicketMessagesMock, updateTicketMessageMock } from "./mock.ticket-messages";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { Ticket, TicketPriority } from "@/types/tickets";

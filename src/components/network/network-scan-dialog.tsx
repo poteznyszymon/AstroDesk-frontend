@@ -1,43 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Check, Network } from "lucide-react";
-import { fetchAvailableSubnets, triggerNetworkScan } from "./use-network";
-import type { SubnetInfo } from "@/types/network";
-import { toast } from "sonner";
+import { useAvailableSubnets, useTriggerNetworkScan } from "@/hooks/network/useNetwork";
 import { cn } from "@/lib/utils";
 
 interface NetworkScanDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onScanComplete: () => void;
 }
 
-export function NetworkScanDialog({ open, onOpenChange, onScanComplete }: NetworkScanDialogProps) {
-  const [subnets, setSubnets]               = useState<SubnetInfo[]>([]);
-  const [selected, setSelected]             = useState<Set<string>>(new Set());
-  const [loadingSubnets, setLoadingSubnets] = useState(false);
-  const [scanning, setScanning]             = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    setLoadingSubnets(true);
-    fetchAvailableSubnets()
-      .then((data) => {
-        setSubnets(data);
-        setSelected(new Set(data.map((s) => s.subnet)));
-      })
-      .catch(() => toast.error("Nie udało się pobrać listy sieci."))
-      .finally(() => setLoadingSubnets(false));
-  }, [open]);
+export function NetworkScanDialog({ open, onOpenChange }: NetworkScanDialogProps) {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { data: subnets, isLoading: loadingSubnets } = useAvailableSubnets(open);
+  const { triggerScan, isLoading: scanning } = useTriggerNetworkScan();
 
   const handleOpenChange = (v: boolean) => {
     onOpenChange(v);
-    if (!v) {
-      setSubnets([]);
-      setSelected(new Set());
-    }
+    if (!v) setSelected(new Set());
   };
 
   const toggle = (subnet: string) => {
@@ -49,18 +30,10 @@ export function NetworkScanDialog({ open, onOpenChange, onScanComplete }: Networ
   };
 
   const handleScan = async () => {
-    setScanning(true);
     try {
-      await triggerNetworkScan([...selected]);
+      await triggerScan([...selected]);
       handleOpenChange(false);
-      toast("Skanowanie sieci zostało uruchomione.", {
-        action: { label: "Zamknij", onClick: () => {} },
-      });
-      setTimeout(onScanComplete, 5000);
     } catch {
-      toast.error("Nie udało się uruchomić skanowania.");
-    } finally {
-      setScanning(false);
     }
   };
 
