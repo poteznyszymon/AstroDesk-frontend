@@ -46,8 +46,14 @@ export const useTriggerNetworkScan = () => {
       toast("Skanowanie sieci zostało uruchomione.", {
         action: { label: "Zamknij", onClick: () => {} },
       });
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: [NETWORK_KEY, "devices"] });
+      const refetch = () =>
+        queryClient.refetchQueries({ queryKey: [NETWORK_KEY, "devices"], type: "active" });
+
+      let count = 0;
+      const poll = setInterval(() => {
+        count++;
+        refetch();
+        if (count >= 24) clearInterval(poll); // max 2 minuty
       }, 5000);
     },
     onError: () => toast.error("Nie udało się uruchomić skanowania."),

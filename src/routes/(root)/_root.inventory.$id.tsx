@@ -232,6 +232,7 @@ function RouteComponent() {
         <TabsContent value="details" className="space-y-10 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
             <Section title="Urządzenie">
+              <Field icon={<Hash className="w-4 h-4" />} label="Nr inwentarza" value={data?.inventoryNumber || "brak"} />
               <Field icon={<Hash className="w-4 h-4" />} label="Numer seryjny" value={data?.serialNumber || "brak"} />
               <Field icon={<Package className="w-4 h-4" />} label="Model" value={data?.model || "brak"} />
               <Field icon={<MapPin className="w-4 h-4" />} label="Lokalizacja" value={data?.location || "brak"} />

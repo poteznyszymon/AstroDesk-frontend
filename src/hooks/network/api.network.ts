@@ -12,7 +12,6 @@ interface PageResponse<T> {
 export interface NetworkFilters {
   hostname?: string;
   macAddress?: string;
-  switchName?: string;
   vendors?: string[];
   isImported?: boolean;
 }
@@ -25,7 +24,6 @@ const buildDeviceQuery = (filters: NetworkFilters, page: number, size: number) =
 
   if (filters.hostname) params.set("hostname", filters.hostname);
   if (filters.macAddress) params.set("macAddress", filters.macAddress);
-  if (filters.switchName) params.set("switchName", filters.switchName);
   filters.vendors?.forEach((v) => params.append("vendors", v));
   if (filters.isImported !== undefined) params.set("isImported", String(filters.isImported));
 

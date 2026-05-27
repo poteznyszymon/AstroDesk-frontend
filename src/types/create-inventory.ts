@@ -6,6 +6,7 @@ export const createInventorySchema = z.object({
         "LAPTOP", "KOMPUTER", "DRUKARKA", "ROUTER", "SWITCH", "TELEFON", "SFP"
     ], { message: "Typ jest wymagany" }),
     serialNumber: z.string().min(1, "Numer seryjny jest wymagany"),
+    inventoryNumber: z.string().nullable().optional(),
     status: z.enum([
         "DOSTEPNE", "DO_WYDANIA", "WYDANE", "WYPORZYCZONE", "W_TRAKCIE", "SERWIS", "UTYLIZACJA"
     ], { message: "Status jest wymagany" }),

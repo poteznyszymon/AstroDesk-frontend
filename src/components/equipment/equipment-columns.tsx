@@ -72,6 +72,20 @@ export const getInventoryColumns = (adminView: boolean): ColumnDef<Inventory>[] 
       },
     },
     {
+      accessorKey: "inventoryNumber",
+      header: "Nr inwentarza",
+      cell: ({ row }) => {
+        const val = row.getValue("inventoryNumber") as string | null;
+        return val
+          ? <span className="font-mono text-sm">{val}</span>
+          : <span className="text-muted-foreground">—</span>;
+      },
+      filterFn: (row, _, filterValue: string) => {
+        if (!filterValue) return true;
+        return (row.original.inventoryNumber ?? '').toLowerCase().includes(filterValue.toLowerCase());
+      },
+    },
+    {
       accessorKey: "itemType",
       header: "Typ",
       filterFn: "equals",

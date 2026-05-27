@@ -37,6 +37,7 @@ export interface Inventory {
     name: string;
     itemType: InventoryItemType;
     serialNumber: string;
+    inventoryNumber: string | null;
     model: string | null;
     boughtDate: string | null;
     price: number | null;

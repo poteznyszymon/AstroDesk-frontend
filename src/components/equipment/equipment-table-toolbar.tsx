@@ -56,6 +56,7 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
   }, [data]);
 
   const nameFilter = (table.getColumn("name")?.getFilterValue() as string) ?? "";
+  const inventoryNumberFilter = (table.getColumn("inventoryNumber")?.getFilterValue() as string) ?? "";
   const typeFilter = (table.getColumn("itemType")?.getFilterValue() as string) ?? "";
   const statusFilter = (table.getColumn("status")?.getFilterValue() as string) ?? "";
   const locationFilter = (table.getColumn("location")?.getFilterValue() as string) ?? "";
@@ -64,6 +65,7 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
 
   const isFiltered =
     nameFilter !== "" ||
+    inventoryNumberFilter !== "" ||
     typeFilter !== "" ||
     statusFilter !== "" ||
     locationFilter !== "" ||
@@ -72,6 +74,7 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
 
   const clearFilters = () => {
     table.getColumn("name")?.setFilterValue("");
+    table.getColumn("inventoryNumber")?.setFilterValue("");
     table.getColumn("itemType")?.setFilterValue("");
     table.getColumn("status")?.setFilterValue("");
     table.getColumn("location")?.setFilterValue("");
@@ -87,7 +90,15 @@ export function EquipmentTableToolbar<TData>({ table }: DataTableToolbarProps<TD
           placeholder="Szukaj po nazwie"
           value={nameFilter}
           onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
-          className="h-8 w-full sm:w-[220px]"
+          className="h-8 w-full sm:w-[200px]"
+        />
+
+        <Input
+          disabled={isLoading}
+          placeholder="Nr inwentarza"
+          value={inventoryNumberFilter}
+          onChange={(e) => table.getColumn("inventoryNumber")?.setFilterValue(e.target.value)}
+          className="h-8 w-full sm:w-[150px]"
         />
 
         <Select

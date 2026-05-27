@@ -48,6 +48,7 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
             name: item.name,
             itemType: item.itemType,
             serialNumber: item.serialNumber,
+            inventoryNumber: item.inventoryNumber ?? "",
             status: item.status,
             model: item.model ?? "",
             boughtDate: item.boughtDate ?? "",
@@ -64,6 +65,7 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
                 name: item.name,
                 itemType: item.itemType,
                 serialNumber: item.serialNumber,
+                inventoryNumber: item.inventoryNumber ?? "",
                 status: item.status,
                 model: item.model ?? "",
                 boughtDate: item.boughtDate ?? "",
@@ -80,6 +82,7 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
             name: values.name,
             itemType: values.itemType,
             serialNumber: values.serialNumber,
+            inventoryNumber: values.inventoryNumber ?? null,
             status: values.status,
             model: values.model ?? null,
             boughtDate: values.boughtDate ?? null,
@@ -189,12 +192,12 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
 
                             <FormField
                                 control={form.control}
-                                name="location"
+                                name="inventoryNumber"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Lokalizacja</FormLabel>
+                                        <FormLabel>Nr inwentarza</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="np. Pokój 204" {...field} value={field.value || ''} />
+                                            <Input placeholder="np. INV/2024/001" {...field} value={field.value || ''} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -269,19 +272,35 @@ const EditEquipmentDialog = ({ item, showText = true }: EditEquipmentDialogProps
                             />
                         </div>
 
-                        <FormField
-                            control={form.control}
-                            name="port"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Port</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Port urządzenia" {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="location"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Lokalizacja</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="np. Pokój 204" {...field} value={field.value || ''} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="port"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Port</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Port urządzenia" {...field} value={field.value || ''} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <DialogFooter>
                             <DialogClose asChild>

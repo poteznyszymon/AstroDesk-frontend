@@ -4,17 +4,14 @@ export interface NetworkItem {
   macAddress: string;
   hostname: string | null;
   vendor: string | null;
+  openPorts: string | null;
   lastSeenAt: string;
-  switchName: string | null;
-  switchPort: string | null;
 }
 
 export interface NetworkHistory {
   id: number;
   macAddress: string;
   ipAddress: string;
-  switchName: string | null;
-  switchPort: string | null;
   seenAt: string;
 }
 

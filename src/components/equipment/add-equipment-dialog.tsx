@@ -45,6 +45,7 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
             name: "",
             itemType: "LAPTOP",
             serialNumber: "",
+            inventoryNumber: "",
             status: "DOSTEPNE",
             location: "",
             model: "",
@@ -58,6 +59,7 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
             name: values.name,
             itemType: values.itemType,
             serialNumber: values.serialNumber,
+            inventoryNumber: values.inventoryNumber || null,
             status: values.status,
             model: values.model || null,
             boughtDate: values.boughtDate || null,
@@ -170,18 +172,32 @@ const AddEquipmentDialog = ({ isLoading = false, triggerClassName }: AddEquipmen
 
                             <FormField
                                 control={form.control}
-                                name="location"
+                                name="inventoryNumber"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Lokalizacja</FormLabel>
+                                        <FormLabel>Nr inwentarza</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="np. Pokój 204" {...field} value={field.value || ''} />
+                                            <Input placeholder="np. INV/2024/001" {...field} value={field.value || ''} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="location"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Lokalizacja</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="np. Pokój 204" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
