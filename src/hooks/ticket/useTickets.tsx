@@ -16,8 +16,8 @@ import {
     addTicketMessage,
     deleteTicketMessage,
     updateTicketMessage,
-    type TicketMessageDTO,
 } from "./api.ticket";
+import type { TicketMessageDTO } from "./api.ticket";
 import { queryClient } from "@/main";
 import { toast } from "sonner";
 import type { Ticket, TicketPriority } from "@/types/tickets";
@@ -168,6 +168,8 @@ export const useTicketMessages = (id: string) => {
     queryKey: [TICKETS_KEY, id, "messages"],
     queryFn: () => getTicketMessages(Number(id)),
     enabled: !!id,
+    staleTime: 0,
+    refetchInterval: 250,
   });
   return { data, isLoading };
 };

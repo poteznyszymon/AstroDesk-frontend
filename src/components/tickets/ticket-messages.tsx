@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTicketMessages, useAddTicketMessage, useDeleteTicketMessage, useUpdateTicketMessage } from '@/hooks/ticket/useTickets';
 import { useMe } from '@/hooks/auth/useAuth';
+import type { TicketMessageDTO } from '@/hooks/ticket/useTickets';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { Trash2, Send, Pencil, MoreHorizontal } from 'lucide-react';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import type { TicketMessageDTO } from '@/hooks/ticket/useTickets';
 
 interface TicketMessagesProps {
   ticketId: string;

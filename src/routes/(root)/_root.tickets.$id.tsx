@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTicketById, useDeleteTicket, useTicketHistory, useAcceptTicket, useOpenTicket, useResolveTicket, useCloseTicket, useCancelTicket } from '@/hooks/ticket/useTickets';
+import { useTicketMessagesSocket } from '@/hooks/ticket/useTicketMessagesSocket';
 import { useInventoryById } from '@/hooks/inventory/useInventory';
 import { useAdmin } from '@/data/mock/admin-context';
 import { statusConfig, priorityConfig } from '@/types/tickets';
@@ -56,6 +57,7 @@ function FieldSkeleton() {
 
 function RouteComponent() {
   const { id } = Route.useParams();
+  useTicketMessagesSocket(id);
   const { data, isLoading } = useTicketById(id);
   const { isTicketAdmin: adminView } = useAdmin();
   const { data: linkedDevice, isLoading: isDeviceLoading } = useInventoryById(data?.linkedInventoryId ?? 0);
