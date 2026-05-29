@@ -24,7 +24,13 @@ npm install
 
 ### 2. Configure environment
 
-The `.env` file is already set to localhost — no changes needed for local dev:
+Skopiuj plik środowiskowy:
+
+```bash
+cp .env.example .env
+```
+
+Domyślna wartość wskazuje na localhost — dla lokalnego devu nie trzeba nic zmieniać:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080
